@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+
+    <title>WebRT-Graph</title>
+
+    <!--    Google Fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Lalezar|Passion+One|Patua+One|Righteous|Coda" rel="stylesheet">
+
+    <!--    Boostrap CSS-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!--    Font Awesome-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <!--    Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/graph.css">
+    <link rel="stylesheet" type="text/css" href="css/sources.css">
+    <link rel="stylesheet" type="text/css" href="css/config.css">
+    <link rel="stylesheet" type="text/css" href="css/checkbox.css">
+    <link rel="stylesheet" type="text/css" href="css/slider.css">
+    <link rel="stylesheet" type="text/css" href="css/scrollbar.css">
+
+    <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+    <script src="//unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="//unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+
+    <!--    Babel  -->
+    <script type="application/javascript" src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+
+    <!--    jquery.js -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"
+            crossorigin="anonymous"></script>
+
+    <!--  jquery UI.js  -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
+            crossorigin="anonymous"></script>
+
+    <!--    Popper.js -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+
+    <!--    Boostrap.js-->
+    <script src="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+
+    <!--    SocketIO-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+
+    <!--    FileSaver to convert SVG into Canvas-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
+
+    <!--    D3.js-->
+    <script src="//d3js.org/d3.v4.js"></script>
+    <script src="//d3js.org/d3-path.v1.min.js"></script> <!-- currently not needed -->
+    <script src="//d3js.org/d3-shape.v1.min.js"></script> <!-- currently not needed -->
+    <script src="//d3js.org/d3-zoom.v1.min.js"></script>
+    <script src="//d3js.org/d3-drag.v1.min.js"></script>
+    <script src="//d3js.org/d3-color.v1.min.js"></script>
+    <script src="//d3js.org/d3-interpolate.v1.min.js"></script>
+    <script src="//d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+</head>
+<body>
+<div id="page-mask"></div>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <a class="navbar-brand" style="color: #00AAFF; font-family: 'Patua One', cursive;" href="graph.html">
+        <img src="images/favicon-32x32.png" width="30" height="30" class="d-inline-block align-top">
+        WebRT-Graph</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="nav navbar-nav mr-auto" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="sources-tab" href="#sources" data-toggle="tab">Sources</a>
+            </li>
+            <li class="nav-item ">
+                <a class="nav-link" id="monitor-tab" href="#monitor" data-toggle="tab">
+                    Graph
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="data-tab" href="#data" data-toggle="tab">Data</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="config-tab" href="#config" data-toggle="tab">Config</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="settings-tab" href="#settings" data-toggle="tab">Settings</a>
+            </li>
+
+        </ul>
+        <div class="form-inline my-0 my-lg-0">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link active" href="logout" id="logout">Logout</a>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</nav>
+
+
+<div class="tab-content">
+
+    <div class="tab-pane fade show active" id="sources" role="tabpanel" aria-labelledby="sources-tab">
+
+        <div id="sources-container">
+        </div>
+        <div class="card border border-primary shadow rounded" id="add-source-box">
+
+            <div class="font-weight-bold text-center card-header">
+                <button type="button" class="close" aria-label="Close" onclick="closeAddSourceWindow()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                Create Source
+            </div>
+            <div id="add-source-body-box">
+
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" class="form-control form-control-lg" placeholder=""
+                           id="create-source-name" oninput="addSourceWindowOnChange()">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" class="form-control form-control-lg" placeholder=""
+                           id="create-source-description">
+                </div>
+                <ul class="nav nav-tabs" id="create-source-type-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#fromscratch" data-toggle="tab">From Scratch</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#fromfile" data-toggle="tab">From File</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#fromtext" data-toggle="tab">Paste Text</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="fromscratch" role="tabpanel">
+                    </div>
+                    <div class="tab-pane fade show " id="fromfile" role="tabpanel">
+                        <input type="file" class="form-control-file" id="create-source-file-button">
+                    </div>
+                    <div class="tab-pane fade show " id="fromtext" role="tabpanel">
+                        <div class="form-group">
+                            <label>JSON/XML/CSV</label>
+                            <textarea class="form-control" id="create-source-area" rows="5">
+{
+  key: "value" //JSON example
+}
+                            </textarea>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button style="width: 100%" type="button" id="create-source-create-btn"
+                                onclick="createSource()"
+                                class="btn btn-primary mb-2" disabled>
+                            Create
+                        </button>
+                    </div>
+                    <div class="col">
+                        <button style="width: 100%" type="button" onclick="closeAddSourceWindow()"
+                                class="btn btn-dark  mb-2">Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <a id="circle" onclick="showAddSourceWindow()">+</a>
+    </div>
+
+    <div id="monitor" class="tab-pane fade" role="tabpanel" aria-labelledby="main-tab">
+        <div id="main">
+            <div class="bg-dark text-light" id="left-nav">
+                <div class="rounded shadow" id="nav-container">
+                    <h4 id="left-nav-header">Navigation</h4>
+
+                    <ul id="monitor-nav-tabs" class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" id="info-tab" href="#info">Info</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" id="nodes-tab" href="#nodes-tab-pane">Nodes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" id="bla-tab" href="#bla">Sources</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" id="node-settings-tab"
+                               href="#node-settings">Settings</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="tab-contents">
+                        <div class="tab-pane fade show active" id="info" role="tabpanel"
+                             aria-labelledby="home-tab"></div>
+                        <div class="tab-pane fade" id="nodes-tab-pane" role="tabpanel"
+                             aria-labelledby="profile-tab">
+                            <div id="select-options">
+                                <button type="button" class="btn" onclick="selectAllNodes(true)">Select All</button>
+                                <button type="button" class="btn" onclick="selectAllNodes(false)">Deselect All
+                                </button>
+                            </div>
+                            <div id="nodes">Nodes..</div>
+                        </div>
+                        <div class="tab-pane fade" id="bla" role="tabpanel" aria-labelledby="profile-tab">Sources..
+                        </div>
+                        <div class="tab-pane fade" id="node-settings" role="tabpanel" aria-labelledby="profile-tab">
+                            <div class="slidecontainer">
+                                <p>forceManyBody strength</p>
+                                <input type="range" min="-100" max="100" value="-10" class="slider"
+                                       id="slider-manybody"/>
+                            </div>
+                            <div class="slidecontainer">
+                                <p>forceLink strength</p>
+                                <input type="range" min="1" max="100" value="50" class="slider" id="myRange2"/>
+                            </div>
+                            <div class="form-group">
+                                <label for="linkLineType">Type of links</label>
+                                <select onchange="setLinkLineType(this)" class="form-control"
+                                        id="linkLineType">
+                                    <option>Linear</option>
+                                    <option>Curved</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="nodeColorPalettes">Node color palettes</label>
+                                <select onchange="setNodeColorPalette(this)" class="form-control"
+                                        id="nodeColorPalettes">
+                                    <option>BrBg</option>
+                                    <option>PRGn</option>
+                                    <option>PiYG</option>
+                                    <option>PuoR</option>
+                                    <option>RdBu</option>
+                                    <option>RdYIBu</option>
+                                    <option>Spectral</option>
+                                    <option>Blues</option>
+                                    <option>Greens</option>
+                                    <option>Oranges</option>
+                                    <option>Reds</option>
+                                    <option>Purples</option>
+                                    <option>Viridis</option>
+                                    <option>Inferno</option>
+                                    <option>Warm</option>
+                                    <option>Cool</option>
+                                    <option>Rainbow</option>
+                                    <option>Sinebow</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="graph-container">
+                <div>
+                    <a id="github-graph" href="https://github.com/xoned1">
+                        <img src="images/GitHub-Mark-Light-32px.png" width="15px" height="15px"/>
+                        on Github
+                    </a>
+                </div>
+                <div id="inner-graph-container"></div>
+            </div>
+
+            <div id="toolbar">
+                <div id="toolbar-items" class="shadow text-white">
+                    <div>
+                        <i value="dd" class="fas fa-sd-card" data-toggle="tooltip" title="Save as image.."
+                           onclick="saveGraphAsImage()"></i>
+                    </div>
+                    <div>
+                        <i value="dd" class="fas fa-camera" data-toggle="tooltip" title="Delete Source"></i>
+                    </div>
+                    <div>
+                        <i value="dd" class="fas fa-compress-arrows-alt" data-toggle="tooltip"
+                           title="Delete Source"></i>
+                    </div>
+                    <div>
+                        <i value="dd" class="fas fa-eye" data-toggle="tooltip" title="Delete Source"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="card shadow" id="overlay">
+            <div class="card-header" id="card-header">NodeTitle</div>
+            <div class="card-body">
+                <h6 class="card-title" id="card-title">CardTitle</h6>
+                <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="tab-pane fade" id="data" role="tabpanel" aria-labelledby="data-tab">
+        <div id="data-table" class="rounded">
+            <div id="data-table-container"></div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+    </div>
+
+    <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
+        <div class="card shadow" id="source-config-box">
+            <div class="form-group">
+                <label for="sourceConfigDropBoxNodes">Use as Nodes</label>
+                <select class="form-control" id="sourceConfigDropBoxNodes" onchange="sourceConfigNodeChanged(this)">
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sourceConfigDropBoxLinks">Use as Links</label>
+                <select onchange="sourceConfigLinkChanged(this)" class="form-control" id="sourceConfigDropBoxLinks">
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sourceConfigDropBoxNodeTitle">Node Title</label>
+                <select onchange="sourceConfigNodeTitleChanged(this)" class="form-control"
+                        id="sourceConfigDropBoxNodeTitle">
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sourceConfigDropBoxNodeWeight">Node Weight</label>
+                <select onchange="sourceConfigNodeWeightChanged(this)" class="form-control"
+                        id="sourceConfigDropBoxNodeWeight">
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!--Order Matters!-->
+<script type="text/babel" src="js/graph-context.js"></script>
+<script type="text/babel" src="js/graph.js"></script>
+<script type="text/babel" src="js/core.js"></script>
+<script type="text/babel" src="js/simulation.js"></script>
+<script type="text/babel" src="js/zoom-pane.js"></script>
+<script type="text/babel" src="js/node-bar.js"></script>
+<script type="text/babel" src="js/sources-react.js"></script>
+<script type="text/babel" src="js/svg-to-image.js"></script>
+<script type="text/babel" src="js/data-table.js"></script>
+</body>
+</html>

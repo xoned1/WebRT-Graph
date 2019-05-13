@@ -1,0 +1,272 @@
+Hauptberufl. wissenschaftl. u. künstler. Personal (Anzahl);;;;;;;;;;;
+;;2008;2009;2010;2011;2012;2013;2014;2015;2016;2017
+Geisteswissenschaften;;
+  Geisteswissenschaften allgemein;männlich;396;437;491;488;533;544;587;638;667;679
+  Geisteswissenschaften allgemein;weiblich;405;432;445;467;521;573;598;678;723;728
+  Geisteswissenschaften allgemein;Insgesamt;801;869;936;955;1054;1117;1185;1316;1390;1407
+  Evangelische Theologie;männlich;626;663;650;667;689;690;694;706;702;718
+  Evangelische Theologie;weiblich;296;323;341;371;389;381;389;420;457;474
+  Evangelische Theologie;Insgesamt;922;986;991;1038;1078;1071;1083;1126;1159;1192
+  Katholische Theologie;männlich;578;583;585;580;599;593;565;568;588;602
+  Katholische Theologie;weiblich;253;266;268;289;302;300;308;300;314;326
+  Katholische Theologie;Insgesamt;831;849;853;869;901;893;873;868;902;928
+  Philosophie;männlich;740;804;870;868;933;973;959;988;1002;1013
+  Philosophie;weiblich;262;300;302;323;390;405;429;443;473;480
+  Philosophie;Insgesamt;1002;1104;1172;1191;1323;1378;1388;1431;1475;1493
+  Geschichte;männlich;1566;1773;1803;1853;1819;1918;1905;1912;1910;1912
+  Geschichte;weiblich;850;1005;1116;1123;1136;1244;1262;1323;1336;1404
+  Geschichte;Insgesamt;2416;2778;2919;2976;2955;3162;3167;3235;3246;3316
+  Bibliothekswissenschaft, Dokumentation;männlich;173;147;130;128;137;126;85;75;65;66
+  Bibliothekswissenschaft, Dokumentation;weiblich;115;105;105;104;117;112;92;74;64;69
+  Bibliothekswissenschaft, Dokumentation;Insgesamt;288;252;235;232;254;238;177;149;129;135
+  Allg. und vergl. Literatur- und Sprachwissenschaft;männlich;635;628;664;682;715;693;710;698;680;667
+  Allg. und vergl. Literatur- und Sprachwissenschaft;weiblich;782;846;881;900;948;952;984;977;971;960
+  Allg. und vergl. Literatur- und Sprachwissenschaft;Insgesamt;1417;1474;1545;1582;1663;1645;1694;1675;1651;1627
+  Altphilologie (klassische Philologie);männlich;256;256;244;250;261;280;304;314;308;307
+  Altphilologie (klassische Philologie);weiblich;158;174;146;161;159;184;201;214;217;205
+  Altphilologie (klassische Philologie);Insgesamt;414;430;390;411;420;464;505;528;525;512
+  Germanistik (Deutsch, germ. Sprachen o. Anglistik);männlich;1180;1213;1279;1263;1265;1300;1304;1334;1378;1382
+  Germanistik (Deutsch, germ. Sprachen o. Anglistik);weiblich;1289;1466;1569;1615;1723;1823;1907;2015;2098;2156
+  Germanistik (Deutsch, germ. Sprachen o. Anglistik);Insgesamt;2469;2679;2848;2878;2988;3123;3211;3349;3476;3538
+  Anglistik, Amerikanistik;männlich;750;739;717;698;708;705;722;743;727;722
+  Anglistik, Amerikanistik;weiblich;943;990;980;1042;1070;1127;1143;1180;1192;1220
+  Anglistik, Amerikanistik;Insgesamt;1693;1729;1697;1740;1778;1832;1865;1923;1919;1942
+  Romanistik;männlich;435;443;431;423;430;431;458;437;446;449
+  Romanistik;weiblich;717;739;791;842;847;887;893;894;888;877
+  Romanistik;Insgesamt;1152;1182;1222;1265;1277;1318;1351;1331;1334;1326
+  Slawistik, Baltistik, Finno-Ugristik;männlich;162;154;154;169;168;158;150;155;150;155
+  Slawistik, Baltistik, Finno-Ugristik;weiblich;264;276;284;291;289;306;307;298;299;301
+  Slawistik, Baltistik, Finno-Ugristik;Insgesamt;426;430;438;460;457;464;457;453;449;456
+  Sonst. außereurop. Sprach- und Kulturwissensch.;männlich;538;565;583;612;635;680;679;652;671;705
+  Sonst. außereurop. Sprach- und Kulturwissensch.;weiblich;492;513;562;583;612;666;697;705;687;733
+  Sonst. außereurop. Sprach- und Kulturwissensch.;Insgesamt;1030;1078;1145;1195;1247;1346;1376;1357;1358;1438
+  Kulturwissenschaften i.e.S.;männlich;162;176;190;223;221;215;198;242;227;240
+  Kulturwissenschaften i.e.S.;weiblich;189;235;249;242;270;289;303;307;325;346
+  Kulturwissenschaften i.e.S.;Insgesamt;351;411;439;465;491;504;501;549;552;586
+  Sonderpädagogik;männlich;238;212;257;249;247;263;258;-;-;-
+  Sonderpädagogik;weiblich;319;302;378;410;425;438;497;-;-;-
+  Sonderpädagogik;Insgesamt;557;514;635;659;672;701;755;-;-;-
+  Islamische Studien;männlich;-;-;-;-;-;-;-;62;55;72
+  Islamische Studien;weiblich;-;-;-;-;-;-;-;28;33;43
+  Islamische Studien;Insgesamt;-;-;-;-;-;-;-;90;88;115
+Sport;Insgesamt;
+  Sport;männlich;884;963;964;1007;1020;1029;1061;1077;1129;1133
+  Sport;weiblich;481;536;615;638;668;718;738;777;797;815
+  Sport;Insgesamt;1365;1499;1579;1645;1688;1747;1799;1854;1926;1948
+Rechts-, Wirtschafts- und Sozialwissenschaften;Insgesamt;
+  Rechts-, Wirtschafts- u.Sozialwissenschaften allg.;männlich;515;631;658;717;746;706;750;823;759;683
+  Rechts-, Wirtschafts- u.Sozialwissenschaften allg.;weiblich;325;398;449;486;524;537;592;647;626;615
+  Rechts-, Wirtschafts- u.Sozialwissenschaften allg.;Insgesamt;840;1029;1107;1203;1270;1243;1342;1470;1385;1298
+  Regionalwissenschaften;männlich;63;95;89;86;81;102;112;106;92;70
+  Regionalwissenschaften;weiblich;52;82;76;82;77;79;81;78;81;71
+  Regionalwissenschaften;Insgesamt;115;177;165;168;158;181;193;184;173;141
+  Politikwissenschaften;männlich;715;734;785;778;821;891;868;914;911;983
+  Politikwissenschaften;weiblich;443;433;474;506;568;592;598;626;627;673
+  Politikwissenschaften;Insgesamt;1158;1167;1259;1284;1389;1483;1466;1540;1538;1656
+  Sozialwissenschaften;männlich;1174;1252;1323;1371;1358;1401;1462;1507;1518;1546
+  Sozialwissenschaften;weiblich;830;919;1026;1100;1077;1241;1309;1352;1355;1453
+  Sozialwissenschaften;Insgesamt;2004;2171;2349;2471;2435;2642;2771;2859;2873;2999
+  Sozialwesen;männlich;736;838;879;882;875;880;876;889;910;925
+  Sozialwesen;weiblich;756;876;975;1118;1185;1200;1255;1236;1270;1367
+  Sozialwesen;Insgesamt;1492;1714;1854;2000;2060;2080;2131;2125;2180;2292
+  Rechtswissenschaften;männlich;2875;3032;3127;3244;3191;3247;3274;3298;3368;3454
+  Rechtswissenschaften;weiblich;1433;1510;1538;1662;1735;1859;1875;1894;1904;1949
+  Rechtswissenschaften;Insgesamt;4308;4542;4665;4906;4926;5106;5149;5192;5272;5403
+  Verwaltungswissenschaften;männlich;970;940;926;909;925;979;1000;1030;1042;1151
+  Verwaltungswissenschaften;weiblich;298;321;366;381;388;435;465;481;483;579
+  Verwaltungswissenschaften;Insgesamt;1268;1261;1292;1290;1313;1414;1465;1511;1525;1730
+  Wirtschaftswissenschaften;männlich;8038;8898;9335;9627;9998;10393;10432;10466;10513;11003
+  Wirtschaftswissenschaften;weiblich;3172;3640;3877;4169;4561;4945;5052;5160;5037;5255
+  Wirtschaftswissenschaften;Insgesamt;11210;12538;13212;13796;14559;15338;15484;15626;15550;16258
+  Wirtschaftsingenieurw. mit wirtschaftsw. Schwerp.;männlich;612;648;686;618;620;611;570;569;581;601
+  Wirtschaftsingenieurw. mit wirtschaftsw. Schwerp.;weiblich;159;183;237;215;203;198;220;226;222;199
+  Wirtschaftsingenieurw. mit wirtschaftsw. Schwerp.;Insgesamt;771;831;923;833;823;809;790;795;803;800
+  Psychologie;männlich;1474;1554;1583;1610;1676;1679;1732;1794;1933;1954
+  Psychologie;weiblich;1688;1893;2005;2213;2353;2455;2520;2712;2823;2928
+  Psychologie;Insgesamt;3162;3447;3588;3823;4029;4134;4252;4506;4756;4882
+  Erziehungswissenschaften;männlich;1306;1401;1468;1532;1604;1662;1628;1920;1912;1963
+  Erziehungswissenschaften;weiblich;1652;1889;2124;2264;2417;2535;2636;3267;3378;3643
+  Erziehungswissenschaften;Insgesamt;2958;3290;3592;3796;4021;4197;4264;5187;5290;5606
+Mathematik, Naturwissenschaften;Insgesamt;
+  Mathematik, Naturwissenschaften allgemein;männlich;412;446;511;508;500;471;737;411;457;472
+  Mathematik, Naturwissenschaften allgemein;weiblich;166;180;240;232;217;246;312;249;262;285
+  Mathematik, Naturwissenschaften allgemein;Insgesamt;578;626;751;740;717;717;1049;660;719;757
+  Mathematik;männlich;3647;3789;4015;4138;4324;4449;4428;4402;4450;4573
+  Mathematik;weiblich;871;921;1012;1111;1186;1275;1342;1383;1411;1503
+  Mathematik;Insgesamt;4518;4710;5027;5249;5510;5724;5770;5785;5861;6076
+  Physik, Astronomie;männlich;7213;7939;8297;8647;8873;8989;9022;8832;8826;8867
+  Physik, Astronomie;weiblich;1272;1436;1557;1704;1742;1777;1802;1792;1813;1915
+  Physik, Astronomie;Insgesamt;8485;9375;9854;10351;10615;10766;10824;10624;10639;10782
+  Chemie;männlich;5626;6113;6405;6584;6767;7063;7076;7168;7184;7349
+  Chemie;weiblich;2648;2877;3012;3103;3332;3415;3344;3385;3358;3357
+  Chemie;Insgesamt;8274;8990;9417;9687;10099;10478;10420;10553;10542;10706
+  Pharmazie;männlich;751;797;832;882;873;870;885;883;918;966
+  Pharmazie;weiblich;654;719;717;736;758;763;763;743;744;756
+  Pharmazie;Insgesamt;1405;1516;1549;1618;1631;1633;1648;1626;1662;1722
+  Biologie;männlich;4185;4443;4586;4763;4856;4912;4941;4971;4931;5074
+  Biologie;weiblich;3151;3498;3754;3894;4102;4235;4269;4308;4406;4508
+  Biologie;Insgesamt;7336;7941;8340;8657;8958;9147;9210;9279;9337;9582
+  Geowissenschaften (ohne Geographie);männlich;1847;2009;2044;1985;2053;2047;2010;1972;2016;2096
+  Geowissenschaften (ohne Geographie);weiblich;713;864;915;873;896;925;938;925;960;1010
+  Geowissenschaften (ohne Geographie);Insgesamt;2560;2873;2959;2858;2949;2972;2948;2897;2976;3106
+  Geographie;männlich;959;1007;1059;1105;1113;1124;1104;1116;1114;1120
+  Geographie;weiblich;437;479;506;595;586;611;617;617;626;663
+  Geographie;Insgesamt;1396;1486;1565;1700;1699;1735;1721;1733;1740;1783
+Humanmedizin/Gesundheitswissenschaften;Insgesamt;
+  Humanmedizin allgemein;männlich;70;52;50;147;156;174;170;174;247;273
+  Humanmedizin allgemein;weiblich;73;56;58;83;106;146;134;154;214;238
+  Humanmedizin allgemein;Insgesamt;143;108;108;230;262;320;304;328;461;511
+  Gesundheitswissenschaften allgemein;männlich;253;268;257;311;333;415;474;490;557;629
+  Gesundheitswissenschaften allgemein;weiblich;297;317;387;494;473;660;741;817;928;1025
+  Gesundheitswissenschaften allgemein;Insgesamt;550;585;644;805;806;1075;1215;1307;1485;1654
+  Vorklinische Humanmedizin (einschl. Zahnmedizin);männlich;2053;2094;2202;2200;2180;2222;2163;2108;2075;2120
+  Vorklinische Humanmedizin (einschl. Zahnmedizin);weiblich;1633;1724;1828;1899;1993;2095;2095;2171;2106;2173
+  Vorklinische Humanmedizin (einschl. Zahnmedizin);Insgesamt;3686;3818;4030;4099;4173;4317;4258;4279;4181;4293
+  Klinisch-theor. Humanmedizin (einschl.Zahnmedizin);männlich;4917;4683;4687;4863;4860;4898;4991;4914;4929;5118
+  Klinisch-theor. Humanmedizin (einschl.Zahnmedizin);weiblich;4313;4279;4435;4543;4790;4982;5162;5101;5122;5194
+  Klinisch-theor. Humanmedizin (einschl.Zahnmedizin);Insgesamt;9230;8962;9122;9406;9650;9880;10153;10015;10051;10312
+  Klinisch-prakt. Humanmedizin (ohne Zahnmedizin);männlich;18318;18983;19408;19460;19695;19989;20126;20380;20609;21316
+  Klinisch-prakt. Humanmedizin (ohne Zahnmedizin);weiblich;13875;15158;16657;17246;17831;18673;18839;19662;20433;21012
+  Klinisch-prakt. Humanmedizin (ohne Zahnmedizin);Insgesamt;32193;34141;36065;36706;37526;38662;38965;40042;41042;42328
+  Zahnmedizin (klinisch-praktisch);männlich;1138;1180;1148;1105;1105;1110;1105;1135;1092;1081
+  Zahnmedizin (klinisch-praktisch);weiblich;758;793;831;788;793;824;810;845;860;877
+  Zahnmedizin (klinisch-praktisch);Insgesamt;1896;1973;1979;1893;1898;1934;1915;1980;1952;1958
+Agrar-, Forst- u.Ernährungswiss., Veterinärmedizin;Insgesamt;
+  Veterinärmedizin allgemein;männlich;5;7;6;6;8;8;7;6;7;3
+  Veterinärmedizin allgemein;weiblich;5;5;6;5;8;9;7;4;7;5
+  Veterinärmedizin allgemein;Insgesamt;10;12;12;11;16;17;14;10;14;8
+  Vorklinische Veterinärmedizin;männlich;104;94;86;86;94;94;79;96;95;92
+  Vorklinische Veterinärmedizin;weiblich;141;134;139;154;160;159;164;164;157;164
+  Vorklinische Veterinärmedizin;Insgesamt;245;228;225;240;254;253;243;260;252;256
+  Klinisch-theoretische Veterinärmedizin;männlich;261;210;211;214;209;215;210;219;208;210
+  Klinisch-theoretische Veterinärmedizin;weiblich;314;285;272;312;300;295;301;327;345;365
+  Klinisch-theoretische Veterinärmedizin;Insgesamt;575;495;483;526;509;510;511;546;553;575
+  Klinisch-praktische Veterinärmedizin;männlich;177;177;172;167;156;171;180;181;197;203
+  Klinisch-praktische Veterinärmedizin;weiblich;286;301;296;321;328;327;338;364;400;415
+  Klinisch-praktische Veterinärmedizin;Insgesamt;463;478;468;488;484;498;518;545;597;618
+  Agrar-, Forst- und Ernährungswissenschaften allg.;männlich;119;98;88;113;124;114;191;144;151;94
+  Agrar-, Forst- und Ernährungswissenschaften allg.;weiblich;39;37;31;59;68;76;129;110;104;55
+  Agrar-, Forst- und Ernährungswissenschaften allg.;Insgesamt;158;135;119;172;192;190;320;254;255;149
+  Landespflege, Umweltgestaltung;männlich;314;393;416;343;334;341;288;294;277;343
+  Landespflege, Umweltgestaltung;weiblich;193;266;255;218;207;219;184;181;191;245
+  Landespflege, Umweltgestaltung;Insgesamt;507;659;671;561;541;560;472;475;468;588
+  Agrarwissensch., Lebensmittel- u. Getränketechnik;männlich;1267;1322;1446;1462;1445;1451;1371;1374;1447;1520
+  Agrarwissensch., Lebensmittel- u. Getränketechnik;weiblich;770;876;989;1038;1094;1064;1032;1116;1157;1252
+  Agrarwissensch., Lebensmittel- u. Getränketechnik;Insgesamt;2037;2198;2435;2500;2539;2515;2403;2490;2604;2772
+  Forstwissenschaft, Holzwirtschaft;männlich;427;424;432;448;442;459;435;476;492;494
+  Forstwissenschaft, Holzwirtschaft;weiblich;129;154;169;194;209;213;191;213;220;257
+  Forstwissenschaft, Holzwirtschaft;Insgesamt;556;578;601;642;651;672;626;689;712;751
+  Ernährungs- und Haushaltswissenschaften;männlich;153;160;176;171;182;173;181;180;184;185
+  Ernährungs- und Haushaltswissenschaften;weiblich;258;276;338;342;348;356;343;325;345;349
+  Ernährungs- und Haushaltswissenschaften;Insgesamt;411;436;514;513;530;529;524;505;529;534
+Ingenieurwissenschaften;Insgesamt;
+  Ingenieurwissenschaften allgemein;männlich;815;973;1198;1303;1402;1500;1537;1434;1598;1672
+  Ingenieurwissenschaften allgemein;weiblich;180;216;312;371;407;444;484;471;538;620
+  Ingenieurwissenschaften allgemein;Insgesamt;995;1189;1510;1674;1809;1944;2021;1905;2136;2292
+  Wirtschaftsingenieurw. mit ingenieurw. Schwerpunkt;männlich;-;51;72;156;214;258;287;327;347;352
+  Wirtschaftsingenieurw. mit ingenieurw. Schwerpunkt;weiblich;-;10;11;44;65;84;102;116;127;131
+  Wirtschaftsingenieurw. mit ingenieurw. Schwerpunkt;Insgesamt;-;61;83;200;279;342;389;443;474;483
+  Bergbau, Hüttenwesen;männlich;413;412;426;451;449;442;458;409;393;407
+  Bergbau, Hüttenwesen;weiblich;104;122;119;128;131;134;139;115;132;137
+  Bergbau, Hüttenwesen;Insgesamt;517;534;545;579;580;576;597;524;525;544
+  Maschinenbau/Verfahrenstechnik;männlich;9948;11226;12232;12638;13258;13835;14139;12762;12852;13085
+  Maschinenbau/Verfahrenstechnik;weiblich;1958;2405;2725;2778;2961;3136;3129;2759;2777;2925
+  Maschinenbau/Verfahrenstechnik;Insgesamt;11906;13631;14957;15416;16219;16971;17268;15521;15629;16010
+  Elektro- und Informationstechnik;männlich;5945;6418;6998;7043;7291;7562;7657;7492;7502;7641
+  Elektro- und Informationstechnik;weiblich;563;649;773;791;843;955;988;989;1062;1099
+  Elektro- und Informationstechnik;Insgesamt;6508;7067;7771;7834;8134;8517;8645;8481;8564;8740
+  Verkehrstechnik, Nautik;männlich;1080;1147;1248;1278;1332;1366;1389;1557;1611;1682
+  Verkehrstechnik, Nautik;weiblich;129;137;138;143;160;175;170;195;200;205
+  Verkehrstechnik, Nautik;Insgesamt;1209;1284;1386;1421;1492;1541;1559;1752;1811;1887
+  Architektur;männlich;1516;1543;1571;1594;1672;1662;1679;1670;1612;1665
+  Architektur;weiblich;675;722;763;786;851;864;877;925;930;985
+  Architektur;Insgesamt;2191;2265;2334;2380;2523;2526;2556;2595;2542;2650
+  Raumplanung;männlich;212;233;262;321;346;313;297;327;310;321
+  Raumplanung;weiblich;157;173;192;258;280;264;272;290;298;301
+  Raumplanung;Insgesamt;369;406;454;579;626;577;569;617;608;622
+  Bauingenieurwesen;männlich;2831;2904;2957;3020;3080;3153;3246;3285;3361;3413
+  Bauingenieurwesen;weiblich;699;784;883;891;912;981;1021;1052;1121;1136
+  Bauingenieurwesen;Insgesamt;3530;3688;3840;3911;3992;4134;4267;4337;4482;4549
+  Vermessungswesen;männlich;408;405;432;425;441;426;425;406;404;401
+  Vermessungswesen;weiblich;98;113;119;125;123;109;122;136;132;137
+  Vermessungswesen;Insgesamt;506;518;551;550;564;535;547;542;536;538
+  Informatik;männlich;6711;7406;7786;7945;8141;8312;8222;8475;8361;8618
+  Informatik;weiblich;1031;1194;1299;1371;1412;1471;1522;1570;1599;1739
+  Informatik;Insgesamt;7742;8600;9085;9316;9553;9783;9744;10045;9960;10357
+  Materialwissenschaft und Werkstofftechnik;männlich;-;-;-;-;-;-;-;1351;1301;1361
+  Materialwissenschaft und Werkstofftechnik;weiblich;-;-;-;-;-;-;-;416;415;416
+  Materialwissenschaft und Werkstofftechnik;Insgesamt;-;-;-;-;-;-;-;1767;1716;1777
+Kunst, Kunstwissenschaft;Insgesamt;
+  Kunst, Kunstwissenschaft allgemein;männlich;531;545;553;586;548;566;535;526;486;505
+  Kunst, Kunstwissenschaft allgemein;weiblich;445;467;490;518;552;616;629;675;690;694
+  Kunst, Kunstwissenschaft allgemein;Insgesamt;976;1012;1043;1104;1100;1182;1164;1201;1176;1199
+  Bildende Kunst;männlich;445;429;446;440;494;493;495;499;493;470
+  Bildende Kunst;weiblich;213;208;247;259;278;289;286;292;293;318
+  Bildende Kunst;Insgesamt;658;637;693;699;772;782;781;791;786;788
+  Gestaltung;männlich;762;766;782;824;858;887;922;901;907;890
+  Gestaltung;weiblich;389;419;447;449;474;512;568;574;605;607
+  Gestaltung;Insgesamt;1151;1185;1229;1273;1332;1399;1490;1475;1512;1497
+  Darstellende Kunst, Film u.Fernsehen, Theaterwiss.;männlich;387;409;407;411;425;443;432;407;394;401
+  Darstellende Kunst, Film u.Fernsehen, Theaterwiss.;weiblich;262;277;291;289;310;335;345;339;341;354
+  Darstellende Kunst, Film u.Fernsehen, Theaterwiss.;Insgesamt;649;686;698;700;735;778;777;746;735;755
+  Musik, Musikwissenschaft;männlich;1879;1887;1921;1973;1973;1961;1950;1961;1976;2015
+  Musik, Musikwissenschaft;weiblich;822;842;858;901;891;924;963;985;1029;1037
+  Musik, Musikwissenschaft;Insgesamt;2701;2729;2779;2874;2864;2885;2913;2946;3005;3052
+Zentr.Einrichtungen (o. klinikspez. Einrichtungen);Insgesamt;
+  Hochschule insgesamt;männlich;315;270;272;325;380;448;400;297;269;289
+  Hochschule insgesamt;weiblich;141;151;191;258;336;368;369;267;278;305
+  Hochschule insgesamt;Insgesamt;456;421;463;583;716;816;769;564;547;594
+  Zentrale Hochschulverwaltung;männlich;773;963;996;1072;1214;1231;1289;1433;1407;1452
+  Zentrale Hochschulverwaltung;weiblich;842;943;1052;1217;1463;1490;1652;1791;1869;2004
+  Zentrale Hochschulverwaltung;Insgesamt;1615;1906;2048;2289;2677;2721;2941;3224;3276;3456
+  Zentral verwaltete Hörsäle und Lehrräume;männlich;1;-;-;-;-;-;-;-;1;1
+  Zentral verwaltete Hörsäle und Lehrräume;weiblich;2;-;-;1;1;-;-;-;-;-
+  Zentral verwaltete Hörsäle und Lehrräume;Insgesamt;3;-;-;1;1;-;-;-;1;1
+  Zentralbibliothek;männlich;207;180;193;178;173;201;192;192;179;191
+  Zentralbibliothek;weiblich;151;160;180;190;199;199;198;207;179;208
+  Zentralbibliothek;Insgesamt;358;340;373;368;372;400;390;399;358;399
+  Hochschulrechenzentrum;männlich;723;738;773;806;821;803;744;765;743;837
+  Hochschulrechenzentrum;weiblich;138;168;150;147;160;159;174;179;179;203
+  Hochschulrechenzentrum;Insgesamt;861;906;923;953;981;962;918;944;922;1040
+  Zentrale wissenschaftliche Einrichtungen;männlich;2483;2741;3267;3184;3218;3562;3695;3520;3587;3532
+  Zentrale wissenschaftliche Einrichtungen;weiblich;1958;2277;2750;2864;3127;3468;3542;3591;3740;3630
+  Zentrale wissenschaftliche Einrichtungen;Insgesamt;4441;5018;6017;6048;6345;7030;7237;7111;7327;7162
+  Zentrale Betriebs- und Versorgungseinrichtungen;männlich;58;45;61;88;91;95;82;75;82;86
+  Zentrale Betriebs- und Versorgungseinrichtungen;weiblich;51;16;60;79;85;93;82;74;81;94
+  Zentrale Betriebs- und Versorgungseinrichtungen;Insgesamt;109;61;121;167;176;188;164;149;163;180
+  Soziale Einrichtungen;männlich;9;15;15;10;11;13;12;10;9;12
+  Soziale Einrichtungen;weiblich;7;11;12;14;15;13;12;12;13;14
+  Soziale Einrichtungen;Insgesamt;16;26;27;24;26;26;24;22;22;26
+  Übrige Ausbildungseinrichtungen;männlich;132;134;117;144;132;141;142;134;176;180
+  Übrige Ausbildungseinrichtungen;weiblich;170;160;149;172;148;166;165;172;236;281
+  Übrige Ausbildungseinrichtungen;Insgesamt;302;294;266;316;280;307;307;306;412;461
+  Mit der Hochschule verb. u. hochschulfr. Einricht.;männlich;310;313;327;307;305;330;328;279;173;165
+  Mit der Hochschule verb. u. hochschulfr. Einricht.;weiblich;143;157;151;133;141;147;154;121;102;99
+  Mit der Hochschule verb. u. hochschulfr. Einricht.;Insgesamt;453;470;478;440;446;477;482;400;275;264
+Zentr.Einricht.d.Hochschulkliniken (nur Humanmed.);Insgesamt;
+  Kliniken insgesamt, Zentrale Dienste;männlich;450;479;372;429;446;443;453;484;528;531
+  Kliniken insgesamt, Zentrale Dienste;weiblich;395;434;396;481;502;539;538;621;645;678
+  Kliniken insgesamt, Zentrale Dienste;Insgesamt;845;913;768;910;948;982;991;1105;1173;1209
+  Soziale Einrichtungen der Kliniken;männlich;1;-;1;3;2;2;3;2;6;5
+  Soziale Einrichtungen der Kliniken;weiblich;4;6;5;11;17;20;18;18;19;15
+  Soziale Einrichtungen der Kliniken;Insgesamt;5;6;6;14;19;22;21;20;25;20
+  Übrige Ausbildungseinrichtungen der Kliniken;männlich;13;13;10;13;15;11;10;19;19;16
+  Übrige Ausbildungseinrichtungen der Kliniken;weiblich;50;91;73;81;77;73;65;110;97;94
+  Übrige Ausbildungseinrichtungen der Kliniken;Insgesamt;63;104;83;94;92;84;75;129;116;110
+  Mit der Klinik verbundene u.klinikfremde Einricht.;männlich;17;24;25;22;15;19;19;19;17;14
+  Mit der Klinik verbundene u.klinikfremde Einricht.;weiblich;13;6;5;16;8;19;14;9;11;14
+  Mit der Klinik verbundene u.klinikfremde Einricht.;Insgesamt;30;30;30;38;23;38;33;28;28;28
+Insgesamt;männlich;121388;129136;135125;138231;141704;145386;146556;146861;147811;151563
+Insgesamt;weiblich;63409;69605;75424;79307;83410;87873;89808;92339;94587;97972
+Insgesamt;Insgesamt;184797;198741;210549;217538;225114;233259;236364;239200;242398;249535
+__________
+"Bibliothekswissenschaft, Dokumentation:
+Bis 2007 einschließlich Publizistik.
+
+Rechts-, Wirtschafts- u.Sozialwissenschaften allg.:
+Ab 2008 einschließlich Publizistik.
+
+Erziehungswissenschaften:
+Ab 2015 einschließlich Sonderpädagogik."
+(C)opyright Statistisches Bundesamt (Destatis), 2019
+Stand: 02.04.2019 / 20:57:15

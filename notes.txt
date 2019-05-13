@@ -1,0 +1,16 @@
+info wo immer grob steht welche source und info..
+
+docker hat eine schöne einlogg seite
+
+prüfung von source daten die erstellt werden (leer, ungültig)
+
+jquery böse bei performance (simulation)
+
+fragezeichen mit erklärungen einbauen.. (z.b. polinode)
+
+
+directed/undirected..
+
+smooth zoom
+
+beim klick auf node könnte man alle benachbarten heller machen und die anderen dunkler (polinode)

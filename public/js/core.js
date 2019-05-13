@@ -1,0 +1,524 @@
+var context = null;
+var isGraphInitialized = false;
+var socket = io.connect();
+var userData;
+var svg;
+const defaultNodeWeight = 20;
+const minNodeWeight = 5;
+const maxNodeWeight = 50;
+
+var nodeColors = createPalette(d3.interpolateYlGnBu);
+
+function setActiveSource() {
+    $.getJSON("/getUserData", function (data) {
+        userData = data;
+        updateLogoutText(data);
+        $.get("/getSources", (data) => {
+            data.forEach((source) => {
+                if (source.name === userData.activeSource) {
+                    const data = JSON.parse(source.data);
+                    setContext(source, data);
+                    if (isMonitorTabVisible()) {
+                        drawGraph();
+                    }
+                }
+            });
+        });
+    });
+}
+
+$(document).ready(() => {
+        setActiveSource();
+        ReactDOM.render(
+            <SourcesReact/>, document.getElementById('sources-container')
+        );
+        /*
+        Hide overlay on click
+         */
+        $('#overlay').hide().click(function () {
+            $(this).hide(200);
+        });
+
+        /*
+        Tab activation events
+         */
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            let activatedTab = e.target.id;
+
+            if (activatedTab === "monitor-tab") {
+                if (!isGraphInitialized && context) {
+                    isGraphInitialized = true;
+                    drawGraph();
+
+                }
+
+                $('html, body').css("overflow-y", "hidden");
+            } else if (activatedTab === "data-tab") {
+                ReactDOM.render(
+                    <DataTable/>, document.getElementById('data-table-container')
+                );
+
+                $('html, body').css("overflow-y", "scroll");
+            } else if (activatedTab === "home-tab") {
+            }
+        });
+
+        /*
+        Settgings: Force slider
+         */
+        let slider = document.getElementById("slider-manybody");
+        slider.oninput = function () {
+            if (d3.event != null) {
+                console.log(d3.event);
+                if (!d3.event.active) {
+                    SIM.simulation.alphaTarget(0.02).restart();
+                }
+                SIM.simulation.force('charge', d3.forceManyBody().strength(this.value))
+            }
+        };
+
+
+    }
+);
+
+function setContext(source, data) {
+    context = new GraphContext(source, data);
+    updateConfig();
+    isGraphInitialized = false;
+}
+
+function isMonitorTabVisible() {
+    return $('#monitor').is(':visible');
+}
+
+function updateLogoutText(data) {
+    $('#logout').text('Logout (' + data.name + ')');
+}
+
+function updateConfig() {
+
+    Object.keys(context.get_data()).forEach((key) => {
+        let option = "<option>" + key + "</option>";
+        $('#sourceConfigDropBoxNodes').append(option);
+        $('#sourceConfigDropBoxLinks').append(option);
+    });
+
+    $('#sourceConfigDropBoxNodes').val(context.get_config_node());
+    $('#sourceConfigDropBoxLinks').val(context.get_config_link());
+
+    $('#sourceConfigDropBoxNodeTitle').append("<option>None</option>");
+    $('#sourceConfigDropBoxNodeWeight').append("<option>None</option>");
+    Object.keys(context.get_node(0)).forEach((key) => {
+        let option = "<option>" + key + "</option>";
+        $('#sourceConfigDropBoxNodeTitle').append(option);
+        $('#sourceConfigDropBoxNodeWeight').append(option);
+    });
+
+    $('#sourceConfigDropBoxNodeTitle').val(context.get_node_title());
+    $('#sourceConfigDropBoxNodeWeight').val(context.get_node_weight());
+
+    $('#linkLineType').val(context.getLinkLineType());
+    $('#nodeColorPalettes').val(context.getNodeColorPalette());
+}
+
+function sourceConfigNodeChanged(e) {
+
+    const json = {sourceConfig: {configNode: e.value}};
+    postJSON('/setSourceConfig', json);
+}
+
+function sourceConfigLinkChanged(e) {
+    const json = {sourceConfig: {configLink: e.value}};
+    postJSON('/setSourceConfig', json);
+}
+
+function sourceConfigNodeTitleChanged(e) {
+    const title = e.value === "None" ? null : e.value;
+    const json = {sourceConfig: {configNodeTitle: title}};
+    context.set_node_title(title);
+    postJSON('/setSourceConfig', json);
+}
+
+function sourceConfigNodeWeightChanged(e) {
+    const weight = e.value === "None" ? null : e.value;
+    const json = {sourceConfig: {configNodeWeight: weight}};
+    postJSON('/setSourceConfig', json);
+}
+
+function drawGraph() {
+    let graphContainer = $("#graph-container");
+    $("#inner-graph-container").empty();
+
+    let margin = {top: 20, right: 20, bottom: 20, left: 20};
+    let width = graphContainer.width() - margin.left - margin.right;
+    let height = graphContainer.height() - margin.top - margin.bottom;
+
+    svg = d3.select("#inner-graph-container")
+        .append("svg")
+        .attr("id", "graph-svg")
+        .attr('background-color', 'red')
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .append("g");
+
+    d3.select("svg").call(d3.zoom()
+        .scaleExtent([0, 10])
+        .on("zoom", zoomed));
+
+    calcNodeWeights(context);
+
+
+    let daten = [];
+    for (let i = 0; i <= 50; i++) {
+        daten[i] = i;
+    }
+
+    d3.select("#graph-svg").append("defs").selectAll("marker")
+        .data(daten)
+        .enter()
+        .append("marker")
+        .attr("id", (d) => {
+            return "arrow" + d
+        })
+        .attr("viewBox", "0 0 10 10")
+        .attr("refX", (d) => {
+            return d
+        })
+        .attr("refY", 5)
+        .attr("markerWidth", 10)
+        .attr("markerHeight", 10)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M 0 0 L 10 5 L 0 10 z");
+
+
+    let nodeParents = svg
+        .selectAll("circle")
+        .data(context.get_nodes())
+        .enter()
+        .append("g")
+        .attr("data-node-id", (node) => {
+            return node.id;
+        });
+
+
+    let node = createNode(nodeParents);
+
+    let link = svg
+        .selectAll("path")
+        .data(context.get_links())
+        .enter()
+        .append("path")
+        .attr('class', 'link')
+        .attr("marker-end", (link) => {
+            let r = parseInt($('#node-' + link.target.id).attr("r")) + 11;
+            return "url(#arrow" + "10" + ")";
+        })
+        .attr("data-source", (link) => {
+            return link.source;
+        })
+        .attr("data-target", (link) => {
+            return link.target
+        });
+
+
+    let text = nodeParents
+        .append("text")
+        .attr("id", (d) => {
+            return "node-text-" + d.id;
+        })
+        .text((d) => {
+            return d[context.get_node_title()]
+        });
+    d3.selectAll("g").raise();
+
+    ReactDOM.render(
+        <NodeBar/>, document.getElementById('nodes')
+    );
+
+    $('.node-checkbox').click(function () {
+        let nodeid = $(this).parent().attr('data-node-id');
+        let checked = $('.styled-checkbox[id=node-checkbox-' + nodeid + ']')[0].checked;
+
+        hideNode(nodeid, checked);
+    });
+
+
+    function createNode(parent) {
+        return parent
+            .append("circle")
+            .attr("id", (node) => {//doppelt id
+                return "node-" + node.id;
+            })
+            .attr("nodeID", (node) => {
+                return node.id;
+            })
+            .attr("r", (node) => {
+                return node.weight;
+            })
+            .style("fill", (node) => {
+                return getNodeColor(node)
+            })
+            .on("click", clickNode)
+            .on("mouseover", handleMouseOver)
+            .on("mouseout", handleMouseExit)
+            .call(nodeDragHandler)
+    }
+
+
+    function handleMouseOver(d, i) {
+        let color = d3.color(d3.select(this).style('fill'));
+        color = color.brighter(1);
+        d3.select(this)
+            .style('stroke-width', '4px')
+            .style('fill', color);
+    }
+
+    function handleMouseExit(node, i) {
+        d3.select(this)
+            .style('stroke-width', '2px')
+            .style('fill', getNodeColor(node));
+    }
+
+    /*
+    Sets colors of circles in navigation bar nodes
+     */
+    $('circle[nodeID]').each((i, e) => {
+        let color = $(e).attr('fill');
+        let id = $(e).attr('nodeID');
+        $('.circle[data-node-id=' + id + ']').each((i, k) => {
+            $(k).css('background', color)
+        });
+    });
+
+
+    /*
+    Hovering events on nodes in navigation
+     */
+    $('[id=node]').hover(function () {
+        let nodeId = $(this).attr('data-node-id');
+        $('circle[nodeID=' + nodeId + ']').each((i, e) => {
+            let color = d3.color(d3.select(e).style('fill'));
+            color = color.brighter(1);
+            $(e).css('stroke-width', '4px')
+                .attr('fill', color);
+        });
+    }, function () {
+        let nodeId = $(this).attr('data-node-id');
+        $('circle[nodeID=' + nodeId + ']').each((i, e) => {
+            let color = d3.color(d3.select(e).style('fill'));
+            color = color.darker(1);
+            $(e).css('stroke-width', '2px')
+                .attr('fill', color);
+        });
+    });
+
+    SIM.bindSimulation(context, node, link, text, width, height);
+}
+
+
+function clickNode(d) {
+    showNodeContent(d);
+}
+
+function getNodeColor(node) {
+    if (node.weight) {
+        return nodeColors(node.weight)
+    }
+    return nodeColors(defaultNodeWeight);
+}
+
+/*
+Opens overlay and shows content of node
+ */
+function showNodeContent(node) {
+    //TODO: Wenn zu weit rechts geklickt wird,
+    //TODO: geht der Overlay zu weit raus..
+    $('#overlay').show(200)
+        .css("left", d3.event.x + 20 + "px")
+        .css("top", d3.event.y + 20 + "px");
+
+    $("#card-header").text(node.country);
+    $("#card-title").text("Projects where participant: " + node.count);
+}
+
+
+/*
+"Select All" button in nodes navigation
+ */
+function selectAllNodes(select) {
+    $('.node-input-checkbox').each(function () {
+        let nodeID = $(this).parent().attr('data-node-id');
+        hideNode(nodeID, !select);
+        $(this).prop('checked', select);
+    });
+}
+
+
+function hideNode(nodeid, hide) {
+    let nodeG = $('g[data-node-id="' + nodeid + '"]');
+    let source = $('line[data-source="' + nodeid + '"]');
+    let target = $('line[data-target="' + nodeid + '"]');
+    if (hide) {
+        nodeG.hide();
+        source.hide();
+        target.hide();
+    } else {
+        nodeG.show();
+        source.show();
+        target.show();
+    }
+}
+
+
+function createSource() {
+
+    const name = $('#create-source-name').val();
+    const desc = $('#create-source-description').val();
+    const data = $('#create-source-area').val().replace(/\r?\n|\r/g, "");
+
+    const json = {
+        source:
+            {
+                name: name,
+                description: desc,
+                lastModified: new Date().getTime(),
+                sharedUsers: [],
+                data: data,
+                configNode: "",
+                configLink: ""
+            }
+    };
+
+    postJSON('/createSource', json);
+    closeAddSourceWindow();
+}
+
+function addSourceWindowOnChange() {
+    const name = $('#create-source-name').val();
+    $('#create-source-create-btn').prop("disabled", name === "")
+}
+
+function formatDate(date) {
+    return date.toLocaleDateString("de-de", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    });
+}
+
+// var force = d3.layout.force()
+//     .gravity(.05)
+//     .distance(100)
+//     .charge(-100)
+//     .size([width, height]);
+
+function postJSON(url, json) {
+    $.ajax(url, {
+        data: JSON.stringify(json),
+        contentType: 'application/json',
+        type: 'POST',
+    });
+}
+
+function showAddSourceWindow() {
+    $('#add-source-box').show("clip", 100);
+    $('#page-mask').show("clip", 100);
+}
+
+function closeAddSourceWindow() {
+    $('#add-source-box').hide("clip", 100);
+    $('#page-mask').hide("clip", 100)
+}
+
+
+function setLinkLineType(e) {
+    const config = {configLinkLineType: e.value};
+    sendSourceConfig(config);
+    SIM.refresh();
+}
+
+function sendSourceConfig(config) {
+    const data = {sourceConfig: config};
+    postJSON('/setSourceConfig', data);
+}
+
+
+function createPalette(palette) {
+    return d3.scaleSequential()
+        .domain([minNodeWeight, maxNodeWeight])
+        .interpolator(palette);
+}
+
+$('#monitor-tab').tab('show');
+$('#node-settings-tab').tab('show');
+
+
+function setNodeColorPalette(e) {
+
+    const palette = e.value;
+    switch (palette) {
+        case "BrBg":
+            nodeColors = createPalette(d3.interpolateBrBG);
+            break;
+        case "PRGn":
+            nodeColors = createPalette(d3.interpolatePRGn);
+            break;
+        case "PiYG":
+            nodeColors = createPalette(d3.interpolatePiYG);
+            break;
+        case "PuoR":
+            nodeColors = createPalette(d3.interpolatePuOr);
+            break;
+        case "RdBu":
+            nodeColors = createPalette(d3.interpolateRdBu);
+            break;
+        case "RdYIBu":
+            nodeColors = createPalette(d3.interpolateRdYlBu);
+            break;
+        case "Spectral":
+            nodeColors = createPalette(d3.interpolateSpectral);
+            break;
+        case "Blues":
+            nodeColors = createPalette(d3.interpolateBlues);
+            break;
+        case "Greens":
+            nodeColors = createPalette(d3.interpolateGreens);
+            break;
+        case "Oranges":
+            nodeColors = createPalette(d3.interpolateOranges);
+            break;
+        case "Reds":
+            nodeColors = createPalette(d3.interpolateReds);
+            break;
+        case "Purples":
+            nodeColors = createPalette(d3.interpolatePurples);
+            break;
+        case "Viridis":
+            nodeColors = createPalette(d3.interpolateViridis);
+            break;
+        case "Inferno":
+            nodeColors = createPalette(d3.interpolateInferno);
+            break;
+        case "Warm":
+            nodeColors = createPalette(d3.interpolateWarm);
+            break;
+        case "Cool":
+            nodeColors = createPalette(d3.interpolateCool);
+            break;
+        case "Rainbow":
+            nodeColors = createPalette(d3.interpolateRainbow);
+            break;
+        case "Sinebow":
+            nodeColors = createPalette(d3.interpolateSinebow);
+            break;
+    }
+
+    $('svg circle').each((index, node) => {
+        const nodeId = parseInt(node.getAttribute('nodeID') - 1); //TODO -1 da ungenau
+        node.style.fill = getNodeColor(context.get_node(nodeId));
+    });
+
+    const config = {nodeColorPalette: palette};
+    sendSourceConfig(config);
+}

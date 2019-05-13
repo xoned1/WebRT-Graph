@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+
+
+    <link href="https://fonts.googleapis.com/css?family=Lalezar|Passion+One|Patua+One|Righteous|Coda" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"
+            crossorigin="anonymous"></script>
+
+    <!--    Popper.js-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+
+    <!--    Bootstrap.js-->
+    <script src="//stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+
+    <!--    Meshspin.js-->
+    <script src="//kickstart.ch/js/meshspin.min.js"></script>
+
+    <script src="js/login.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="css/login.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/checkbox.css">
+    <link rel="stylesheet" type="text/css" href="css/slider.css">
+    <link rel="stylesheet" type="text/css" href="css/scrollbar.css">
+
+    <title>WebRT-Graph</title>
+</head>
+<body>
+
+
+<div style="height: 85%; display:flex; flex-direction: column; justify-content:center; align-items: center">
+
+    <div class="alert alert-warning fade" role="alert" id="login-alert">
+        <span id="login-message"></span>
+        <button type="button" onclick="hideAlert()" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div style="height: 150px; width: 150px; margin-bottom: 20px" id="wrapper"></div>
+
+    <div class="card border border-primary shadow rounded">
+        <div class="font-weight-bold text-center card-header">
+            WebRT-Graph - Log-In
+        </div>
+        <form style="padding: 40px 100px 40px 100px;">
+            <div class="form-group">
+                <label for="login-username">Username</label>
+                <input type="text" class="form-control" name="username" id="login-username"
+                       placeholder="Enter username" value="Timo">
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" class="form-control" name="password" id="login-password" placeholder="Password"
+                       value="test">
+            </div>
+            <div class="form-group form-check" style="padding: 0;">
+                <input class="node-input-checkbox styled-checkbox" id="kk"
+                       type="checkbox" value="" checked/>
+                <label class="node-checkbox" htmlFor="kk">Remember me</label>
+            </div>
+            <button type="button" onclick="login()" class="btn btn-primary">Login</button>
+        </form>
+    </div>
+</div>
+
+<div class="fixed-bottom" style="text-align: center; margin-bottom: 8px;">
+    <a href="https://github.com/xoned1" style="color:black;">
+        <img src="images/GitHub-Mark-32px.png" width="24px" height="24px"
+             style="margin-bottom: 4px; margin-right: 5px;"/>
+        WebRT-Graph on GitHub
+    </a>
+</div>
+
+<script>
+    let phi = (1 + Math.sqrt(5)) / 2;
+    let dodecahedron = {};
+    dodecahedron.nodes = [
+        {x: 0.5, y: 1, z: 1},
+        {x: 0.7, y: 1, z: -1},
+        {x: 1, y: -0.5, z: 0.4},
+        {x: 0.9, y: -1, z: -1},
+        {x: -1, y: 0.8, z: 1},
+        {x: -0.3, y: 1, z: -0.9},
+        {x: -1, y: -0.6, z: 1},
+        {x: -0.3, y: -1, z: -1},
+        {x: 0, y: phi, z: 1 / phi},
+        {x: 0, y: phi, z: -1 / phi},
+        {x: 0, y: -phi, z: 1 / phi},
+        {x: 0, y: -phi, z: -1 / phi},
+        {x: 1 / phi, y: 0, z: phi},
+        {x: 1 / phi, y: 0, z: -phi},
+        {x: -1 / phi, y: 0, z: phi},
+        {x: -1 / phi, y: 0, z: -phi},
+        {x: phi, y: 1 / phi, z: 0},
+        {x: phi, y: -1 / phi, z: 0},
+        {x: -phi, y: 1 / phi, z: 0},
+        {x: -phi, y: -1 / phi, z: 0},
+    ];
+    dodecahedron.edges = [[0, 15], [0, 16], [2, 17], [6, 3], [19, 18], [5, 8], [16, 10], [8, 9], [4, 12]];
+    let mesh = new MeshSpin();
+    mesh.getRotationOffset = mesh.rotateByMouse;
+    mesh.figure(dodecahedron);
+    mesh.props.debug = true;
+    mesh.setup('wrapper');
+    mesh.fillColor = "#000";
+    mesh.run();
+</script>
+</body>
+</html>

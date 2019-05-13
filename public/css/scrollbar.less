@@ -1,0 +1,22 @@
+@import 'style.less';
+
+::-webkit-scrollbar {
+  width: 2px;
+  background-color: @background-color;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  background-color: #FFF;
+  background-image: -webkit-gradient(linear,
+  40% 0%,
+  75% 84%,
+  from(darken(@primary-color, 30%)),
+  to(darken(@primary-color, 15%)),
+  color-stop(.6, @primary-color))
+}
+
+::-webkit-scrollbar-track {
+  background-color: @background-color;
+  border-radius: 1px;
+}

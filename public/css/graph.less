@@ -1,0 +1,34 @@
+@import 'style.less';
+
+SVG Text {
+  user-select: none;
+  pointer-events: none;
+}
+
+.circle {
+  border: 1px solid #8699a4;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+
+svg defs marker {
+  fill: #444;
+}
+
+svg circle {
+  stroke: @background-color;
+  stroke-width: 2px;
+}
+
+svg path.link {
+  fill: none;
+  stroke: #444;
+}
+
+svg path.link:hover {
+  stroke-width: 2px;
+  stroke: black !important;
+}
+

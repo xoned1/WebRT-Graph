@@ -1,0 +1,229 @@
+@primary-color: #00AAFF;
+@graph-background-color: #8699a4;
+@circle-color: #0077AA;
+@background-color: #343a40;
+@nav-item-background-color: #242a30;
+
+html, body {
+  background-color: @graph-background-color;
+  margin: 0;
+  height: 100%;
+  min-height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: 'Coda', cursive;
+}
+
+.navbar .nav-item {
+  margin-left: 30px;
+}
+
+.navbar .nav-item:hover {
+  border-bottom: 5px solid @primary-color;
+  margin-bottom: -8px;
+}
+
+.tab-content {
+  height: calc(100% - 56px);
+}
+
+#monitor {
+  height: 100%
+}
+
+#main {
+  height: 100%;
+  display: flex;
+}
+
+#graph-container {
+  position: relative;
+  width: 100%;
+}
+
+#inner-graph-container {
+  height: 100%;
+  width: 100%;
+}
+
+
+#left-nav {
+  height: 100%;
+  padding: 20px 20px 10px 20px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
+  border-top: 3px solid @primary-color;
+}
+
+#left-nav-header {
+  text-align: center;
+  text-decoration: underline;
+  font-family: 'Righteous', cursive;
+  margin-bottom: 20px;
+}
+
+#nav-container {
+  height: 100%;
+  background-color: lighten(#242a30, 10%);
+  padding: 15px;
+}
+
+.nav {
+  flex-wrap: nowrap; //notwendig?
+}
+
+.nav .nav-link {
+  color: white;
+}
+
+
+#monitor-nav-tabs {
+  font-size: 14px;
+
+  .nav .nav-link.active {
+    background-color: lighten(@nav-item-background-color, 10%);
+    color: white;
+    border-bottom: 1px solid lighten(#242a30, 10%);
+  }
+}
+
+#tab-contents {
+  height: 100%;
+}
+
+#nodes-tab-pane {
+  height: calc(100% - 42px - 33px - 58px);
+
+}
+
+#select-options {
+  flex: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+#select-options button {
+  background-color: @nav-item-background-color;
+  border-bottom: 1px solid @primary-color;
+  flex: 1;
+  margin: 10px;
+  color: white;
+}
+
+#select-options button:hover {
+  background-color: lighten(@nav-item-background-color, 30%);
+}
+
+#nodes {
+  height: 100%;
+  overflow-y: scroll;
+}
+
+#node {
+  display: flex;
+  justify-content: space-between;
+  background-color: @nav-item-background-color;
+  border-bottom: 1px solid @primary-color;
+  padding: 0 5px 0 10px;
+  margin: 0 10px 20px 10px;
+}
+
+#node:hover {
+  background-color: lighten(@nav-item-background-color, 30%);
+}
+
+#node .node-checkbox {
+  flex: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+#data-node {
+  flex: 1;
+  margin-top: 10px;
+  margin-left: 10px;
+  text-align: left;
+}
+
+
+#circle-container {
+  flex: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 10px;
+}
+
+#settings {
+  margin-top: 20px;
+}
+
+.slidecontainer {
+  margin-bottom: 20px;
+}
+
+.slidecontainer p {
+  margin: 0;
+}
+
+#overlay {
+  top: 0;
+  left: 0;
+  position: absolute;
+  z-index: 10;
+  display: none;
+}
+
+#toolbar {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#toolbar-items {
+
+  background-color: @background-color;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+
+  div {
+    margin: 8px 0 8px 0;
+  }
+}
+
+#data-table {
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.75);
+
+  margin: 30px;
+  padding: 10px 2px 10px 2px;
+  background-color: @background-color;
+}
+
+thead {
+  background-color: @nav-item-background-color;
+}
+
+#github-graph {
+  color: @background-color;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  font-size: 14px;
+
+  margin-bottom: 5px;
+
+  img {
+    margin-right: 3px;
+    margin-bottom: 3px;
+  }
+}
