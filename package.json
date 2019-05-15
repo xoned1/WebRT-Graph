@@ -118,7 +118,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "npm start webrt-graph",
+    "start": "node webrt-graph",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --ignore sessions/ webrt-graph.js"
   },
