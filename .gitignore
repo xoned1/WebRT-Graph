@@ -1,5 +1,5 @@
 database.json
 *.css
 *.css.map
-config.css
 node_modules/
+workspace.xml

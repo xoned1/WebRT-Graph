@@ -20,7 +20,7 @@ function setActiveSource() {
                 if (source.name === userData.activeSource) {
                     const data = JSON.parse(source.data);
                     setContext(source, data);
-                    if (isMonitorTabVisible()) {
+                    if (IsGraphTabVisible()) {
                         drawGraph();
                     }
                 }
@@ -33,6 +33,9 @@ $(document).ready(() => {
         setActiveSource();
         ReactDOM.render(
             <SourcesReact/>, document.getElementById('sources-container')
+        );
+        ReactDOM.render(
+            <NodeInfo ref={(nodeInfo) => {window.nodeInfo = nodeInfo}}/>, document.getElementById('info-container')
         );
         /*
         Hide overlay on click
@@ -87,7 +90,7 @@ function setContext(source, data) {
     isGraphInitialized = false;
 }
 
-function isMonitorTabVisible() {
+function IsGraphTabVisible() {
     return $('#graph').is(':visible');
 }
 
@@ -361,8 +364,10 @@ function parseCSV(csv) {
     return json;
 }
 
-function clickNode(d) {
-    showNodeContent(d);
+
+function clickNode(node) {
+    nodeInfo.setNode(node);
+    //showNodeContent(d);
 }
 
 function getNodeColor(node) {

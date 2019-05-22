@@ -210,7 +210,7 @@
                                href="#nodes-tab-pane">Nodes</a>
                         </li>
                         <li class="flex-fill nav-item">
-                            <a class="flex-fill nav-link" data-toggle="pill" id="bla-tab" href="#bla">Views</a>
+                            <a class="flex-fill nav-link" data-toggle="pill" id="view-tab" href="#views">Views</a>
                         </li>
                         <li class="flex-fill nav-item">
                             <a class="flex-fill nav-link" data-toggle="pill" id="node-settings-tab"
@@ -218,10 +218,10 @@
                         </li>
                     </ul>
                     <div class="tab-content" id="tab-contents">
-                        <div class="tab-pane fade show active" id="info" role="tabpanel"
-                             aria-labelledby="home-tab"></div>
-                        <div class="tab-pane fade" id="nodes-tab-pane" role="tabpanel"
-                             aria-labelledby="profile-tab">
+                        <div class="tab-pane fade show active" id="info" role="tabpanel">
+                            <div id="info-container" class="block rounded shadow">No Selection</div>
+                        </div>
+                        <div class="tab-pane fade" id="nodes-tab-pane" role="tabpanel">
                             <div id="select-options">
                                 <button type="button" class="btn" onclick="selectAllNodes(true)">Select All</button>
                                 <button type="button" class="btn" onclick="selectAllNodes(false)">Deselect All
@@ -229,7 +229,7 @@
                             </div>
                             <div id="nodes">Nodes..</div>
                         </div>
-                        <div class="tab-pane fade" id="bla" role="tabpanel" aria-labelledby="profile-tab">Sources..
+                        <div class="tab-pane fade" id="views" role="tabpanel" aria-labelledby="profile-tab">Sources..
                         </div>
                         <div class="tab-pane fade" id="node-settings" role="tabpanel" aria-labelledby="profile-tab">
                             <div class="block rounded shadow">
@@ -394,15 +394,16 @@
         </div>
     </div>
 </div>
-    <!--Order Matters!-->
-    <script type="text/babel" src="js/graph-context.js"></script>
-    <script type="text/babel" src="js/graph.js"></script>
-    <script type="text/babel" src="js/core.js"></script>
-    <script type="text/babel" src="js/simulation.js"></script>
-    <script type="text/babel" src="js/zoom-pane.js"></script>
-    <script type="text/babel" src="js/node-bar.js"></script>
-    <script type="text/babel" src="js/sources-react.js"></script>
-    <script type="text/babel" src="js/svg-to-image.js"></script>
-    <script type="text/babel" src="js/data-table.js"></script>
+<!--Order Matters!-->
+<script type="text/babel" src="js/graph-context.js"></script>
+<script type="text/babel" src="js/graph.js"></script>
+<script type="text/babel" src="js/core.js"></script>
+<script type="text/babel" src="js/simulation.js"></script>
+<script type="text/babel" src="js/zoom-pane.js"></script>
+<script type="text/babel" src="js/node-bar.js"></script>
+<script type="text/babel" src="js/sources-react.js"></script>
+<script type="text/babel" src="js/svg-to-image.js"></script>
+<script type="text/babel" src="js/data-table.js"></script>
+<script type="text/babel" src="js/node-info.js"></script>
 </body>
 </html>
