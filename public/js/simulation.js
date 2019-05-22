@@ -72,7 +72,7 @@ var SIM = (function (module) {
 
     var lineX2 = function (d) {
 
-        let nodeRadius = parseInt($('#node-' + d.target.id).attr("r"));
+        let nodeRadius = parseInt(getGraphNodeById(d.target.id).attr("r"));
         var length = Math.sqrt(Math.pow(d.target.y - d.source.y, 2) + Math.pow(d.target.x - d.source.x, 2));
         var scale = (length - nodeRadius) / length;
         var offset = (d.target.x - d.source.x) - (d.target.x - d.source.x) * scale;
@@ -80,7 +80,7 @@ var SIM = (function (module) {
     };
     var lineY2 = function (d) {
 
-        let nodeRadius = parseInt($('#node-' + d.target.id).attr("r"));
+        let nodeRadius = parseInt(getGraphNodeById(d.target.id).attr("r"));
         var length = Math.sqrt(Math.pow(d.target.y - d.source.y, 2) + Math.pow(d.target.x - d.source.x, 2));
         var scale = (length - nodeRadius) / length;
         var offset = (d.target.y - d.source.y) - (d.target.y - d.source.y) * scale;

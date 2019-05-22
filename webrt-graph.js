@@ -1,58 +1,47 @@
 const express = require('express');
-const uuid = require('uuid/v4');
 const session = require('express-session');
-const FileStore = require('session-file-store')(session);
+const path = require('path')
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bodyParser = require('body-parser');
 const r = require('rethinkdb');
-
-
+const fs = require('fs');
+const RDBStore = require('./rethinkdb-session')(session);
 const app = express();
-const port = 3000;
-const rethinkHost = "192.168.178.57";
-const rethinkPort = 28015;
-
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const log = new console.Console(process.stdout, process.stderr);
 
-const users = [
-    {id: 'Timo', password: 'test'},
-    {id: 'Test', password: 'test'}
-];
+//Port for HTTP Server
+const httpPort = 8080;
 
+//Connection to RethinkDB
 var connection = null;
 
-app.use(express.static('public'));
+//Log from stdout & stderr
+const log = new console.Console(process.stdout, process.stderr);
+
+//Load database config file
+const databaseConfig = getDatabaseConfig('database.json');
+
+//Parse body content
 app.use(bodyParser.urlencoded({extended: false}));
+
+//Parse JSON from body content
 app.use(express.json());
-app.use('/login', express.static('public/login.html'));
 
+//Allow access to public files
+app.use(express.static('public'));
 
-passport.use(new LocalStrategy(
-    (id, password, done) => {
-        const user = users[0];
-        if (id === user.id && password === user.password) {
-            return done(null, user);
-        }
-        return done(null, false);
-    }
-));
+//Check user credentials
+passport.use(createLoginStrategy());
 
+//Session handling
+app.use(createSessionHandler());
 
-app.use(session({
-    genid: (req) => {
-        return uuid();
-    },
-    store: new FileStore(),
-    secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: true
-}));
 app.use(passport.initialize());
-app.use(passport.session());
 
+//Allow passport access to sessions
+app.use(passport.session());
 
 function isAuth(req, res, next) {
     if (req.isAuthenticated()) {
@@ -62,15 +51,89 @@ function isAuth(req, res, next) {
     res.redirect('/login')
 }
 
-app.use('/webwork', isAuth, express.static('public/graph.html'));
+//Beautiful URLs
+app.use('/login', express.static(path.join(__dirname, 'public/login.html')));
+app.use('/WebRT-Graph', isAuth, express.static(path.join(__dirname, 'public/graph.html')));
 
+//Start Server
+http.listen(httpPort, () => console.log(`WebRT-Graph is listening on port ${httpPort}!`));
 
+/*
+    -----------------------------------------------------
+    ------------------    Routes    ---------------------
+    -----------------------------------------------------
+ */
 app.get("/", function (req, res) {
     if (!req.isAuthenticated()) {
         res.redirect("/login")
     } else {
-        res.redirect("/webwork")
+        res.redirect("/WebRT-Graph")
     }
+});
+
+
+app.post('/dologin', (req, res, next) => {
+    passport.authenticate('local', function (err, user, info) {
+        if (err) {
+            console.log(err);
+            return res.write(err);
+        }
+        if (!user) {
+            return res.send({err: "Username or password invalid."});
+        }
+        req.logIn(user, function (err) {
+            if (err) {
+                console.log(err);
+                return res.write(err.toString());
+            }
+            return res.send({redirect: '/WebRT-Graph'});
+        });
+    })(req, res, next);
+});
+
+//Creates new user in database if not exists
+app.post('/createUser', (req, res, next) => {
+    const username = req.body.username;
+    const password = req.body.password;
+
+    getUserTable().get(username).run(connection, (err, user) => {
+        //Check if user already exists in database
+        if (user) {
+            console.log("User \"" + username + "\" already exists.");
+            return res.end("User already exists!");
+        }
+
+        //Insert new user into users table
+        getUserTable().insert({username: username, password: password}).run(connection, function (err, result) {
+            if (err) {
+                console.log(err);
+                res.send(err);
+            }
+            console.log("New user \"" + username + "\" added");
+
+            //Create own table for user
+            getDataDb().tableCreate(username, {primaryKey: "name"}).run(connection, function (err, result) {
+                if (err) {
+                    console.log(err);
+                    res.send(err);
+                }
+                console.log("New table \"" + username + "\" created");
+
+                //Insert basic data in his own table
+                getDataDb().table(username).insert({
+                    "name": username,
+                    "last_login": new Date().getTime(),
+                    "sources": []
+                }).run(connection, function (err, result) {
+                    if (err) {
+                        console.log(err);
+                        res.send(err);
+                    }
+                    res.end();
+                });
+            });
+        });
+    });
 });
 
 
@@ -79,9 +142,9 @@ app.get('/logout', (req, res) => {
     return res.redirect('/');
 });
 
-app.get('/getUserData', function (req, res) {
 
-    r.table(req.user).get(req.user).without('sources').run(connection, (err, result) => {
+app.get('/getUserData', function (req, res) {
+    getUserData(req.user).get(req.user).without('sources').run(connection, (err, result) => {
         if (err) {
             return res.send(err);
         }
@@ -89,9 +152,10 @@ app.get('/getUserData', function (req, res) {
     });
 });
 
+
 app.post('/setActiveSource', (req, res, next) => {
     const source = req.body.activeSource;
-    r.table(req.user).update({activeSource: source}).run(connection, (err, result) => {
+    getUserData(req.user).update({activeSource: source}).run(connection, (err, result) => {
         if (err) {
             return res.send(err);
         }
@@ -100,70 +164,11 @@ app.post('/setActiveSource', (req, res, next) => {
     })
 });
 
-app.post('/dologin', (req, res, next) => {
-
-    passport.authenticate('local', function (err, user, info) {
-        if (err) {
-            return res.write(err);
-        }
-        if (!user) {
-            return res.send({err: "Username or password invalid."});
-        }
-        req.logIn(user, function (err) {
-            if (err) {
-                return res.write(err);
-            }
-            return res.send({redirect: '/webwork'});
-        });
-    })(req, res, next);
-});
-
-
-passport.serializeUser((user, done) => {
-    done(null, user.id);
-});
-
-passport.deserializeUser(function (id, done) {
-    done(null, users[0].id);
-});
-
-http.listen(port, () => console.log(`Example app listening on port ${port}!`));
-
-
-r.connect({host: rethinkHost, port: rethinkPort}, function (err, conn) {
-    if (err) {
-        throw err;
-    }
-
-    console.log("Connection to reThinkDB established");
-    connection = conn;
-});
-
-app.get("/test", (req, res, next) => {
-
-    res.send();
-
-});
-
-app.get('/createUser', (req, res, next) => {
-    r.tableCreate(req.user, {primaryKey: "name"}).run(connection, function (err, result) {
-        if (err) console.log(err);
-        r.table(req.user).insert({
-            "name": req.user,
-            "last_login": new Date().getTime(),
-            "sources": []
-        }).run(connection, function (err, result) {
-            if (err) console.log(err);
-            console.log(JSON.stringify(result, null, 2));
-        });
-    });
-    res.end();
-});
 
 app.post('/createSource', (req, res, next) => {
     var source = req.body.source;
 
-    r.table(req.user).get(req.user)
+    getUserData(req.user).get(req.user)
         .update({sources: r.row("sources").append(source)})
         .run(connection, (err, cursor) => {
             console.log(cursor)
@@ -175,29 +180,33 @@ app.post('/createSource', (req, res, next) => {
 
 app.post('/removeSource', (req, res, next) => {
 
-    var sourcename = req.body.sourcename;
-    r.table(req.user).get(req.user)
+    const sourcename = req.body.sourcename;
+    getUserData(req.user).get(req.user)
         .update({
             sources: r.row('sources').filter(function (row) {
                 return row('name').ne(sourcename)
             })
         })
         .run(connection, (err, result) => {
-            if (err) console.log(err);
+            if (err) {
+                console.log(err);
+                return res.end(err)
+            }
             console.log(JSON.stringify(result, null, 2));
+            res.end();
         });
     io.emit('source-removed');
-    res.end();
 });
 
 app.get('/getSources', (req, res, next) => {
 
-    r.table(req.user)('sources').run(connection, function (err, cursor) {
+    getUserData(req.user).get(req.user)('sources').run(connection, function (err, cursor) {
         if (err) {
-            log.log(err);
+            console.log(err);
+            return res.end(err);
         }
         cursor.toArray(function (err, result) {
-            res.send(result[0]);
+            return res.send(result);
         });
     });
 });
@@ -205,9 +214,10 @@ app.get('/getSources', (req, res, next) => {
 app.post('/setSourceConfig', (req, res, next) => {
 
     const config = req.body.sourceConfig;
-    r.table(req.user).get(req.user).run(connection, (err, result) => {
+    getUserData(req.user).get(req.user).run(connection, (err, result) => {
         if (err) {
-            res.send(err);
+            console.log(err);
+            return res.send(err);
         }
 
         result.sources.forEach((source) => {
@@ -215,6 +225,9 @@ app.post('/setSourceConfig', (req, res, next) => {
 
                 if (config.hasOwnProperty("configNode")) {
                     source.configNode = config.configNode;
+                }
+                if (config.hasOwnProperty("configNodeId")) {
+                    source.configNodeId = config.configNodeId;
                 }
                 if (config.hasOwnProperty("configLink")) {
                     source.configLink = config.configLink;
@@ -239,14 +252,124 @@ app.post('/setSourceConfig', (req, res, next) => {
             }
         });
 
-        r.table(req.user).get(req.user).update(result).run(connection, (err, result) => {
+        getUserData(req.user).update(result).run(connection, (err, result) => {
             res.end();
         })
-
     });
-
 });
 
+/*
+    -----------------------------------------------------
+    ------------------    Socket IO    ---------------------
+    -----------------------------------------------------
+ */
 io.on('connection', function (socket) {
     console.log('an user connected');
 });
+
+/*
+    -----------------------------------------------------
+    ------------------    Passport.JS    ---------------------
+    -----------------------------------------------------
+ */
+passport.serializeUser((user, done) => {
+    done(null, user.username);
+});
+
+passport.deserializeUser(function (id, done) {
+    const user = getUser(id).run(connection);
+    user.then(
+        success => done(null, success.username),
+        fail => console.log(fail));
+});
+
+/*
+    -----------------------------------------------------
+    ------------------    Functions    ---------------------
+    -----------------------------------------------------
+ */
+function getDataDb() {
+    return r.db("test");
+}
+
+function getUserTable() {
+    return getDataDb().table("users");
+}
+
+function getUser(username) {
+    return getUserTable().get(username);
+}
+
+function getUserData(username) {
+    return getDataDb().table(username);
+}
+
+function getDatabaseConfig(fileName) {
+    try {
+        let databaseFile = fs.readFileSync(fileName);
+        return JSON.parse(databaseFile);
+    } catch (err) {
+        console.log("Error while loading database config file:" + err)
+    }
+}
+
+
+function createLoginStrategy() {
+    return new LocalStrategy(
+        (id, password, done) => {
+            r.db("test").table('users').get(id).run(connection, (err, user) => {
+
+                if (err) {
+                    done(err);
+                }
+                if (user.password === password) {
+                    done(null, user)
+                } else {
+                    //Incorrect password
+                    done(null, false, {message: "Incorrect credentials"});
+                }
+            });
+        }
+    )
+}
+
+//Create Database Connection
+function createDatabaseConnection(resolve, reject) {
+
+    r.connect({
+        host: databaseConfig.host,
+        port: databaseConfig.port,
+        user: databaseConfig.user,
+        password: databaseConfig.password
+    }, function (err, conn) {
+        if (err) {
+            reject(Error(err));
+        }
+
+        console.log("Connection to RethinkDB established");
+        connection = conn;
+        resolve(conn)
+    });
+}
+
+function createSessionHandler() {
+    return session({
+        key: 'sid',
+        secret: 'dasndjansjdnaj3!dd(key)!',
+        cookie: {maxAge: 860000},
+        store: createSessionStore(),
+        resave: false,
+        saveUninitialized: true
+    })
+}
+
+function createSessionStore() {
+    return new RDBStore({
+        connection: new Promise(createDatabaseConnection),
+        database: 'sessions',
+        table: 'sessions',
+        instance: r,
+        sessionTimeout: 86400000,
+        flushInterval: 240000, //Clear all 4 minutes the expired sessions
+    });
+}

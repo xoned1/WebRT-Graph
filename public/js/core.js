@@ -7,7 +7,9 @@ const defaultNodeWeight = 20;
 const minNodeWeight = 5;
 const maxNodeWeight = 50;
 
-var nodeColors = createPalette(d3.interpolateYlGnBu);
+var nodeMap = {};
+
+var nodeColors = createPalette(d3.interpolateBrBG);
 
 function setActiveSource() {
     $.getJSON("/getUserData", function (data) {
@@ -45,11 +47,10 @@ $(document).ready(() => {
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             let activatedTab = e.target.id;
 
-            if (activatedTab === "monitor-tab") {
-                if (!isGraphInitialized && context) {
+            if (activatedTab === "graph-tab") {
+                if (!isGraphInitialized && context != null) {
                     isGraphInitialized = true;
-                    drawGraph();
-
+                    drawGraph()
                 }
 
                 $('html, body').css("overflow-y", "hidden");
@@ -69,7 +70,6 @@ $(document).ready(() => {
         let slider = document.getElementById("slider-manybody");
         slider.oninput = function () {
             if (d3.event != null) {
-                console.log(d3.event);
                 if (!d3.event.active) {
                     SIM.simulation.alphaTarget(0.02).restart();
                 }
@@ -88,7 +88,7 @@ function setContext(source, data) {
 }
 
 function isMonitorTabVisible() {
-    return $('#monitor').is(':visible');
+    return $('#graph').is(':visible');
 }
 
 function updateLogoutText(data) {
@@ -97,34 +97,58 @@ function updateLogoutText(data) {
 
 function updateConfig() {
 
+    //Combobox Nodes and Links
     Object.keys(context.get_data()).forEach((key) => {
         let option = "<option>" + key + "</option>";
         $('#sourceConfigDropBoxNodes').append(option);
         $('#sourceConfigDropBoxLinks').append(option);
     });
-
     $('#sourceConfigDropBoxNodes').val(context.get_config_node());
     $('#sourceConfigDropBoxLinks').val(context.get_config_link());
 
-    $('#sourceConfigDropBoxNodeTitle').append("<option>None</option>");
-    $('#sourceConfigDropBoxNodeWeight').append("<option>None</option>");
-    Object.keys(context.get_node(0)).forEach((key) => {
-        let option = "<option>" + key + "</option>";
-        $('#sourceConfigDropBoxNodeTitle').append(option);
-        $('#sourceConfigDropBoxNodeWeight').append(option);
-    });
+    if (!context.get_config_node() || !context.getConfigNodeId()) {
+        $('#graph-tab').addClass('disabled');
+    } else {
+        $('#graph-tab').removeClass('disabled');
+    }
 
-    $('#sourceConfigDropBoxNodeTitle').val(context.get_node_title());
-    $('#sourceConfigDropBoxNodeWeight').val(context.get_node_weight());
+    //Comboboxes Node keys
+    if (context.get_nodes()) {
+        $('#sourceConfigDropBoxNodeTitle').append("<option>None</option>");
+        $('#sourceConfigDropBoxNodeWeight').append("<option>None</option>");
 
+        Object.keys(context.get_nodes()[0]).forEach((key) => { //TODO nur wenn node/links angeben sind.. graph nur anzeigenn wenn nodes/links defined?
+            let option = "<option>" + key + "</option>";
+            $('#sourceConfigDropBoxNodeTitle').append(option);
+            $('#sourceConfigDropBoxNodeWeight').append(option);
+            $('#sourceConfigDropBoxNodeID').append(option);
+        });
+
+        $('#sourceConfigDropBoxNodeTitle').val(context.get_node_title());
+        $('#sourceConfigDropBoxNodeWeight').val(context.get_node_weight());
+        $('#sourceConfigDropBoxNodeID').val(context.getConfigNodeId());
+    }
+
+    //Combobox in Graph Settings
     $('#linkLineType').val(context.getLinkLineType());
-    $('#nodeColorPalettes').val(context.getNodeColorPalette());
+    if (context.getNodeColorPalette()) {
+        $('#nodeColorPalettes').val(context.getNodeColorPalette());
+    } else {
+        $('#nodeColorPalettes').val("BrBg");
+    }
+
 }
 
 function sourceConfigNodeChanged(e) {
-
     const json = {sourceConfig: {configNode: e.value}};
     postJSON('/setSourceConfig', json);
+    updateConfig();
+}
+
+function sourceConfigNodeIdChanged(e) {
+    const json = {sourceConfig: {configNodeId: e.value}};
+    postJSON('/setSourceConfig', json);
+    updateConfig();
 }
 
 function sourceConfigLinkChanged(e) {
@@ -152,6 +176,8 @@ function drawGraph() {
     let margin = {top: 20, right: 20, bottom: 20, left: 20};
     let width = graphContainer.width() - margin.left - margin.right;
     let height = graphContainer.height() - margin.top - margin.bottom;
+
+    console.log(context + " " + width + " " + height)
 
     svg = d3.select("#inner-graph-container")
         .append("svg")
@@ -204,6 +230,11 @@ function drawGraph() {
 
     let node = createNode(nodeParents);
 
+    nodeMap = {}
+    node.each((node) => {
+        nodeMap[node.id] = $('circle[nodeID=' + node.id + ']');
+    });
+
     let link = svg
         .selectAll("path")
         .data(context.get_links())
@@ -247,11 +278,8 @@ function drawGraph() {
     function createNode(parent) {
         return parent
             .append("circle")
-            .attr("id", (node) => {//doppelt id
-                return "node-" + node.id;
-            })
             .attr("nodeID", (node) => {
-                return node.id;
+                return String(node[context.getConfigNodeId()]).replace(/\s/g, '');
             })
             .attr("r", (node) => {
                 return node.weight;
@@ -317,6 +345,22 @@ function drawGraph() {
 }
 
 
+function isValidJSON(json) {
+    try {
+        JSON.parse(json);
+        return true
+    } catch (e) {
+    }
+    return false;
+}
+
+
+function parseCSV(csv) {
+    const result = Papa.parse(csv, {header: true});
+    const json = {"Nodes": result.data};
+    return json;
+}
+
 function clickNode(d) {
     showNodeContent(d);
 }
@@ -373,9 +417,16 @@ function hideNode(nodeid, hide) {
 
 function createSource() {
 
-    const name = $('#create-source-name').val();
-    const desc = $('#create-source-description').val();
-    const data = $('#create-source-area').val().replace(/\r?\n|\r/g, "");
+    const name = $('#create-source-name').val().trim();
+    const desc = $('#create-source-description').val().trim();
+    let data = $('#create-source-area').val().trim();
+
+    if (!isValidJSON(data)) {
+        data = JSON.stringify(parseCSV(data));
+        //TODO Wenn kein CSV, dann XML testen.
+    }
+
+    data = data.replace(/\r?\n|\r/g, "");
 
     const json = {
         source:
@@ -392,11 +443,16 @@ function createSource() {
 
     postJSON('/createSource', json);
     closeAddSourceWindow();
+
+    $('#config-tab').tab('show');
 }
 
 function addSourceWindowOnChange() {
     const name = $('#create-source-name').val();
-    $('#create-source-create-btn').prop("disabled", name === "")
+    const source = $('#create-source-area').val();
+
+    const disable = (name.trim() === "") || (source.trim() === "");
+    $('#create-source-create-btn').prop("disabled", disable)
 }
 
 function formatDate(date) {
@@ -450,7 +506,7 @@ function createPalette(palette) {
         .interpolator(palette);
 }
 
-$('#monitor-tab').tab('show');
+$('#sources-tab').tab('show');
 $('#node-settings-tab').tab('show');
 
 
@@ -515,10 +571,14 @@ function setNodeColorPalette(e) {
     }
 
     $('svg circle').each((index, node) => {
-        const nodeId = parseInt(node.getAttribute('nodeID') - 1); //TODO -1 da ungenau
+        const nodeId = parseInt(node.getAttribute('nodeID'));
         node.style.fill = getNodeColor(context.get_node(nodeId));
     });
 
     const config = {nodeColorPalette: palette};
     sendSourceConfig(config);
+}
+
+function getGraphNodeById(id) {
+    return nodeMap[id];
 }

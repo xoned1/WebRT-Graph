@@ -2,8 +2,8 @@ function calcNodeWeights(context) {
     let weights = [];
 
     if (!context.get_node_weight()) {
-        context.get_nodes().forEach((value) => {
-            value.weight = defaultNodeWeight;
+        context.get_nodes().forEach((node) => {
+            node.weight = defaultNodeWeight;
         });
         return;
     }

@@ -14,11 +14,25 @@ class GraphContext {
     }
 
     get_node(nodeid) {
-        return this.get_nodes()[nodeid]; //nodeid key != id value
+
+        const nodes = this.get_nodes();
+        for (let key in nodes) {
+            if (this.get_nodes()[key][this.getConfigNodeId()].toString() === nodeid.toString()) {
+                return this.get_nodes()[key];
+            }
+        }
+        return "error";
     }
 
     get_links() {
-        return this.data[this.get_config_link()];
+        if (this.get_config_link()) {
+            return this.data[this.get_config_link()];
+        }
+        return [];
+    }
+
+    getConfigNodeId() {
+        return this.source.configNodeId;
     }
 
     get_config_node() {

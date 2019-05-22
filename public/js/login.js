@@ -1,3 +1,12 @@
+$(document).ready(() => {
+
+    $(document).keydown(() => {
+        $("#login-button").click();
+    });
+    //TODO Abhängig ob register oder login
+
+});
+
 function login() {
     let username = $('#login-username')[0].value;
     let password = $('#login-password')[0].value;
@@ -12,19 +21,35 @@ function login() {
         if (data.redirect) {
             return window.location.replace(data.redirect);
         }
-
-        let message = $('#login-message');
-        $('#login-alert').addClass('show');
         if (data.err) {
-            message.text(data.err);
+            showErrorMessage(data.err);
+        } else {
+            showErrorMessage("Error while login.");
         }
-        message.text("Error while login.");
     }).fail((data) => {
-        let message = $('#login-message');
-        $('#login-alert').addClass('show');
-        message.text(data);
+        showErrorMessage(data);
     });
+}
 
+function register() {
+    const json = {username: "ssss", password: "hansen"};
+    $.ajax('/createUser', {
+        data: JSON.stringify(json),
+        contentType: 'application/json',
+        type: 'POST',
+    }).done((data) => {
+        if (data) {
+            showErrorMessage(data);
+        }
+    }).fail((data) => {
+        showErrorMessage(data);
+    });
+}
+
+function showErrorMessage(message) {
+    let control = $('#login-message');
+    $('#login-alert').addClass('show');
+    control.text(message);
 }
 
 function hideAlert() {

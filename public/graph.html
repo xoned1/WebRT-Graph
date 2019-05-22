@@ -71,6 +71,9 @@
     <script src="//d3js.org/d3-interpolate.v1.min.js"></script>
     <script src="//d3js.org/d3-scale-chromatic.v1.min.js"></script>
 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/PapaParse/4.6.3/papaparse.min.js"></script>
+
+
 </head>
 <body>
 <div id="page-mask"></div>
@@ -88,7 +91,7 @@
                 <a class="nav-link active" id="sources-tab" href="#sources" data-toggle="tab">Sources</a>
             </li>
             <li class="nav-item ">
-                <a class="nav-link" id="monitor-tab" href="#monitor" data-toggle="tab">
+                <a class="nav-link" id="graph-tab" href="#graph" data-toggle="tab">
                     Graph
                 </a>
             </li>
@@ -161,9 +164,10 @@
                     <div class="tab-pane fade show " id="fromtext" role="tabpanel">
                         <div class="form-group">
                             <label>JSON/XML/CSV</label>
-                            <textarea class="form-control" id="create-source-area" rows="5">
+                            <textarea class="form-control" id="create-source-area" rows="5"
+                                      oninput="addSourceWindowOnChange()">
 {
-  key: "value" //JSON example
+  "key": "value" //JSON example
 }
                             </textarea>
                         </div>
@@ -191,24 +195,25 @@
         <a id="circle" onclick="showAddSourceWindow()">+</a>
     </div>
 
-    <div id="monitor" class="tab-pane fade" role="tabpanel" aria-labelledby="main-tab">
+    <div id="graph" class="tab-pane fade" role="tabpanel">
         <div id="main">
             <div class="bg-dark text-light" id="left-nav">
                 <div class="rounded shadow" id="nav-container">
                     <h4 id="left-nav-header">Navigation</h4>
 
-                    <ul id="monitor-nav-tabs" class="nav nav-tabs" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" data-toggle="tab" id="info-tab" href="#info">Info</a>
+                    <ul id="monitor-nav-tabs" class="nav nav-pills flex-column flex-sm-row" role="tablist">
+                        <li class="flex-fill nav-item">
+                            <a class="flex-fill nav-link active" data-toggle="pill" id="info-tab" href="#info">Info</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" id="nodes-tab" href="#nodes-tab-pane">Nodes</a>
+                        <li class="flex-fill nav-item">
+                            <a class="flex-fill nav-link" data-toggle="pill" id="nodes-tab"
+                               href="#nodes-tab-pane">Nodes</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" id="bla-tab" href="#bla">Sources</a>
+                        <li class="flex-fill nav-item">
+                            <a class="flex-fill nav-link" data-toggle="pill" id="bla-tab" href="#bla">Views</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" id="node-settings-tab"
+                        <li class="flex-fill nav-item">
+                            <a class="flex-fill nav-link" data-toggle="pill" id="node-settings-tab"
                                href="#node-settings">Settings</a>
                         </li>
                     </ul>
@@ -227,51 +232,61 @@
                         <div class="tab-pane fade" id="bla" role="tabpanel" aria-labelledby="profile-tab">Sources..
                         </div>
                         <div class="tab-pane fade" id="node-settings" role="tabpanel" aria-labelledby="profile-tab">
-                            <div class="slidecontainer">
-                                <p>forceManyBody strength</p>
-                                <input type="range" min="-100" max="100" value="-10" class="slider"
-                                       id="slider-manybody"/>
+                            <div class="block rounded shadow">
+                                <div class="block-title">Forces</div>
+                                <div class="slidecontainer">
+                                    <p>Many-Body Force Strength</p>
+                                    <input type="range" min="-100" max="100" value="-10" class="slider"
+                                           id="slider-manybody"/>
+                                </div>
+                                <div class="slidecontainer">
+                                    <p>Link Force Strength</p>
+                                    <input type="range" min="1" max="100" value="50" class="slider" id="myRange2"/>
+                                </div>
                             </div>
-                            <div class="slidecontainer">
-                                <p>forceLink strength</p>
-                                <input type="range" min="1" max="100" value="50" class="slider" id="myRange2"/>
+                            <div class="block rounded shadow">
+                                <div class="block-title">Links</div>
+                                <div class="form-group">
+                                    <label for="linkLineType">Type</label>
+                                    <select onchange="setLinkLineType(this)" class="form-control"
+                                            id="linkLineType">
+                                        <option>Linear</option>
+                                        <option>Curved</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="linkLineType">Type of links</label>
-                                <select onchange="setLinkLineType(this)" class="form-control"
-                                        id="linkLineType">
-                                    <option>Linear</option>
-                                    <option>Curved</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="nodeColorPalettes">Node color palettes</label>
-                                <select onchange="setNodeColorPalette(this)" class="form-control"
-                                        id="nodeColorPalettes">
-                                    <option>BrBg</option>
-                                    <option>PRGn</option>
-                                    <option>PiYG</option>
-                                    <option>PuoR</option>
-                                    <option>RdBu</option>
-                                    <option>RdYIBu</option>
-                                    <option>Spectral</option>
-                                    <option>Blues</option>
-                                    <option>Greens</option>
-                                    <option>Oranges</option>
-                                    <option>Reds</option>
-                                    <option>Purples</option>
-                                    <option>Viridis</option>
-                                    <option>Inferno</option>
-                                    <option>Warm</option>
-                                    <option>Cool</option>
-                                    <option>Rainbow</option>
-                                    <option>Sinebow</option>
-                                </select>
+                            <div class="block rounded shadow">
+                                <div class="block-title">Nodes</div>
+                                <div class="form-group">
+                                    <label for="nodeColorPalettes">Color Palette</label>
+                                    <select onchange="setNodeColorPalette(this)" class="form-control"
+                                            id="nodeColorPalettes">
+                                        <option>BrBg</option>
+                                        <option>PRGn</option>
+                                        <option>PiYG</option>
+                                        <option>PuoR</option>
+                                        <option>RdBu</option>
+                                        <option>RdYIBu</option>
+                                        <option>Spectral</option>
+                                        <option>Blues</option>
+                                        <option>Greens</option>
+                                        <option>Oranges</option>
+                                        <option>Reds</option>
+                                        <option>Purples</option>
+                                        <option>Viridis</option>
+                                        <option>Inferno</option>
+                                        <option>Warm</option>
+                                        <option>Cool</option>
+                                        <option>Rainbow</option>
+                                        <option>Sinebow</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div id="graph-container">
                 <div>
                     <a id="github-graph" href="https://github.com/xoned1">
@@ -281,26 +296,24 @@
                 </div>
                 <div id="inner-graph-container"></div>
             </div>
-
-            <div id="toolbar">
-                <div id="toolbar-items" class="shadow text-white">
-                    <div>
-                        <i value="dd" class="fas fa-sd-card" data-toggle="tooltip" title="Save as image.."
-                           onclick="saveGraphAsImage()"></i>
-                    </div>
-                    <div>
-                        <i value="dd" class="fas fa-camera" data-toggle="tooltip" title="Delete Source"></i>
-                    </div>
-                    <div>
-                        <i value="dd" class="fas fa-compress-arrows-alt" data-toggle="tooltip"
-                           title="Delete Source"></i>
-                    </div>
-                    <div>
-                        <i value="dd" class="fas fa-eye" data-toggle="tooltip" title="Delete Source"></i>
-                    </div>
+        </div>
+        <div id="toolbar">
+            <div id="toolbar-items" class="shadow text-white">
+                <div>
+                    <i value="dd" class="fas fa-sd-card" data-toggle="tooltip" title="Save as image.."
+                       onclick="saveGraphAsImage()"></i>
+                </div>
+                <div>
+                    <i value="dd" class="fas fa-camera" data-toggle="tooltip" title="Delete Source"></i>
+                </div>
+                <div>
+                    <i value="dd" class="fas fa-compress-arrows-alt" data-toggle="tooltip"
+                       title="Delete Source"></i>
+                </div>
+                <div>
+                    <i value="dd" class="fas fa-eye" data-toggle="tooltip" title="Delete Source"></i>
                 </div>
             </div>
-
         </div>
 
 
@@ -312,9 +325,8 @@
                 <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
             </div>
         </div>
-
-
     </div>
+
 
     <div class="tab-pane fade" id="data" role="tabpanel" aria-labelledby="data-tab">
         <div id="data-table" class="rounded">
@@ -324,45 +336,73 @@
 
     <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
     </div>
-
     <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
-        <div class="card shadow" id="source-config-box">
-            <div class="form-group">
-                <label for="sourceConfigDropBoxNodes">Use as Nodes</label>
-                <select class="form-control" id="sourceConfigDropBoxNodes" onchange="sourceConfigNodeChanged(this)">
-                </select>
+        <div id="source-config-box">
+            <div class="card shadow source-config-box" id="required-card">
+                <div class="card-header bg-danger text-center">
+                    Required Properties
+                </div>
+                <div class="card-body">
+                    <div class="form-group card-text">
+                        <label for="sourceConfigDropBoxNodes">Nodes</label>
+                        <select class="form-control" id="sourceConfigDropBoxNodes"
+                                onchange="sourceConfigNodeChanged(this)">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sourceConfigDropBoxNodes">Node ID (must be unique to identify nodes)</label>
+                        <select class="form-control" id="sourceConfigDropBoxNodeID"
+                                onchange="sourceConfigNodeIdChanged(this)">
+                        </select>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="sourceConfigDropBoxLinks">Use as Links</label>
-                <select onchange="sourceConfigLinkChanged(this)" class="form-control" id="sourceConfigDropBoxLinks">
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="sourceConfigDropBoxNodeTitle">Node Title</label>
-                <select onchange="sourceConfigNodeTitleChanged(this)" class="form-control"
-                        id="sourceConfigDropBoxNodeTitle">
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="sourceConfigDropBoxNodeWeight">Node Weight</label>
-                <select onchange="sourceConfigNodeWeightChanged(this)" class="form-control"
-                        id="sourceConfigDropBoxNodeWeight">
-                </select>
+            <div id="node-link-box">
+                <div class="card shadow source-config-box">
+                    <div class="card-header text-center">
+                        Node Properties
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="sourceConfigDropBoxNodeTitle">Node Title (shown near the node)</label>
+                            <select onchange="sourceConfigNodeTitleChanged(this)" class="form-control"
+                                    id="sourceConfigDropBoxNodeTitle">
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sourceConfigDropBoxNodeWeight">Node Weight (affects the node size)</label>
+                            <select onchange="sourceConfigNodeWeightChanged(this)" class="form-control"
+                                    id="sourceConfigDropBoxNodeWeight">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card shadow source-config-box">
+                    <div class="card-header text-center">
+                        Link Properties
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="sourceConfigDropBoxLinks">Links</label>
+                            <select onchange="sourceConfigLinkChanged(this)" class="form-control"
+                                    id="sourceConfigDropBoxLinks">
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-</div>
-
-<!--Order Matters!-->
-<script type="text/babel" src="js/graph-context.js"></script>
-<script type="text/babel" src="js/graph.js"></script>
-<script type="text/babel" src="js/core.js"></script>
-<script type="text/babel" src="js/simulation.js"></script>
-<script type="text/babel" src="js/zoom-pane.js"></script>
-<script type="text/babel" src="js/node-bar.js"></script>
-<script type="text/babel" src="js/sources-react.js"></script>
-<script type="text/babel" src="js/svg-to-image.js"></script>
-<script type="text/babel" src="js/data-table.js"></script>
+    <!--Order Matters!-->
+    <script type="text/babel" src="js/graph-context.js"></script>
+    <script type="text/babel" src="js/graph.js"></script>
+    <script type="text/babel" src="js/core.js"></script>
+    <script type="text/babel" src="js/simulation.js"></script>
+    <script type="text/babel" src="js/zoom-pane.js"></script>
+    <script type="text/babel" src="js/node-bar.js"></script>
+    <script type="text/babel" src="js/sources-react.js"></script>
+    <script type="text/babel" src="js/svg-to-image.js"></script>
+    <script type="text/babel" src="js/data-table.js"></script>
 </body>
 </html>

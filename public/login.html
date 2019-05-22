@@ -53,27 +53,65 @@
 
     <div style="height: 150px; width: 150px; margin-bottom: 20px" id="wrapper"></div>
 
-    <div class="card border border-primary shadow rounded">
+    <div class="card border shadow rounded">
         <div class="font-weight-bold text-center card-header">
-            WebRT-Graph - Log-In
+            WebRT-Graph
         </div>
-        <form style="padding: 40px 100px 40px 100px;">
-            <div class="form-group">
-                <label for="login-username">Username</label>
-                <input type="text" class="form-control" name="username" id="login-username"
-                       placeholder="Enter username" value="Timo">
-            </div>
-            <div class="form-group">
-                <label for="login-password">Password</label>
-                <input type="password" class="form-control" name="password" id="login-password" placeholder="Password"
-                       value="test">
-            </div>
-            <div class="form-group form-check" style="padding: 0;">
-                <input class="node-input-checkbox styled-checkbox" id="kk"
-                       type="checkbox" value="" checked/>
-                <label class="node-checkbox" htmlFor="kk">Remember me</label>
-            </div>
-            <button type="button" onclick="login()" class="btn btn-primary">Login</button>
+        <ul class="nav nav-pills nav-fill" role="tablist" id="form-pills">
+            <li class="nav-item">
+                <a class="nav-link active" href="#log-in" data-toggle="tab" role="tab">Sign In</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#sign-up" data-toggle="tab" role="tab">Sign Up</a>
+            </li>
+        </ul>
+        <form id="test" style="padding: 40px 100px 40px 100px;">
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="log-in" role="tabpanel">
+                    <div class="form-group">
+                        <label for="login-username">Username</label>
+                        <input type="text" class="form-control" name="username" id="login-username"
+                               placeholder="Enter username" value="Timo">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" class="form-control" name="password" id="login-password"
+                               placeholder="Password"
+                               value="test">
+                    </div>
+                    <div class="form-group form-check" style="padding: 0;">
+                        <input class="node-input-checkbox styled-checkbox" id="kk"
+                               type="checkbox" value="" checked/>
+                        <label class="node-checkbox" htmlFor="kk">Remember me</label>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <button type="button" id="login-button" onclick="login()" class="btn btn-primary">Log In</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade show" id="sign-up" role="tabpanel">
+                    <div class="tab-pane fade show active" id="dasd-in" role="tabpanel">
+                        <div class="form-group">
+                            <label for="login-username">Username</label>
+                            <input type="text" class="form-control" name="username" id="dasd-dasd"
+                                   placeholder="Enter username" value="Timo">
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" class="form-control" name="password" id="login-dasd"
+                                   placeholder="Password"
+                                   value="test">
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <button id="signup-button" type="button" onclick="register()" class="btn btn-primary">Sign Up</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
         </form>
     </div>
 </div>
