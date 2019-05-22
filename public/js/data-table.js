@@ -10,7 +10,7 @@ class DataTable extends React.Component {
         const nodeKeys = Object.keys(nodes[0]);
 
         const header = nodeKeys.map((nodeKey) => {
-            return <th scope="col">{nodeKey}</th>
+            return <th key={nodeKey} scope="col">{nodeKey}</th>
         });
 
         const body = nodes.map((node) => {

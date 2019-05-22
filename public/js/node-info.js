@@ -13,7 +13,6 @@ class NodeInfo extends React.Component {
     }
 
     render() {
-        console.log("render");
         return Object.keys(this.state.activeNode).map((key) => {
             return <div key={key}>{key}: {this.state.activeNode[key]}</div>
         });

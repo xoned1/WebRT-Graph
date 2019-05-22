@@ -180,8 +180,6 @@ function drawGraph() {
     let width = graphContainer.width() - margin.left - margin.right;
     let height = graphContainer.height() - margin.top - margin.bottom;
 
-    console.log(context + " " + width + " " + height)
-
     svg = d3.select("#inner-graph-container")
         .append("svg")
         .attr("id", "graph-svg")
@@ -405,9 +403,10 @@ function selectAllNodes(select) {
 
 
 function hideNode(nodeid, hide) {
+    //TODO die source target nur anzeigen, wenn BEIDE nodes angezeigt werden
     let nodeG = $('g[data-node-id="' + nodeid + '"]');
-    let source = $('line[data-source="' + nodeid + '"]');
-    let target = $('line[data-target="' + nodeid + '"]');
+    let source = $('path[data-source="' + nodeid + '"]');
+    let target = $('path[data-target="' + nodeid + '"]');
     if (hide) {
         nodeG.hide();
         source.hide();
