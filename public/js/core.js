@@ -313,9 +313,10 @@ function drawGraph() {
     Sets colors of circles in navigation bar nodes
      */
     $('circle[nodeID]').each((i, e) => {
-        let color = $(e).attr('fill');
+        let color = $(e).css('fill');
         let id = $(e).attr('nodeID');
         $('.circle[data-node-id=' + id + ']').each((i, k) => {
+            console.log(color)
             $(k).css('background', color)
         });
     });
