@@ -50,35 +50,48 @@ class SourcesReact extends React.Component {
 
                     const active = e.name === activeSource;
                     const btnActiveClass = active ? 'btn-primary' : 'btn-secondary';
-                    const btnText = active ? 'Active!!!' : 'Activate';
+                    const btnText = active ? 'Current' : 'Activate';
 
 
                     const result = <div key={e.name} className="card border shadow rounded source-card">
                         <div className="source-item">
-                            <div>
-                                <button type="button" onClick={() => SourcesReact.setActiveSource(e.name)}
-                                        className={"btn " + btnActiveClass} disabled={active}>
-                                    {btnText}
-                                </button>
-                            </div>
-                            <div>
-                                <div className="h4">
-                                    {e.name}
-                                </div>
+                            <div className="source-item-left">
                                 <div>
-                                    {e.description}
+                                    <button type="button" onClick={() => SourcesReact.setActiveSource(e.name)}
+                                            className={"btn " + btnActiveClass} disabled={active}>
+                                        {btnText}
+                                    </button>
                                 </div>
-                                <div>
-                                    Last modified: {formatDate(new Date(e.lastModified))}
+                                <div id="main-desc-box">
+                                    <div className="h3">
+                                        {e.name}
+                                    </div>
+                                    <div className="h5">
+                                        {e.description}
+                                    </div>
                                 </div>
                             </div>
+                            <div className="source-item-right">
+                                <div>
+                                    <div>
+                                        Last modified: {formatDate(new Date(e.lastModified))}
+                                    </div>
+                                    <div>
+                                        Nodes: -
+                                    </div>
+                                    <div>
+                                        Links: -
+                                    </div>
+                                </div>
 
-                            <div id="source-item-options">
-                                <i className="fas fa-project-diagram" data-toggle="tooltip"
-                                   title="View Source"/>
-                                <i value={e.name} onClick={() => SourcesReact.remove(e.name)}
-                                   className="fas fa-trash-alt" data-toggle="tooltip"
-                                   title="Delete Source"/>
+
+                                <div id="source-item-options">
+                                    <i className="fas fa-project-diagram" data-toggle="tooltip"
+                                       title="View Source"/>
+                                    <i value={e.name} onClick={() => SourcesReact.remove(e.name)}
+                                       className="fas fa-trash-alt" data-toggle="tooltip"
+                                       title="Delete Source"/>
+                                </div>
                             </div>
                         </div>
                     </div>;
