@@ -370,6 +370,7 @@ function parseCSV(csv) {
 
 function clickNode(node) {
     nodeInfo.setNode(node);
+      $('#info-tab').tab('show');
     //showNodeContent(d);
 }
 
