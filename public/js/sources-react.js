@@ -77,10 +77,10 @@ class SourcesReact extends React.Component {
                                         Last modified: {formatDate(new Date(e.lastModified))}
                                     </div>
                                     <div>
-                                        Nodes: -
+                                        Nodes: {e.nodeCount}
                                     </div>
                                     <div>
-                                        Links: -
+                                        Links:  {e.linkCount}
                                     </div>
                                 </div>
 

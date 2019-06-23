@@ -148,9 +148,18 @@ function updateConfig() {
 }
 
 function sourceConfigNodeChanged(e) {
-    const json = {sourceConfig: {configNode: e.value}};
+    context.setConfigNode(e.value);
+
+    const json = {
+        sourceConfig:
+            {
+                configNode: e.value,
+                nodeCount: context.getNodeCount()
+            }
+    };
+
     postJSON('/setSourceConfig', json);
-    updateConfig();
+    //updateConfig();
 }
 
 function sourceConfigNodeIdChanged(e) {
@@ -160,7 +169,13 @@ function sourceConfigNodeIdChanged(e) {
 }
 
 function sourceConfigLinkChanged(e) {
-    const json = {sourceConfig: {configLink: e.value}};
+    const json = {
+        sourceConfig:
+            {
+                configLink: e.value,
+                linkCount: context.getLinkCount()
+            }
+    };
     postJSON('/setSourceConfig', json);
 }
 
@@ -370,7 +385,7 @@ function parseCSV(csv) {
 
 function clickNode(node) {
     nodeInfo.setNode(node);
-      $('#info-tab').tab('show');
+    $('#info-tab').tab('show');
     //showNodeContent(d);
 }
 

@@ -39,8 +39,16 @@ class GraphContext {
         return this.source.configNode;
     }
 
+    setConfigNode(configNode) {
+        this.source.configNode = configNode;
+    }
+
     get_config_link() {
         return this.source.configLink;
+    }
+
+    setConfigLink(configLink) {
+        this.source.configLink = configLink;
     }
 
     get_node_title() {
@@ -61,6 +69,14 @@ class GraphContext {
 
     getNodeColorPalette() {
         return this.source.nodeColorPalette;
+    }
+
+    getNodeCount() {
+        return this.get_nodes().length;
+    }
+
+    getLinkCount() {
+        return this.get_links().length;
     }
 
 }
