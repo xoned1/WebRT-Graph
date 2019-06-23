@@ -35,7 +35,9 @@ $(document).ready(() => {
             <SourcesReact/>, document.getElementById('sources-container')
         );
         ReactDOM.render(
-            <NodeInfo ref={(nodeInfo) => {window.nodeInfo = nodeInfo}}/>, document.getElementById('info-container')
+            <NodeInfo ref={(nodeInfo) => {
+                window.nodeInfo = nodeInfo
+            }}/>, document.getElementById('info-container')
         );
         /*
         Hide overlay on click
@@ -134,8 +136,11 @@ function updateConfig() {
 
     //Combobox in Graph Settings
     $('#linkLineType').val(context.getLinkLineType());
-    if (context.getNodeColorPalette()) {
-        $('#nodeColorPalettes').val(context.getNodeColorPalette());
+
+    const colorPalette = context.getNodeColorPalette();
+    if (colorPalette) {
+        $('#nodeColorPalettes').val(colorPalette);
+        setNodeColorPalette(colorPalette);
     } else {
         $('#nodeColorPalettes').val("BrBg");
     }
@@ -316,7 +321,6 @@ function drawGraph() {
         let color = $(e).css('fill');
         let id = $(e).attr('nodeID');
         $('.circle[data-node-id=' + id + ']').each((i, k) => {
-            console.log(color)
             $(k).css('background', color)
         });
     });
@@ -516,8 +520,8 @@ $('#node-settings-tab').tab('show');
 
 
 function setNodeColorPalette(e) {
+    const palette = e.value ? e.value : e;
 
-    const palette = e.value;
     switch (palette) {
         case "BrBg":
             nodeColors = createPalette(d3.interpolateBrBG);
