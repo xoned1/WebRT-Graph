@@ -77,6 +77,17 @@
   font-size: 3em;
 }
 
+
+#main-desc-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  div.h5 {
+    margin: 0;
+  }
+}
+
 .source-card {
   margin-bottom: 25px;
 }
@@ -86,27 +97,39 @@
   color: black;
 }
 
-#myTabContent {
+#myTabContent { //TODO name..
   margin: 10px;
 }
 
 .source-item {
   padding: 20px;
   display: flex;
+  justify-content: space-between;
 
-  div {
-    margin-right: 30px;
-
-    button {
-      height: 100%;
-    }
+  div button {
+    height: 100%;
   }
 
 }
 
+.source-item-left, .source-item-right {
+  display: flex;
+}
+
+.source-item-left {
+  div {
+    margin-right: 30px;
+  }
+}
+
+.source-item-right {
+  div {
+    margin-left: 50px;
+  }
+}
+
+
 #source-item-options {
-  margin-left: auto;
-  margin-right: 5px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
