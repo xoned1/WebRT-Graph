@@ -93,10 +93,11 @@ module.exports = function (session) {
     RethinkStore.prototype.set = function (sid, sess, fn) {
         var sessionToStore = {
             id: sid,
-            expires: new Date().getTime() + (sess.cookie.originalMaxAge || this.sessionTimeout),
             session: JSON.stringify(sess)
         };
-
+        if (sess.cookie.originalMaxAge) {
+            sessionToStore.expires = new Date().getTime() + (sess.cookie.originalMaxAge || this.sessionTimeout)
+        }
         this.instance.db(this.options.database).table(this.options.table).insert(sessionToStore, {conflict: 'replace'}).run(this.conn).then(function (data) {
             if (typeof fn === 'function') {
                 fn();

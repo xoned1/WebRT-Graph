@@ -364,7 +364,7 @@ function createSessionHandler() {
     return session({
         key: 'sid',
         secret: 'dasndjansjdnaj3!dd(key)!',
-        // cookie: {maxAge: 860000},
+        cookie: {maxAge: null},
         store: createSessionStore(),
         resave: false,
         saveUninitialized: true
