@@ -6,6 +6,7 @@ var svg;
 const defaultNodeWeight = 20;
 const minNodeWeight = 5;
 const maxNodeWeight = 50;
+const none = "None";
 
 var nodeMap = {};
 
@@ -88,7 +89,7 @@ $(document).ready(() => {
 
 function setContext(source, data) {
     context = new GraphContext(source, data);
-    updateConfig();
+    initConfigBoxes(); //machen wenn der tab geöffnet wird?
     isGraphInitialized = false;
 }
 
@@ -101,37 +102,14 @@ function updateLogoutText(data) {
 }
 
 function updateConfig() {
-
-    //Combobox Nodes and Links
-    Object.keys(context.get_data()).forEach((key) => {
-        let option = "<option>" + key + "</option>";
-        $('#sourceConfigDropBoxNodes').append(option);
-        $('#sourceConfigDropBoxLinks').append(option);
-    });
-    $('#sourceConfigDropBoxNodes').val(context.get_config_node());
-    $('#sourceConfigDropBoxLinks').val(context.get_config_link());
-
-    if (!context.get_config_node() || !context.getConfigNodeId()) {
+    if (!context.getConfigNode() || !context.getConfigNodeId()) {
         $('#graph-tab').addClass('disabled');
     } else {
         $('#graph-tab').removeClass('disabled');
     }
 
     //Comboboxes Node keys
-    if (context.get_nodes()) {
-        $('#sourceConfigDropBoxNodeTitle').append("<option>None</option>");
-        $('#sourceConfigDropBoxNodeWeight').append("<option>None</option>");
-
-        Object.keys(context.get_nodes()[0]).forEach((key) => { //TODO nur wenn node/links angeben sind.. graph nur anzeigenn wenn nodes/links defined?
-            let option = "<option>" + key + "</option>";
-            $('#sourceConfigDropBoxNodeTitle').append(option);
-            $('#sourceConfigDropBoxNodeWeight').append(option);
-            $('#sourceConfigDropBoxNodeID').append(option);
-        });
-
-        $('#sourceConfigDropBoxNodeTitle').val(context.get_node_title());
-        $('#sourceConfigDropBoxNodeWeight').val(context.get_node_weight());
-        $('#sourceConfigDropBoxNodeID').val(context.getConfigNodeId());
+    if (context.getNodes()) {
     }
 
     //Combobox in Graph Settings
@@ -149,7 +127,7 @@ function updateConfig() {
 
 function sourceConfigNodeChanged(e) {
     context.setConfigNode(e.value);
-
+    //update nodeID, node title, node weight
     const json = {
         sourceConfig:
             {
@@ -159,8 +137,71 @@ function sourceConfigNodeChanged(e) {
     };
 
     postJSON('/setSourceConfig', json);
-    //updateConfig();
+    nodeConfigChanged();
 }
+
+function nodeConfigChanged() {
+    updateNodeIDconfigBox();
+    updateNodeTitleConfigBox();
+    updateNodeWeightConfigBox();
+}
+
+function initConfigBoxes() {
+    updateNodeConfigBox();
+    updateNodeIDconfigBox();
+    updateNodeTitleConfigBox();
+    updateNodeWeightConfigBox();
+    updateLinkConfigBox();
+}
+
+function updateNodeConfigBox() {
+    const nodeBox = $('#sourceConfigDropBoxNodes');
+    nodeBox.empty();
+    Object.keys(context.getData()).forEach((key) => {
+        nodeBox.append(createOption(key));
+    });
+    nodeBox.val(context.getConfigNode());
+}
+
+function updateNodeIDconfigBox() {
+    const nodeIDBox = $('#sourceConfigDropBoxNodeID');
+    nodeIDBox.empty();
+    Object.keys(context.getNodes()[0]).forEach((key) => { //TODO nur wenn node/links angeben sind.. graph nur anzeigenn wenn nodes/links defined?
+        nodeIDBox.append(createOption(key));
+    });
+    nodeIDBox.val(context.getConfigNodeId());
+}
+
+function updateNodeTitleConfigBox() {
+    const titleBox = $('#sourceConfigDropBoxNodeTitle');
+    titleBox.empty();
+    titleBox.append(createOption(none));
+
+    Object.keys(context.getNodes()[0]).forEach((key) => {
+        titleBox.append(createOption(key));
+    });
+    titleBox.val(context.getNodeTitle());
+}
+
+function updateNodeWeightConfigBox() {
+    const weightBox = $('#sourceConfigDropBoxNodeWeight');
+    weightBox.empty();
+    weightBox.append(createOption(none));
+    Object.keys(context.getNodes()[0]).forEach((key) => {
+        weightBox.append(createOption(key));
+    });
+    weightBox.val(context.getNodeWeight());
+}
+
+function updateLinkConfigBox() {
+    const linkBox = $('#sourceConfigDropBoxLinks');
+    linkBox.empty();
+    Object.keys(context.getData()).forEach((key) => {
+        linkBox.append(createOption(key));
+    });
+    linkBox.val(context.getConfigLink());
+}
+
 
 function sourceConfigNodeIdChanged(e) {
     const json = {sourceConfig: {configNodeId: e.value}};
@@ -169,6 +210,7 @@ function sourceConfigNodeIdChanged(e) {
 }
 
 function sourceConfigLinkChanged(e) {
+    context.setConfigLink(e.value);
     const json = {
         sourceConfig:
             {
@@ -177,18 +219,20 @@ function sourceConfigLinkChanged(e) {
             }
     };
     postJSON('/setSourceConfig', json);
+    linkConfigChanged();
 }
 
 function sourceConfigNodeTitleChanged(e) {
     const title = e.value === "None" ? null : e.value;
     const json = {sourceConfig: {configNodeTitle: title}};
-    context.set_node_title(title);
+    context.setConfigNodeTitle(title);
     postJSON('/setSourceConfig', json);
 }
 
 function sourceConfigNodeWeightChanged(e) {
     const weight = e.value === "None" ? null : e.value;
     const json = {sourceConfig: {configNodeWeight: weight}};
+    set.setConfigNodeWeight(e.value);
     postJSON('/setSourceConfig', json);
 }
 
@@ -241,7 +285,7 @@ function drawGraph() {
 
     let nodeParents = svg
         .selectAll("circle")
-        .data(context.get_nodes())
+        .data(context.getNodes())
         .enter()
         .append("g")
         .attr("data-node-id", (node) => {
@@ -258,7 +302,7 @@ function drawGraph() {
 
     let link = svg
         .selectAll("path")
-        .data(context.get_links())
+        .data(context.getLinks())
         .enter()
         .append("path")
         .attr('class', 'link')
@@ -280,7 +324,7 @@ function drawGraph() {
             return "node-text-" + d.id;
         })
         .text((d) => {
-            return d[context.get_node_title()]
+            return d[context.getNodeTitle()]
         });
     d3.selectAll("g").raise();
 
@@ -597,7 +641,7 @@ function setNodeColorPalette(e) {
 
     $('svg circle').each((index, node) => {
         const nodeId = parseInt(node.getAttribute('nodeID'));
-        node.style.fill = getNodeColor(context.get_node(nodeId));
+        node.style.fill = getNodeColor(context.getNode(nodeId));
     });
 
     const config = {nodeColorPalette: palette};
@@ -606,4 +650,8 @@ function setNodeColorPalette(e) {
 
 function getGraphNodeById(id) {
     return nodeMap[id];
+}
+
+function createOption(option) {
+    return "<option>" + option + "</option>";
 }

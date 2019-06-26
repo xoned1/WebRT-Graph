@@ -13,7 +13,7 @@ var SIM = (function (module) {
         module.simulation.alpha(1);
         module.simulation.restart();
 
-        module.simulation.nodes(context.get_nodes())
+        module.simulation.nodes(context.getNodes())
             .force('charge', d3.forceManyBody().strength(-30))
             .force('center', d3.forceCenter(width / 2, height / 2))
             .force('radius', d3.forceCollide().radius((d) => {
@@ -23,7 +23,7 @@ var SIM = (function (module) {
                 .id((d) => {
                     return d.id;
                 })
-                .links(context.get_links()))
+                .links(context.getLinks()))
             .on('tick', ticked)
             .on('end', () => module.simulation.force('charge', null));
 
@@ -65,7 +65,7 @@ var SIM = (function (module) {
                     return d.y + 5;
                 })
                 .text(d => {
-                    return d[context.get_node_title()];
+                    return d[context.getNodeTitle()];
                 });
         }
     };

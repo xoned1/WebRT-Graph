@@ -18,17 +18,17 @@ class NodeBar extends React.Component {
 
     render() {
         let context = this.state.context;
-        let nodes = this.state.context.get_nodes();
+        let nodes = this.state.context.getNodes();
         let node =
             Object.keys(nodes).map((key, index) => (
                 <div id="node" className="shadow rounded" data-node-id={nodes[key].id} key={key}
-                     onClick={() => this.handleClick(key, this.state.context.get_nodes())}>
+                     onClick={() => this.handleClick(key, this.state.context.getNodes())}>
                     <input className="node-input-checkbox styled-checkbox" id={"node-checkbox-" + nodes[key].id}
                            type="checkbox" value="" defaultChecked/>
                     <label className="node-checkbox" htmlFor={"node-checkbox-" + nodes[key].id}/>
                     <div id="data-node">
                         <p>ID: {nodes[key].id}</p>
-                        <p>Title: {nodes[key][context.get_node_title()]}</p>
+                        <p>Title: {nodes[key][context.getNodeTitle()]}</p>
                     </div>
                     <div id="circle-container">
                         <div className="circle" data-node-id={nodes[key].id}></div>

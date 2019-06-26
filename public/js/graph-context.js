@@ -5,28 +5,28 @@ class GraphContext {
         this.data = data;
     }
 
-    get_data() {
+    getData() {
         return this.data;
     }
 
-    get_nodes() {
-        return this.data[this.get_config_node()];
+    getNodes() {
+        return this.data[this.getConfigNode()];
     }
 
-    get_node(nodeid) {
+    getNode(nodeid) {
 
-        const nodes = this.get_nodes();
+        const nodes = this.getNodes();
         for (let key in nodes) {
-            if (this.get_nodes()[key][this.getConfigNodeId()].toString() === nodeid.toString()) {
-                return this.get_nodes()[key];
+            if (this.getNodes()[key][this.getConfigNodeId()].toString() === nodeid.toString()) {
+                return this.getNodes()[key];
             }
         }
         return "error";
     }
 
-    get_links() {
-        if (this.get_config_link()) {
-            return this.data[this.get_config_link()];
+    getLinks() {
+        if (this.getConfigLink()) {
+            return this.data[this.getConfigLink()];
         }
         return [];
     }
@@ -35,7 +35,7 @@ class GraphContext {
         return this.source.configNodeId;
     }
 
-    get_config_node() {
+    getConfigNode() {
         return this.source.configNode;
     }
 
@@ -43,7 +43,7 @@ class GraphContext {
         this.source.configNode = configNode;
     }
 
-    get_config_link() {
+    getConfigLink() {
         return this.source.configLink;
     }
 
@@ -51,15 +51,15 @@ class GraphContext {
         this.source.configLink = configLink;
     }
 
-    get_node_title() {
+    getNodeTitle() {
         return this.source.configNodeTitle;
     }
 
-    set_node_title(title) {
+    setConfigNodeTitle(title) {
         this.source.configNodeTitle = title;
     }
 
-    get_node_weight() {
+    getNodeWeight() {
         return this.source.configNodeWeight;
     }
 
@@ -72,11 +72,11 @@ class GraphContext {
     }
 
     getNodeCount() {
-        return this.get_nodes().length;
+        return this.getNodes().length;
     }
 
     getLinkCount() {
-        return this.get_links().length;
+        return this.getLinks().length;
     }
 
 }

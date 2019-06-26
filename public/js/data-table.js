@@ -6,7 +6,7 @@ class DataTable extends React.Component {
 
 
     render() {
-        let nodes = context.get_nodes();
+        let nodes = context.getNodes();
         const nodeKeys = Object.keys(nodes[0]);
 
         const header = nodeKeys.map((nodeKey) => {
