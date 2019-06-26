@@ -249,6 +249,14 @@ app.post('/setSourceConfig', (req, res, next) => {
                     source.nodeColorPalette = config.nodeColorPalette;
                     console.log("Set node color palette: " + source.nodeColorPalette)
                 }
+                if (config.hasOwnProperty("nodeCount")) {
+                    source.nodeCount = config.nodeCount;
+                    console.log("Set node count: " + source.nodeCount)
+                }
+                if (config.hasOwnProperty("linkCount")) {
+                    source.linkCount = config.linkCount;
+                    console.log("Set link count: " + source.linkCount)
+                }
             }
         });
 
