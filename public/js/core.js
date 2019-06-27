@@ -101,6 +101,12 @@ function updateLogoutText(data) {
     $('#logout').text('Logout (' + data.name + ')');
 }
 
+/*
+
+    Config
+
+ */
+
 function updateConfig() {
     if (!context.getConfigNode() || !context.getConfigNodeId()) {
         $('#graph-tab').addClass('disabled');
@@ -123,21 +129,6 @@ function updateConfig() {
         $('#nodeColorPalettes').val("BrBg");
     }
 
-}
-
-function sourceConfigNodeChanged(e) {
-    context.setConfigNode(e.value);
-    //update nodeID, node title, node weight
-    const json = {
-        sourceConfig:
-            {
-                configNode: e.value,
-                nodeCount: context.getNodeCount()
-            }
-    };
-
-    postJSON('/setSourceConfig', json);
-    nodeConfigChanged();
 }
 
 function nodeConfigChanged() {
@@ -180,7 +171,7 @@ function updateNodeTitleConfigBox() {
     Object.keys(context.getNodes()[0]).forEach((key) => {
         titleBox.append(createOption(key));
     });
-    titleBox.val(context.getNodeTitle());
+    titleBox.val(context.getConfigNodeTitle());
 }
 
 function updateNodeWeightConfigBox() {
@@ -190,7 +181,7 @@ function updateNodeWeightConfigBox() {
     Object.keys(context.getNodes()[0]).forEach((key) => {
         weightBox.append(createOption(key));
     });
-    weightBox.val(context.getNodeWeight());
+    weightBox.val(context.getConfigNodeWeight());
 }
 
 function updateLinkConfigBox() {
@@ -202,8 +193,25 @@ function updateLinkConfigBox() {
     linkBox.val(context.getConfigLink());
 }
 
+function sourceConfigNodeChanged(e) {
+    context.setConfigNode(e.value);
+    isGraphInitialized = false;
+    //update nodeID, node title, node weight
+    const json = {
+        sourceConfig:
+            {
+                configNode: e.value,
+                nodeCount: context.getNodeCount()
+            }
+    };
+
+    postJSON('/setSourceConfig', json);
+    nodeConfigChanged();
+}
 
 function sourceConfigNodeIdChanged(e) {
+    context.setConfigNodeId(e.value);
+    isGraphInitialized = false;
     const json = {sourceConfig: {configNodeId: e.value}};
     postJSON('/setSourceConfig', json);
     updateConfig();
@@ -211,6 +219,7 @@ function sourceConfigNodeIdChanged(e) {
 
 function sourceConfigLinkChanged(e) {
     context.setConfigLink(e.value);
+    isGraphInitialized = false;
     const json = {
         sourceConfig:
             {
@@ -222,21 +231,28 @@ function sourceConfigLinkChanged(e) {
     linkConfigChanged();
 }
 
+function linkConfigChanged() {
+    //update depending config comboboxes if link config changed..
+}
+
 function sourceConfigNodeTitleChanged(e) {
     const title = e.value === "None" ? null : e.value;
     const json = {sourceConfig: {configNodeTitle: title}};
     context.setConfigNodeTitle(title);
     postJSON('/setSourceConfig', json);
+    SIM.refresh();
 }
 
 function sourceConfigNodeWeightChanged(e) {
     const weight = e.value === "None" ? null : e.value;
     const json = {sourceConfig: {configNodeWeight: weight}};
-    set.setConfigNodeWeight(e.value);
+    context.setConfigNodeWeight(e.value);
     postJSON('/setSourceConfig', json);
+    isGraphInitialized = false;
 }
 
 function drawGraph() {
+    SIM.reset();
     let graphContainer = $("#graph-container");
     $("#inner-graph-container").empty();
 
@@ -324,7 +340,7 @@ function drawGraph() {
             return "node-text-" + d.id;
         })
         .text((d) => {
-            return d[context.getNodeTitle()]
+            return d[context.getConfigNodeTitle()]
         });
     d3.selectAll("g").raise();
 

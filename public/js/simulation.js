@@ -8,6 +8,10 @@ var SIM = (function (module) {
         module.simulation.alpha(0.001).restart();
     };
 
+    module.reset = function () {
+        module.simulation.restart();
+    }
+
     module.bindSimulation = function (context, node, link, text, width, height) {
 
         module.simulation.alpha(1);
@@ -65,7 +69,7 @@ var SIM = (function (module) {
                     return d.y + 5;
                 })
                 .text(d => {
-                    return d[context.getNodeTitle()];
+                    return d[context.getConfigNodeTitle()];
                 });
         }
     };

@@ -35,6 +35,10 @@ class GraphContext {
         return this.source.configNodeId;
     }
 
+    setConfigNodeId(configNodeId) {
+        this.source.configNodeId = configNodeId;
+    }
+
     getConfigNode() {
         return this.source.configNode;
     }
@@ -51,16 +55,20 @@ class GraphContext {
         this.source.configLink = configLink;
     }
 
-    getNodeTitle() {
+    getConfigNodeTitle() {
         return this.source.configNodeTitle;
     }
 
-    setConfigNodeTitle(title) {
-        this.source.configNodeTitle = title;
+    setConfigNodeTitle(configTitle) {
+        this.source.configNodeTitle = configTitle;
     }
 
-    getNodeWeight() {
+    getConfigNodeWeight() {
         return this.source.configNodeWeight;
+    }
+
+    setConfigNodeWeight(configNodeWeight) {
+        this.source.configNodeWeight = configNodeWeight;
     }
 
     getLinkLineType() {

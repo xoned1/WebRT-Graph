@@ -28,7 +28,7 @@ class NodeBar extends React.Component {
                     <label className="node-checkbox" htmlFor={"node-checkbox-" + nodes[key].id}/>
                     <div id="data-node">
                         <p>ID: {nodes[key].id}</p>
-                        <p>Title: {nodes[key][context.getNodeTitle()]}</p>
+                        <p>Title: {nodes[key][context.getConfigNodeTitle()]}</p>
                     </div>
                     <div id="circle-container">
                         <div className="circle" data-node-id={nodes[key].id}></div>
