@@ -164,6 +164,31 @@ app.post('/setActiveSource', (req, res, next) => {
     })
 });
 
+app.post('/setGraphData', (req, res, next) => {
+    const selectedSource = req.body.source;
+    const graphData = req.body.graphData;
+    getUserData(req.user).get(req.user).run(connection, (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        }
+
+        result.sources.forEach((source) => {
+            if (source.name === selectedSource) {
+                source.data = JSON.stringify(graphData);
+            }
+
+            getUserData(req.user).update(result).run(connection, (err, result) => {
+                if (err) {
+                    console.log(err);
+                    return res.send(err);
+                }
+                res.end();
+                //TODO return SAVED or something to make it sure
+            });
+        });
+    });
+});
 
 app.post('/createSource', (req, res, next) => {
     var source = req.body.source;

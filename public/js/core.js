@@ -31,6 +31,12 @@ function setActiveSource() {
 }
 
 $(document).ready(() => {
+        document.onkeydown = function (e) {
+            if (e.ctrlKey && e.keyCode == 83) {
+                saveGraph();
+                return false;
+            }
+        };
         setActiveSource();
         ReactDOM.render(
             <SourcesReact/>, document.getElementById('sources-container')
@@ -66,7 +72,8 @@ $(document).ready(() => {
                 );
 
                 $('html, body').css("overflow-y", "scroll");
-            } else if (activatedTab === "home-tab") {
+            } else if (activatedTab === "sources-tab") {
+                $('html, body').css("overflow-y", "scroll");
             }
         });
 
@@ -110,7 +117,7 @@ function updateGraphTabState() {
         $('#config-tab').addClass('primary-color')
     } else {
         $('#graph-tab').removeClass('disabled');
-          $('#config-tab').removeClass('primary-color')
+        $('#config-tab').removeClass('primary-color')
     }
 }
 
@@ -430,6 +437,40 @@ function drawGraph() {
     SIM.bindSimulation(context, node, link, text, width, height);
 }
 
+function pulse() {
+    $('#save-icon').fadeOut(1000).fadeIn(1000);
+}
+
+function startSaveAnimation() {
+    $('#save-icon').css("color", "#00AAFF").show();
+    ;
+    return setInterval(pulse, 1000);
+}
+
+function stopSaveAnimation(animation) {
+    clearInterval(animation);
+    $("#save-icon").animate({
+        color: "green"
+    }, 1000, function () {
+        $('#save-icon').hide();
+    });
+}
+
+function saveGraph() {
+    const animation = startSaveAnimation();
+    const json = {source: userData.activeSource, graphData: context.getData()};
+
+    $.ajax('/setGraphData', {
+        data: JSON.stringify(json),
+        contentType: 'application/json',
+        type: 'POST',
+    })
+        .done((data) => {
+            stopSaveAnimation(animation);
+        }).fail((data) => {
+        showErrorMessage(data);
+    });
+}
 
 function isValidJSON(json) {
     try {
