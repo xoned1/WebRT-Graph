@@ -12,12 +12,12 @@ function startDragNode(d) {
         SIM.simulation.alphaTarget(0.01).restart();
     }
 
-    var current = d3.select(this);
+    d.fx = null;
+    d.fy = null;
+
+    const current = d3.select(this);
     deltaX = current.attr("cx") - d3.event.x;
     deltaY = current.attr("cy") - d3.event.y;
-
-
-    current.style('fill', 'brightness(150%)')
 }
 
 function dragNode(d) {
@@ -36,11 +36,8 @@ function endDragNode(d) {
     if (!d3.event.active) SIM.simulation.alphaTarget(0.0001);
 
     d3.select(this)
-        .attr("cx", d.x = d3.event.x + deltaX)
-        .attr("cy", d.y = d3.event.y + deltaY)
-
-    // d3.select(this).style('fill', '#00AAFF')
-
+        .attr("cx", d.fx = d3.event.x + deltaX)
+        .attr("cy", d.fy = d3.event.y + deltaY)
 }
 
 function zoomed() {
