@@ -4,13 +4,13 @@ var SIM = (function (module) {
     const lineTypeDropDown = $('#linkLineType');
 
     module.refresh = function () {
-        //smalltest alpha target. 1 tick left.
+        //smallest alpha target. 1 tick left.
         module.simulation.alpha(0.001).restart();
     };
 
     module.reset = function () {
         module.simulation.restart();
-    }
+    };
 
     module.bindSimulation = function (context, node, link, text, width, height) {
 
@@ -78,6 +78,7 @@ var SIM = (function (module) {
 
         let nodeRadius = parseInt(getGraphNodeById(d.target.id).attr("r"));
         var length = Math.sqrt(Math.pow(d.target.y - d.source.y, 2) + Math.pow(d.target.x - d.source.x, 2));
+        if (length === 0) length = 1; //TODO
         var scale = (length - nodeRadius) / length;
         var offset = (d.target.x - d.source.x) - (d.target.x - d.source.x) * scale;
         return d.target.x - offset;
@@ -86,6 +87,7 @@ var SIM = (function (module) {
 
         let nodeRadius = parseInt(getGraphNodeById(d.target.id).attr("r"));
         var length = Math.sqrt(Math.pow(d.target.y - d.source.y, 2) + Math.pow(d.target.x - d.source.x, 2));
+        if (length === 0) length = 1; //TODO
         var scale = (length - nodeRadius) / length;
         var offset = (d.target.y - d.source.y) - (d.target.y - d.source.y) * scale;
         return d.target.y - offset;

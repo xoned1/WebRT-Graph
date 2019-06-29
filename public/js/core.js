@@ -102,22 +102,19 @@ function updateLogoutText(data) {
 }
 
 /*
-
     Config
-
  */
-
-function updateConfig() {
+function updateGraphTabState() {
     if (!context.getConfigNode() || !context.getConfigNodeId()) {
         $('#graph-tab').addClass('disabled');
+        $('#config-tab').addClass('primary-color')
     } else {
         $('#graph-tab').removeClass('disabled');
+          $('#config-tab').removeClass('primary-color')
     }
+}
 
-    //Comboboxes Node keys
-    if (context.getNodes()) {
-    }
-
+function updateConfig() {
     //Combobox in Graph Settings
     $('#linkLineType').val(context.getLinkLineType());
 
@@ -143,6 +140,7 @@ function initConfigBoxes() {
     updateNodeTitleConfigBox();
     updateNodeWeightConfigBox();
     updateLinkConfigBox();
+    updateGraphTabState();
 }
 
 function updateNodeConfigBox() {
@@ -157,9 +155,11 @@ function updateNodeConfigBox() {
 function updateNodeIDconfigBox() {
     const nodeIDBox = $('#sourceConfigDropBoxNodeID');
     nodeIDBox.empty();
-    Object.keys(context.getNodes()[0]).forEach((key) => { //TODO nur wenn node/links angeben sind.. graph nur anzeigenn wenn nodes/links defined?
-        nodeIDBox.append(createOption(key));
-    });
+    if (context.getConfigNode()) {
+        Object.keys(context.getNodes()[0]).forEach((key) => { //TODO nur wenn node/links angeben sind.. graph nur anzeigenn wenn nodes/links defined?
+            nodeIDBox.append(createOption(key));
+        });
+    }
     nodeIDBox.val(context.getConfigNodeId());
 }
 
@@ -167,10 +167,11 @@ function updateNodeTitleConfigBox() {
     const titleBox = $('#sourceConfigDropBoxNodeTitle');
     titleBox.empty();
     titleBox.append(createOption(none));
-
-    Object.keys(context.getNodes()[0]).forEach((key) => {
-        titleBox.append(createOption(key));
-    });
+    if (context.getConfigNode()) {
+        Object.keys(context.getNodes()[0]).forEach((key) => {
+            titleBox.append(createOption(key));
+        });
+    }
     titleBox.val(context.getConfigNodeTitle());
 }
 
@@ -178,9 +179,11 @@ function updateNodeWeightConfigBox() {
     const weightBox = $('#sourceConfigDropBoxNodeWeight');
     weightBox.empty();
     weightBox.append(createOption(none));
-    Object.keys(context.getNodes()[0]).forEach((key) => {
-        weightBox.append(createOption(key));
-    });
+    if (context.getConfigNode()) {
+        Object.keys(context.getNodes()[0]).forEach((key) => {
+            weightBox.append(createOption(key));
+        });
+    }
     weightBox.val(context.getConfigNodeWeight());
 }
 
@@ -207,6 +210,7 @@ function sourceConfigNodeChanged(e) {
 
     postJSON('/setSourceConfig', json);
     nodeConfigChanged();
+    updateGraphTabState();
 }
 
 function sourceConfigNodeIdChanged(e) {
@@ -215,6 +219,7 @@ function sourceConfigNodeIdChanged(e) {
     const json = {sourceConfig: {configNodeId: e.value}};
     postJSON('/setSourceConfig', json);
     updateConfig();
+    updateGraphTabState();
 }
 
 function sourceConfigLinkChanged(e) {
@@ -311,7 +316,7 @@ function drawGraph() {
 
     let node = createNode(nodeParents);
 
-    nodeMap = {}
+    nodeMap = {};
     node.each((node) => {
         nodeMap[node.id] = $('circle[nodeID=' + node.id + ']');
     });
