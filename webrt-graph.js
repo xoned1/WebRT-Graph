@@ -27,7 +27,7 @@ const databaseConfig = getDatabaseConfig('database.json');
 app.use(bodyParser.urlencoded({extended: false}));
 
 //Parse JSON from body content
-app.use(express.json());
+app.use(express.json({limit: '5mb'}));
 
 //Allow access to public files
 app.use(express.static('public'));
