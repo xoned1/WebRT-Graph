@@ -319,7 +319,7 @@ function drawGraph() {
         .append("g")
         .attr("data-node-id", (node) => {
             console.log("create node")
-            return node.id; //TODO id hardcoded?
+            return node[context.getConfigNodeId()];
         });
 
 
@@ -337,7 +337,7 @@ function drawGraph() {
         .append("path")
         .attr('class', 'link')
         .attr("marker-end", (link) => {
-            let r = parseInt($('#node-' + link.target.id).attr("r")) + 11;
+            let r = parseInt($('#node-' + link.target).attr("r")) + 11;
             return "url(#arrow" + "10" + ")";
         })
         .attr("data-source", (link) => {
@@ -486,15 +486,14 @@ function removeNode() {
             }
         });
 
-        let merken = []
-        console.log(context.getLinks())
+        let indexes = []
         $.each(context.getLinks(), function (index, link) {
             if (link.target.id == nodeid || link.source.id == nodeid) {
                 merken.push(index);
             }
         });
 
-        merken.reverse().forEach(index => {
+        indexes.reverse().forEach(index => {
             context.getLinks().splice(index, 1);
         });
         drawGraph();
@@ -646,9 +645,9 @@ function createSource() {
 
     postJSON('/createSource', json);
     closeAddSourceWindow();
-
-    $('#config-tab').tab('show');
+    SourcesReact.setActiveSource(name)
 }
+
 
 function addSourceWindowOnChange() {
     const name = $('#create-source-name').val();

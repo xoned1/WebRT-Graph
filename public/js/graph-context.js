@@ -5,9 +5,12 @@ class GraphContext {
         this.data = data;
 
         //TODO workaround
-        for (let key in this.getLinks()) {
-             this.getLinks()[key].source = this.getLinks()[key].source.id;
-            this.getLinks()[key].target = this.getLinks()[key].target.id;
+
+        if(this.getLinks() && this.getLinks().length > 0 && this.getLinks()[0].target.id) {
+            for (let key in this.getLinks()) {
+                this.getLinks()[key].source = this.getLinks()[key].source.id;
+                this.getLinks()[key].target = this.getLinks()[key].target.id;
+            }
         }
     }
 

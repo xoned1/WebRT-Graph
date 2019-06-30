@@ -14,3 +14,14 @@ directed/undirected..
 smooth zoom
 
 beim klick auf node könnte man alle benachbarten heller machen und die anderen dunkler (polinode)
+
+
+
+configuration:
+nach änderung auf graph ändern (grapg ungültig kennzeichnen?)
+
+wenn z.b. title geändert wird aktualisiert sich nicht er graph von allein erst bei drag
+zoom to fit nach änderung? funktion auf jedenfall implementieren
+
+
+Bug: Wenn man bei config link die nodes auswöhlt, erhält man fehler aber kann nichts anderes mehr auswählen wenn es nur "nodes" gibt (z.b. bei CSV)

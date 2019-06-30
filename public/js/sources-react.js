@@ -57,7 +57,8 @@ class SourcesReact extends React.Component {
                         <div className="source-item">
                             <div className="source-item-left">
                                 <div>
-                                    <button type="button" onClick={() => SourcesReact.setActiveSource(e.name)}
+                                    <button id={"btn-source-" + e.name} type="button"
+                                            onClick={() => SourcesReact.setActiveSource(e.name)}
                                             className={"btn " + btnActiveClass} disabled={active}>
                                         {btnText}
                                     </button>
@@ -80,7 +81,7 @@ class SourcesReact extends React.Component {
                                         Nodes: {e.nodeCount}
                                     </div>
                                     <div>
-                                        Links:  {e.linkCount}
+                                        Links: {e.linkCount}
                                     </div>
                                 </div>
 
