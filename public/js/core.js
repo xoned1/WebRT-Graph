@@ -32,7 +32,7 @@ function setActiveSource() {
 
 $(document).ready(() => {
         document.onkeydown = function (e) {
-            if (e.ctrlKey && e.keyCode == 83) {
+            if (e.ctrlKey && e.key == "s") {
                 saveGraph();
                 return false;
             }
@@ -125,8 +125,6 @@ function updateGraphTabState() {
 
 function updateLinkLineType() {
     $('#linkLineType').val(context.getLinkLineType());
-
-
 }
 
 function updateNodeColorPalette() {
@@ -290,13 +288,13 @@ function drawGraph() {
     calcNodeWeights(context);
 
 
-    let daten = [];
+    let markerIDs = [];
     for (let i = 0; i <= 50; i++) {
-        daten[i] = i;
+        markerIDs[i] = i;
     }
 
     d3.select("#graph-svg").append("defs").selectAll("marker")
-        .data(daten)
+        .data(markerIDs)
         .enter()
         .append("marker")
         .attr("id", (d) => {
@@ -320,7 +318,8 @@ function drawGraph() {
         .enter()
         .append("g")
         .attr("data-node-id", (node) => {
-            return node.id;
+            console.log("create node")
+            return node.id; //TODO id hardcoded?
         });
 
 
@@ -439,6 +438,74 @@ function drawGraph() {
 
     SIM.bindSimulation(context, node, link, text, width, height);
 }
+
+function addNode() {
+    $('#graph-container').css('cursor', 'crosshair');
+
+    const keyevent = function (e) {
+        if (e.key == "Escape") {
+            cancelNodeAddMode(keyevent);
+        }
+    };
+    document.addEventListener("keydown", keyevent);
+
+    $('#graph-container').click((event) => {
+
+        cancelNodeAddMode();
+        context.getNodes().push({
+            "id": 93443,
+            "country": "dasdasd",
+            x: event.offsetX,
+            y: event.offsetY
+        });
+        drawGraph();
+    })
+}
+
+function cancelNodeAddMode(keyevent) {
+    $('#graph-container').css('cursor', 'auto').unbind();
+    document.removeEventListener("keydown", keyevent)
+}
+
+function removeNode() {
+    $('circle').css('cursor', 'crosshair');
+    const keyevent = function (e) {
+        if (e.key == "Escape") {
+            cancelNodeRemoveMode(keyevent);
+        }
+    };
+    document.addEventListener("keydown", keyevent);
+
+    $('circle').click((event) => {
+        const nodeid = event.target.__data__[context.getConfigNodeId()]
+
+        $.each(context.getNodes(), function (index, node) {
+            if (node[context.getConfigNodeId()] == nodeid) {
+                context.getNodes().splice(index, 1);
+                return false
+            }
+        });
+
+        let merken = []
+        console.log(context.getLinks())
+        $.each(context.getLinks(), function (index, link) {
+            if (link.target.id == nodeid || link.source.id == nodeid) {
+                merken.push(index);
+            }
+        });
+
+        merken.reverse().forEach(index => {
+            context.getLinks().splice(index, 1);
+        });
+        drawGraph();
+    });
+}
+
+function cancelNodeRemoveMode(keyevent) {
+    $('circle').css('cursor', 'auto').unbind();
+    document.removeEventListener("keydown", keyevent)
+}
+
 
 function pulse() {
     $('#save-icon').fadeOut(1000).fadeIn(1000);
