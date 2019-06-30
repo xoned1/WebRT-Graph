@@ -436,7 +436,8 @@ function drawGraph() {
         });
     });
 
-    SIM.bindSimulation(context, node, link, text, width, height);
+    SIM.setItems(context, node, link, text, width, height);
+    SIM.bindSimulation();
 }
 
 function addNode() {
