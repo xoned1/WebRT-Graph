@@ -12,18 +12,25 @@ var SIM = (function (module) {
         module.simulation.restart();
     };
 
+    module.explode = function () {
+        module.simulation.nodes(context.getNodes())
+            .force('charge', d3.forceManyBody().strength())
+            .on('tick', ticked)
+            .on('end', () => module.simulation.force('charge', null));
+    };
+
     module.bindSimulation = function (context, node, link, text, width, height) {
 
         module.simulation.alpha(1);
         module.simulation.restart();
 
         module.simulation.nodes(context.getNodes())
-            .force('charge', d3.forceManyBody().strength(-30))
+         // .force('charge', d3.forceManyBody().strength(-30))
             .force('center', d3.forceCenter(width / 2, height / 2))
             .force('radius', d3.forceCollide().radius((d) => {
                 return d.weight;
             }))
-            .force('link', d3.forceLink().strength(0.0001)
+            .force('link', d3.forceLink().strength(0.000001)
                 .id((d) => {
                     return d.id;
                 })

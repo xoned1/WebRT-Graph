@@ -97,6 +97,8 @@ $(document).ready(() => {
 function setContext(source, data) {
     context = new GraphContext(source, data);
     initConfigBoxes(); //machen wenn der tab geöffnet wird?
+    updateNodeColorPalette();
+    updateLinkLineType();
     isGraphInitialized = false;
 }
 
@@ -121,10 +123,13 @@ function updateGraphTabState() {
     }
 }
 
-function updateConfig() {
-    //Combobox in Graph Settings
+function updateLinkLineType() {
     $('#linkLineType').val(context.getLinkLineType());
 
+
+}
+
+function updateNodeColorPalette() {
     const colorPalette = context.getNodeColorPalette();
     if (colorPalette) {
         $('#nodeColorPalettes').val(colorPalette);
@@ -132,7 +137,6 @@ function updateConfig() {
     } else {
         $('#nodeColorPalettes').val("BrBg");
     }
-
 }
 
 function nodeConfigChanged() {
@@ -225,7 +229,6 @@ function sourceConfigNodeIdChanged(e) {
     isGraphInitialized = false;
     const json = {sourceConfig: {configNodeId: e.value}};
     postJSON('/setSourceConfig', json);
-    updateConfig();
     updateGraphTabState();
 }
 
