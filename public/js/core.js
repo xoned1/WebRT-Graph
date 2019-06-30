@@ -443,15 +443,16 @@ function pulse() {
 
 function startSaveAnimation() {
     $('#save-icon').css("color", "#00AAFF").show();
-    ;
     return setInterval(pulse, 1000);
 }
 
-function stopSaveAnimation(animation) {
+function stopSaveAnimation(animation, success) {
     clearInterval(animation);
+    const color = success ? "green" : "red";
+    const time = success ? 2000 : 5000;
     $("#save-icon").animate({
-        color: "green"
-    }, 1000, function () {
+        color: color
+    }, time, function () {
         $('#save-icon').hide();
     });
 }
@@ -466,9 +467,10 @@ function saveGraph() {
         type: 'POST',
     })
         .done((data) => {
-            stopSaveAnimation(animation);
-        }).fail((data) => {
-        showErrorMessage(data);
+            stopSaveAnimation(animation, true);
+        }).fail((jqXHR, textStatus, errorThrown) => {
+        stopSaveAnimation(animation, false);
+        showGraphAlert(textStatus);
     });
 }
 
@@ -716,4 +718,16 @@ function getGraphNodeById(id) {
 
 function createOption(option) {
     return "<option>" + option + "</option>";
+}
+
+//TODO: Unite with login-message
+function showGraphAlert(message) {
+    let control = $('#graph-message');
+    $('#graph-alert').addClass('show');
+    control.text(message);
+}
+
+//TODO: Unite with login-message
+function hideAlert() {
+    $('#graph-alert').removeClass('show')
 }
