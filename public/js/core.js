@@ -39,6 +39,10 @@ $(document).ready(() => {
                 saveGraph();
                 return false;
             }
+            else if (e.key == "f") {
+                zoomFit(0.95, 500);
+                return false;
+            }
         };
         setActiveSource();
         ReactDOM.render(
