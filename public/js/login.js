@@ -5,7 +5,16 @@ $(document).ready(() => {
     });
     //TODO Abhängig ob register oder login
 
+    //Required to have same height for login and signup
+    setLoginCardHeight();
+
 });
+
+function setLoginCardHeight() {
+    const loginCard = $('#login-card');
+    const height = loginCard.outerHeight();
+    loginCard.css('height', height);
+}
 
 function login() {
     let username = $('#login-username')[0].value;
