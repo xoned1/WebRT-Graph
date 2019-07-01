@@ -38,8 +38,7 @@ $(document).ready(() => {
             if (e.ctrlKey && e.key == "s") {
                 saveGraph();
                 return false;
-            }
-            else if (e.key == "f") {
+            } else if (e.key == "f") {
                 zoomFit(0.95, 500);
                 return false;
             }
@@ -68,7 +67,6 @@ $(document).ready(() => {
 
             if (activatedTab === "graph-tab") {
                 if (!isGraphInitialized && context != null) {
-                    isGraphInitialized = true;
                     drawGraph()
                 }
 
@@ -272,6 +270,7 @@ function sourceConfigNodeWeightChanged(e) {
 }
 
 function drawGraph() {
+    isGraphInitialized = true;
     SIM.reset();
     let graphContainer = $("#graph-container");
     $("#inner-graph-container").empty();
@@ -326,7 +325,6 @@ function drawGraph() {
         .enter()
         .append("g")
         .attr("data-node-id", (node) => {
-            console.log("create node")
             return node[context.getConfigNodeId()];
         });
 
@@ -345,7 +343,7 @@ function drawGraph() {
         .append("path")
         .attr('class', 'link')
         .attr("marker-end", (link) => {
-            let r = parseInt($('#node-' + link.target).attr("r")) + 11;
+            //let r = parseInt($('#node-' + link.target.id).attr("r")) + 11;
             return "url(#arrow" + "10" + ")";
         })
         .attr("data-source", (link) => {

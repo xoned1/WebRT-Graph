@@ -24,7 +24,6 @@ var SIM = (function (module) {
     module.explode = function () {
         module.reset();
         const strength = $('#slider-manybody').val();
-        console.log(strength)
         module.simulation.nodes(module.context.getNodes())
             .force('charge', d3.forceManyBody().strength(strength))
             .on('tick', ticked)
