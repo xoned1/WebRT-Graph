@@ -7,6 +7,7 @@ const defaultNodeWeight = 20;
 const minNodeWeight = 5;
 const maxNodeWeight = 50;
 const none = "None";
+const zoom = d3.zoom();
 
 var nodeMap = {};
 
@@ -283,9 +284,10 @@ function drawGraph() {
         .attr("height", "100%")
         .append("g");
 
-    d3.select("svg").call(d3.zoom()
-        .scaleExtent([0, 10])
-        .on("zoom", zoomed));
+
+    d3.select("svg").call(
+        zoom.scaleExtent([0, 10])
+            .on("zoom", zoomed));
 
     calcNodeWeights(context);
 
