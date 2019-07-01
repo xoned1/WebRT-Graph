@@ -15,10 +15,12 @@ var nodeColors = createPalette(d3.interpolateBrBG);
 function setActiveSource() {
     $.getJSON("/getUserData", function (data) {
         userData = data;
-        updateLogoutText(data);
+        updateLogoutText(data); //TODO warum wird hier eigl der name gesetzt bei jeder source änderung? müsste beim einloggen passieren
         $.get("/getSources", (data) => {
             data.forEach((source) => {
+                //TODO Nur die sources datas laden, die auch gebraucht werden.. traffic!
                 if (source.name === userData.activeSource) {
+                    $('#header-source-name').text(source.name.substring(0, 25));
                     const data = JSON.parse(source.data);
                     setContext(source, data);
                     if (IsGraphTabVisible()) {
