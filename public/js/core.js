@@ -87,6 +87,7 @@ $(document).ready(() => {
          */
         let slider = document.getElementById("slider-manybody");
         slider.oninput = function () {
+            $('#value-manybody').text(this.value);
             if (d3.event != null) {
                 if (!d3.event.active) {
                     SIM.simulation.alphaTarget(0.02).restart();
