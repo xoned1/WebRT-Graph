@@ -454,12 +454,12 @@ function drawGraph() {
 function addNode() {
     $('#graph-container').css('cursor', 'crosshair');
 
-    const keyevent = function (e) {
+    const keyEvent = function (e) {
         if (e.key === "Escape") {
-            cancelNodeAddMode(keyevent);
+            cancelNodeAddMode(keyEvent);
         }
     };
-    document.addEventListener("keydown", keyevent);
+    document.addEventListener("keydown", keyEvent);
 
     d3.select('svg').on('click', function () {
 
@@ -488,26 +488,20 @@ function cancelNodeAddMode(keyevent) {
 
 function removeNode() {
     $('circle').css('cursor', 'crosshair');
-    const keyevent = function (e) {
-        if (e.key == "Escape") {
-            cancelNodeRemoveMode(keyevent);
+    const keyEvent = function (e) {
+        if (e.key === "Escape") {
+            cancelNodeRemoveMode(keyEvent);
         }
     };
-    document.addEventListener("keydown", keyevent);
+    document.addEventListener("keydown", keyEvent);
 
-    $('circle').click((event) => {
-        const nodeid = event.target.__data__[context.getConfigNodeId()]
+    d3.selectAll('circle').on('click', function (node) {
 
-        $.each(context.getNodes(), function (index, node) {
-            if (node[context.getConfigNodeId()] == nodeid) {
-                context.getNodes().splice(index, 1);
-                return false
-            }
-        });
+        context.getNodes().splice(node.index, 1);
 
         let indexes = [];
         $.each(context.getLinks(), function (index, link) {
-            if (link.target.id == nodeid || link.source.id == nodeid) {
+            if (link.target.id === node.id || link.source.id === node.id) {
                 indexes.push(index);
             }
         });
@@ -519,9 +513,9 @@ function removeNode() {
     });
 }
 
-function cancelNodeRemoveMode(keyevent) {
+function cancelNodeRemoveMode(keyEvent) {
     $('circle').css('cursor', 'auto').unbind();
-    document.removeEventListener("keydown", keyevent)
+    document.removeEventListener("keydown", keyEvent)
 }
 
 

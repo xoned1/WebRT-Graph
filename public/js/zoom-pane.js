@@ -44,24 +44,24 @@ function zoomed() {
 }
 
 function zoomFit(paddingPercent, transitionDuration) {
-    var bounds = svgG.node().getBBox();
-    var parent = svgG.node().parentElement;
-    var fullWidth = parent.clientWidth || parent.parentNode.clientWidth,
+    const bounds = svgG.node().getBBox();
+    const parent = svgG.node().parentElement;
+    const fullWidth = parent.clientWidth || parent.parentNode.clientWidth,
         fullHeight = parent.clientHeight || parent.parentNode.clientHeight;
-    var width = bounds.width,
+    const width = bounds.width,
         height = bounds.height;
-    var midX = bounds.x + width / 2,
+    const midX = bounds.x + width / 2,
         midY = bounds.y + height / 2;
-    if (width == 0 || height == 0) return; // nothing to fit
-    var scale = 0.85 / Math.max(width / fullWidth, height / fullHeight);
-    var translate = [fullWidth / 2 - scale * midX, fullHeight / 2 - scale * midY];
+    if (width === 0 || height === 0) return;
+    const scale = 0.85 / Math.max(width / fullWidth, height / fullHeight);
+    const translate = [fullWidth / 2 - scale * midX, fullHeight / 2 - scale * midY];
 
-    var transform = d3.zoomIdentity
+    const transform = d3.zoomIdentity
         .translate(translate[0], translate[1])
         .scale(scale);
 
     d3.select("svg")
         .transition()
-        .duration(transitionDuration || 0) // milliseconds
+        .duration(transitionDuration || 0)
         .call(zoom.transform, transform);
 }
