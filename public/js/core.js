@@ -494,10 +494,10 @@ function removeNode() {
             }
         });
 
-        let indexes = []
+        let indexes = [];
         $.each(context.getLinks(), function (index, link) {
             if (link.target.id == nodeid || link.source.id == nodeid) {
-                merken.push(index);
+                indexes.push(index);
             }
         });
 
