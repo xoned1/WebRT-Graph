@@ -452,28 +452,26 @@ function drawGraph() {
 }
 
 function addNode() {
-    $('#graph-container').css('cursor', 'crosshair');
+    enableAddNodeMode();
 
-    const keyEvent = function (e) {
-        if (e.key === "Escape") {
+    const keyEvent = event => {
+        if (event.key === "Escape") {
             cancelNodeAddMode(keyEvent);
         }
     };
     document.addEventListener("keydown", keyEvent);
 
-    d3.select('svg').on('click', function () {
+    d3.select('svg').on('click', () => {
         cancelNodeAddMode();
 
         const mouse = d3.mouse(svgG.node());
         const uuid = uuidv4();
-        const newNode =
-            {
-                x: mouse[0],
-                y: mouse[1]
-            };
+        const newNode = {};
 
         newNode[context.getConfigNodeId()] = uuid;
         newNode[context.getConfigNodeTitle()] = uuid;
+        newNode.x = mouse[0];
+        newNode.y = mouse[1];
         context.getNodes().push(newNode);
 
         drawGraph();
@@ -483,27 +481,23 @@ function addNode() {
 
 }
 
-function cancelNodeAddMode(keyevent) {
-    $('#graph-container').css('cursor', 'auto').unbind();
-    document.removeEventListener("keydown", keyevent)
-}
 
 function removeNode() {
-    enableSelectCircleMode();
-    const keyEvent = function (e) {
-        if (e.key === "Escape") {
+    enableSelectNodeMode();
+    const keyEvent = event => {
+        if (event.key === "Escape") {
             cancelNodeRemoveMode(keyEvent);
         }
     };
     document.addEventListener("keydown", keyEvent);
 
-    d3.selectAll('circle').on('click', function (node) {
+    d3.selectAll('circle').on('click', node => {
 
         const nodeId = node[context.getConfigNodeId()];
         context.getNodes().splice(node.index, 1);
 
         let indexes = [];
-        $.each(context.getLinks(), function (index, link) {
+        $.each(context.getLinks(), (index, link) => {
             if (link.target.id === nodeId || link.source.id === nodeId) {
                 indexes.push(index);
             }
@@ -517,29 +511,52 @@ function removeNode() {
 }
 
 function addLink() {
-    enableSelectCircleMode();
-    const keyEvent = function (e) {
-        if (e.key === "Escape") {
+    enableSelectNodeMode();
+    const keyEvent = event => {
+        if (event.key === "Escape") {
             cancelNodeRemoveMode(keyEvent); //TODO name unpassend.. remove node..
         }
     };
     document.addEventListener("keydown", keyEvent);
 
-    d3.selectAll('circle').on('click', function (node) {
+    d3.selectAll('circle').on('click', node => {
         let sourceNode = node;
 
-        d3.selectAll('circle').on('click', function (node) {
+        d3.selectAll('circle').on('click', node => {
 
             context.getLinks().push({source: sourceNode, target: node});
             drawGraph();
         });
     });
-
-
 }
 
-function enableSelectCircleMode() {
+function removeLink() {
+    enableSelectLinkMode();
+    const keyEvent = event => {
+        if (event.key === "Escape") {
+            stopSelectLinkMode();
+        }
+    };
+    document.addEventListener("keydown", keyEvent);
+
+    d3.selectAll('path').on('click', function (link) {
+        context.getLinks().splice(link.index, 1);
+        drawGraph();
+    });
+}
+
+//TODO element to cross.. use one function and make element as paramter
+function enableSelectNodeMode() {
     $('circle').css('cursor', 'crosshair');
+}
+
+function enableAddNodeMode() {
+    $('svg').css('cursor', 'crosshair');
+}
+
+function cancelNodeAddMode(keyEvent) {
+    $('svg').css('cursor', 'auto').unbind();
+    document.removeEventListener("keydown", keyEvent)
 }
 
 function cancelNodeRemoveMode(keyEvent) {
@@ -547,6 +564,13 @@ function cancelNodeRemoveMode(keyEvent) {
     document.removeEventListener("keydown", keyEvent)
 }
 
+function enableSelectLinkMode() {
+    $('path').css('cursor', 'crosshair');
+}
+
+function stopSelectLinkMode() {
+    $('path').css('cursor', 'auto');
+}
 
 function pulse() {
     $('#save-icon').fadeOut(1000).fadeIn(1000);
