@@ -3,6 +3,7 @@ var isGraphInitialized = false;
 var socket = io.connect();
 var userData;
 var svg;
+const forbiddenNodeVars = ["id", "x", "y", "vx", "vy", "index"];
 const defaultNodeWeight = 20;
 const minNodeWeight = 5;
 const maxNodeWeight = 50;
