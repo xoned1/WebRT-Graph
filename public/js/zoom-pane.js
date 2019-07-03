@@ -40,12 +40,12 @@ function endDragNode(d) {
 }
 
 function zoomed() {
-    svg.attr("transform", d3.event.transform);
+    svgG.attr("transform", d3.event.transform);
 }
 
 function zoomFit(paddingPercent, transitionDuration) {
-    var bounds = svg.node().getBBox();
-    var parent = svg.node().parentElement;
+    var bounds = svgG.node().getBBox();
+    var parent = svgG.node().parentElement;
     var fullWidth = parent.clientWidth || parent.parentNode.clientWidth,
         fullHeight = parent.clientHeight || parent.parentNode.clientHeight;
     var width = bounds.width,

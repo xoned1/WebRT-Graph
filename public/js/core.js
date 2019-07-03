@@ -2,7 +2,7 @@ var context = null;
 var isGraphInitialized = false;
 var socket = io.connect();
 var userData;
-var svg;
+var svgG;
 const forbiddenNodeVars = ["id", "x", "y", "vx", "vy", "index"];
 const defaultNodeWeight = 20;
 const minNodeWeight = 5;
@@ -276,8 +276,8 @@ function sourceConfigNodeWeightChanged(e) {
 
 function drawGraph() {
 
-    if (svg) {
-        var transform = svg.attr("transform")
+    if (svgG) {
+        var transform = svgG.attr("transform")
     }
 
     isGraphInitialized = true;
@@ -289,7 +289,7 @@ function drawGraph() {
     let width = graphContainer.width() - margin.left - margin.right;
     let height = graphContainer.height() - margin.top - margin.bottom;
 
-    svg = d3.select('svg')
+    svgG = d3.select('svg')
         .attr("id", "graph-svg")
         .attr('background-color', 'red')
         .attr("width", "100%")
@@ -324,7 +324,7 @@ function drawGraph() {
         .attr("d", "M 0 0 L 10 5 L 0 10 z");
 
 
-    let nodeParents = svg
+    let nodeParents = svgG
         .selectAll("circle")
         .data(context.getNodes())
         .enter()
@@ -341,7 +341,7 @@ function drawGraph() {
         nodeMap[node.id] = $('circle[nodeID=' + node.id + ']');
     });
 
-    let link = svg
+    let link = svgG
         .selectAll("path")
         .data(context.getLinks())
         .enter()
@@ -463,7 +463,7 @@ function addNode() {
 
     d3.select('svg').on('click', function () {
 
-        const mouse = d3.mouse(svg.node());
+        const mouse = d3.mouse(svgG.node());
         cancelNodeAddMode();
 
         const uuid = uuidv4();

@@ -15,7 +15,6 @@ class NodeInfo extends React.Component {
 
     handleChange(event, key) {
         //TODO "setActiveNode" the react way?
-        //TODO Bug: update farbe erst bei hover..
         this.state.activeNode[key] = event.target.value;
         this.setState({activeNode: this.state.activeNode});
         SIM.refresh();
