@@ -85,15 +85,15 @@ $(document).ready(() => {
         /*
         Settgings: Force slider
          */
-        let slider = document.getElementById("slider-manybody");
-        slider.oninput = function () {
+        const manybodySlider = document.getElementById("slider-manybody");
+        manybodySlider.oninput = function () {
             $('#value-manybody').text(this.value);
-            if (d3.event != null) {
-                if (!d3.event.active) {
-                    SIM.simulation.alphaTarget(0.02).restart();
-                }
-                SIM.simulation.force('charge', d3.forceManyBody().strength(this.value))
-            }
+        };
+
+        const forceLinkSlider = document.getElementById("slider-linkforce");
+        forceLinkSlider.oninput = function () {
+            $('#value-linkforce').text(this.value);
+            SIM.linkforce();
         };
 
 

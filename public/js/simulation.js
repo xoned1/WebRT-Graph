@@ -24,11 +24,22 @@ var SIM = (function (module) {
     module.explode = function () {
         module.reset();
         const strength = $('#slider-manybody').val();
-        module.simulation.nodes(module.context.getNodes())
+        module.simulation
             .force('charge', d3.forceManyBody().strength(strength))
             .on('tick', ticked)
             .on('end', () => module.simulation.force('charge', null));
     };
+
+    module.linkforce = function () {
+        module.reset();
+        const strength = $('#slider-linkforce').val();
+        module.simulation
+            .force('link', d3.forceLink().distance(0).id((d) => {
+                return d.id;
+            }))
+            .on('tick', ticked);
+    };
+
 
     module.bindSimulation = function () {
         module.simulation.alpha(1);
