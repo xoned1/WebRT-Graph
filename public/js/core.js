@@ -97,6 +97,9 @@ $(document).ready(() => {
         };
 
 
+        d3.select('svg').call(
+            zoom.scaleExtent([0, 10])
+                .on("zoom", zoomed));
     }
 );
 
@@ -271,27 +274,27 @@ function sourceConfigNodeWeightChanged(e) {
 }
 
 function drawGraph() {
+
+    if (svg) {
+        var transform = svg.attr("transform")
+    }
+
     isGraphInitialized = true;
+    $("svg").empty();
     SIM.reset();
     let graphContainer = $("#graph-container");
-    $("#inner-graph-container").empty();
 
     let margin = {top: 20, right: 20, bottom: 20, left: 20};
     let width = graphContainer.width() - margin.left - margin.right;
     let height = graphContainer.height() - margin.top - margin.bottom;
 
-    svg = d3.select("#inner-graph-container")
-        .append("svg")
+    svg = d3.select('svg')
         .attr("id", "graph-svg")
         .attr('background-color', 'red')
         .attr("width", "100%")
         .attr("height", "100%")
-        .append("g");
-
-
-    d3.select("svg").call(
-        zoom.scaleExtent([0, 10])
-            .on("zoom", zoomed));
+        .append("g")
+        .attr("transform", transform);
 
     calcNodeWeights(context);
 
@@ -451,23 +454,30 @@ function addNode() {
     $('#graph-container').css('cursor', 'crosshair');
 
     const keyevent = function (e) {
-        if (e.key == "Escape") {
+        if (e.key === "Escape") {
             cancelNodeAddMode(keyevent);
         }
     };
     document.addEventListener("keydown", keyevent);
 
-    $('#graph-container').click((event) => {
+    d3.select('svg').on('click', function () {
 
+        const mouse = d3.mouse(svg.node());
         cancelNodeAddMode();
+
+        const uuid = uuidv4();
         context.getNodes().push({
-            "id": 93443,
-            "country": "dasdasd",
-            x: event.offsetX,
-            y: event.offsetY
+            "id": uuid,
+            "country": uuid,
+            x: mouse[0],
+            y: mouse[1]
         });
+
         drawGraph();
-    })
+        d3.select('svg').on('click', null)
+    });
+
+
 }
 
 function cancelNodeAddMode(keyevent) {
@@ -606,7 +616,6 @@ function selectAllNodes(select) {
         $(this).prop('checked', select);
     });
 }
-
 
 function hideNode(nodeid, hide) {
     //TODO die source target nur anzeigen, wenn BEIDE nodes angezeigt werden
@@ -807,4 +816,14 @@ function showGraphAlert(message) {
 //TODO: Unite with login-message
 function hideAlert() {
     $('#graph-alert').removeClass('show')
+}
+
+function uuidv4() {
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    )
+}
+
+function isFloat(n) {
+    return Number(n) === n && n % 1 !== 0;
 }

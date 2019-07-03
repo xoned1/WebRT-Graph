@@ -13,8 +13,8 @@ var SIM = (function (module) {
     };
 
     module.refresh = function () {
-        //smallest alpha target. 1 tick left.
-        module.simulation.alpha(0.001).restart();
+        //0.001 is smallest alpha target. 1 tick left.
+        module.simulation.alpha(0.002).restart();
     };
 
     module.reset = function () {
@@ -31,12 +31,10 @@ var SIM = (function (module) {
     };
 
     module.bindSimulation = function () {
-
         module.simulation.alpha(1);
         module.simulation.restart();
 
         module.simulation.nodes(module.context.getNodes())
-        // .force('charge', d3.forceManyBody().strength(-30))
             .force('center', d3.forceCenter(module.width / 2, module.height / 2))
             .force('radius', d3.forceCollide().radius((d) => {
                 return d.weight;
@@ -66,18 +64,26 @@ var SIM = (function (module) {
     }
 
     function ticked() {
+
         module.link
             .attr("d", (link) => {
                 return getLinkLine(link);
             });
 
         module.node
-            .attr("cx", (d) => {
-                return d.x;
+            .attr("cx", (node) => {
+                return node.x;
             })
-            .attr("cy", (d) => {
-                return d.y;
+            .attr("cy", (node) => {
+                return node.y;
+            })
+            .attr("r", (node) => {
+                return node.weight;
+            })
+            .style("fill", (node) => {
+                return getNodeColor(node)
             });
+
 
         module.text
             .attr("x", function (d) {
