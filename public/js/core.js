@@ -462,17 +462,19 @@ function addNode() {
     document.addEventListener("keydown", keyEvent);
 
     d3.select('svg').on('click', function () {
-
-        const mouse = d3.mouse(svgG.node());
         cancelNodeAddMode();
 
+        const mouse = d3.mouse(svgG.node());
         const uuid = uuidv4();
-        context.getNodes().push({
-            "id": uuid,
-            "country": uuid,
-            x: mouse[0],
-            y: mouse[1]
-        });
+        const newNode =
+            {
+                x: mouse[0],
+                y: mouse[1]
+            };
+
+        newNode[context.getConfigNodeId()] = uuid;
+        newNode[context.getConfigNodeTitle()] = uuid;
+        context.getNodes().push(newNode);
 
         drawGraph();
         d3.select('svg').on('click', null)
@@ -487,7 +489,7 @@ function cancelNodeAddMode(keyevent) {
 }
 
 function removeNode() {
-    $('circle').css('cursor', 'crosshair');
+    enableSelectCircleMode();
     const keyEvent = function (e) {
         if (e.key === "Escape") {
             cancelNodeRemoveMode(keyEvent);
@@ -497,11 +499,12 @@ function removeNode() {
 
     d3.selectAll('circle').on('click', function (node) {
 
+        const nodeId = node[context.getConfigNodeId()];
         context.getNodes().splice(node.index, 1);
 
         let indexes = [];
         $.each(context.getLinks(), function (index, link) {
-            if (link.target.id === node.id || link.source.id === node.id) {
+            if (link.target.id === nodeId || link.source.id === nodeId) {
                 indexes.push(index);
             }
         });
@@ -511,6 +514,32 @@ function removeNode() {
         });
         drawGraph();
     });
+}
+
+function addLink() {
+    enableSelectCircleMode();
+    const keyEvent = function (e) {
+        if (e.key === "Escape") {
+            cancelNodeRemoveMode(keyEvent); //TODO name unpassend.. remove node..
+        }
+    };
+    document.addEventListener("keydown", keyEvent);
+
+    d3.selectAll('circle').on('click', function (node) {
+        let sourceNode = node;
+
+        d3.selectAll('circle').on('click', function (node) {
+
+            context.getLinks().push({source: sourceNode, target: node});
+            drawGraph();
+        });
+    });
+
+
+}
+
+function enableSelectCircleMode() {
+    $('circle').css('cursor', 'crosshair');
 }
 
 function cancelNodeRemoveMode(keyEvent) {
