@@ -1,7 +1,9 @@
 # WebRT-Graph
 WebRT-Graph is web-application to analyze graph-networks.
 
-### WebRT let's you:
+## *Currently under development* :construction_worker:
+
+### WebRT-Graph let's you:
 
 * **Import** JSON, XML & CSV files or text
 * **Edit** Graph (add & remove nodes and links, change the style)
@@ -20,4 +22,6 @@ as data store.
 
 To start the application type:
 
-`npm start server`
+`npm run start`
+
+![Image of WebRT-Graph](webrt.jpg)
