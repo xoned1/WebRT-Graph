@@ -21,6 +21,16 @@ class NodeInfo extends React.Component {
     }
 
     render() {
+
+        function addLockSymbol(disabled) {
+            if (disabled) {
+                return <div className="input-group-append">
+                    <span className="input-group-text "><li className="fa fa-lock"/></span>
+                </div>
+            }
+            return null;
+        }
+
         const node = this.state.activeNode;
         return Object.keys(node).map((key) => {
             const disabled = forbiddenNodeVars.includes(key);
@@ -34,14 +44,14 @@ class NodeInfo extends React.Component {
                     <div className="col col-md-4">
                         {key}
                     </div>
-                    <div className="col col-md-8">
-                        <input type="text" className="form-control form-control-sm"
+                    <div className="input-group col col-md-8">
+                        <input type="text" className="form-control form-control-sm graph-settings"
                                onChange={(e) => this.handleChange(e, key)} value={value}
                                disabled={disabled}/>
+                        {addLockSymbol(disabled)}
                     </div>
                 </div>
-            </form>
-
+            </form>;
         });
     }
 }

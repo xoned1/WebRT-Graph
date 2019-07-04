@@ -477,8 +477,6 @@ function addNode() {
         drawGraph();
         d3.select('svg').on('click', null)
     });
-
-
 }
 
 

@@ -27,3 +27,5 @@ zoom to fit nach änderung? funktion auf jedenfall implementieren
 Bug: Wenn man bei config link die nodes auswöhlt, erhält man fehler aber kann nichts anderes mehr auswählen wenn es nur "nodes" gibt (z.b. bei CSV)
 Bug: Beim einloggen kann man durch refresh wieder eingeloggt werden..
 Bug: Stop force on source change..
+
+bootstrap switches?
