@@ -575,7 +575,7 @@ function pulse() {
 }
 
 function startSaveAnimation() {
-    $('#save-icon').css("color", "#00AAFF").show();
+    $('#save-icon').css("color", "#00AAFF").css('visibility', 'visible');
     return setInterval(pulse, 1000);
 }
 
@@ -586,7 +586,7 @@ function stopSaveAnimation(animation, success) {
     $("#save-icon").animate({
         color: color
     }, time, function () {
-        $('#save-icon').hide();
+        $('#save-icon').css('visibility', 'hidden');
     });
 }
 
