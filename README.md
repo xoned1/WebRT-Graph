@@ -24,4 +24,4 @@ To start the application type:
 
 `npm run start`
 
-![Image of WebRT-Graph](webrt.jpg)
+![Image of WebRT-Graph](webrt.JPG)
