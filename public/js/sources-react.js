@@ -36,9 +36,20 @@ class SourcesReact extends React.Component {
 
 
     render() {
-        const sources = this.state.sources;
-        const nosource =
-            <div id='no-sources'>
+        const sourcesReq = this.state.sourcesReq;
+
+        //Isn't loaded
+        if (!sourcesReq) {
+            return <div className="d-flex justify-content-center align-items-center h-100 ">
+                <div className="spinner-border" role="status">
+                    <span className="sr-only">Loading...</span>
+                </div>
+            </div>
+        }
+
+        //Is empty
+        if (sourcesReq.sources.length === 0) {
+            return <div id='no-sources'>
                 <div>no sources found! - q|o_O|p</div>
             </div>;
         }
