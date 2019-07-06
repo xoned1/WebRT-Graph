@@ -394,6 +394,11 @@ function drawGraph() {
             .style("fill", (node) => {
                 return getNodeColor(node)
             })
+            .style("stroke-width", (node) => {
+                if (node['stroke-width']) {
+                    return node['stroke-width']
+                }
+            })
             .on("click", clickNode)
             .on("mouseover", handleMouseOver)
             .on("mouseout", handleMouseExit)
@@ -410,8 +415,14 @@ function drawGraph() {
     }
 
     function handleMouseExit(node, i) {
+
+        var width = '2px';
+        if (node['stroke-width']) {
+            width = node['stroke-width'] + 'px';
+        }
+
         d3.select(this)
-            .style('stroke-width', '2px')
+            .style('stroke-width', width)
             .style('fill', getNodeColor(node));
     }
 
@@ -604,7 +615,7 @@ function saveGraph() {
             stopSaveAnimation(animation, true);
         }).fail((jqXHR, textStatus, errorThrown) => {
         stopSaveAnimation(animation, false);
-        showGraphAlert(textStatus);
+        showAlert('graph', textStatus);
     });
 }
 
@@ -687,11 +698,10 @@ function createSource() {
     const desc = $('#create-source-description').val().trim();
     let data = $('#create-source-area').val().trim();
 
-    if (!isValidJSON(data)) {
-        data = JSON.stringify(parseCSV(data));
-        //TODO Wenn kein CSV, dann XML testen.
-    }
-
+    // if (!isValidJSON(data)) { //TODO zerstört das json
+    //     data = JSON.stringify(parseCSV(data));
+    //     //TODO Wenn kein CSV, dann XML testen.
+    // }
     data = data.replace(/\r?\n|\r/g, "");
     const json = {
         source:
@@ -720,13 +730,6 @@ function addSourceWindowOnChange() {
     $('#create-source-create-btn').prop("disabled", disable)
 }
 
-function formatDate(date) {
-    return date.toLocaleDateString("de-de", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-    });
-}
 
 // var force = d3.layout.force()
 //     .gravity(.05)
@@ -734,13 +737,6 @@ function formatDate(date) {
 //     .charge(-100)
 //     .size([width, height]);
 
-function postJSON(url, json) {
-    $.ajax(url, {
-        data: JSON.stringify(json),
-        contentType: 'application/json',
-        type: 'POST',
-    });
-}
 
 function showAddSourceWindow() {
     $('#add-source-box').show("clip", 100);
@@ -849,28 +845,14 @@ function getGraphNodeById(id) {
     return nodeMap[id];
 }
 
-function createOption(option) {
-    return "<option>" + option + "</option>";
-}
+function test() {
+    d3.selectAll('circle').on('click', function (node) {
 
-//TODO: Unite with login-message
-function showGraphAlert(message) {
-    let control = $('#graph-message');
-    $('#graph-alert').addClass('show');
-    control.text(message);
-}
+        const value = $('#txtBox-node-stroke-width').val();
+        //if leer? dann 0?
+        node['stroke-width'] = value;
+        d3.select(this).style('stroke-width', value + "px");
+        d3.selectAll('circle').on('click', clickNode);
 
-//TODO: Unite with login-message
-function hideAlert() {
-    $('#graph-alert').removeClass('show')
-}
-
-function uuidv4() {
-    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-    )
-}
-
-function isFloat(n) {
-    return Number(n) === n && n % 1 !== 0;
+    });
 }

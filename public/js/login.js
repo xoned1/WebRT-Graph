@@ -1,13 +1,17 @@
 $(document).ready(() => {
 
-    $(document).keydown(() => {
-        $("#login-button").click();
+    $(document).keydown((event) => {
+        if (event.key === "Enter") {
+            if (isTabActive('#sign-in-pill')) {
+                $("#login-button").click();
+            } else {
+                $("#signup-button").click();
+            }
+        }
     });
-    //TODO Abhängig ob register oder login
 
     //Required to have same height for login and signup
     setLoginCardHeight();
-
 });
 
 function setLoginCardHeight() {
@@ -25,44 +29,39 @@ function login() {
     $.ajax('/dologin', {
         data: JSON.stringify(data),
         contentType: 'application/json',
-        type: 'POST',
+        type: 'POST'
     }).done((data) => {
         if (data.redirect) {
             return window.location.replace(data.redirect);
         }
         if (data.err) {
-            showErrorMessage(data.err);
+            showAlert('login', data.err);
         } else {
-            showErrorMessage("Error while login.");
+            showAlert('login', "Error while login.");
         }
-    }).fail((data) => {
-        showErrorMessage(data);
+    }).fail((xhr, status, error) => {
+        showAlert('login', status + ': ' + error);
     });
 }
 
 function register() {
-    const json = {username: "ssss", password: "hansen"};
+    const username = $('#signup-username').val();
+    const password = $('#signup-password').val();
+
+    const json = {username: username, password: password};
     $.ajax('/createUser', {
         data: JSON.stringify(json),
         contentType: 'application/json',
         type: 'POST',
     }).done((data) => {
         if (data) {
-            showErrorMessage(data);
+            showAlert('login', data);
         }
     }).fail((data) => {
-        showErrorMessage(data);
+        showAlert('login', data);
     });
 }
 
-function showErrorMessage(message) {
-    let control = $('#login-message');
-    $('#login-alert').addClass('show');
-    control.text(message);
-}
 
-function hideAlert() {
-    $('#login-alert').removeClass('show')
-}
 
 
