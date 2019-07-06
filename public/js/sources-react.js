@@ -2,7 +2,7 @@ class SourcesReact extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            sources: [],
+            sourcesReq: null,
         };
 
         socket.on('source-added', () => {
@@ -12,21 +12,20 @@ class SourcesReact extends React.Component {
             this.getSources();
         });
         socket.on('active-source-changed', (msg) => {
-            userData.activeSource = msg;
-            this.setState({});
-            setActiveSource();
+            this.getSources();
+            setActiveSource(msg);
         });
         this.getSources();
     }
 
     getSources() {
-        $.get('/getSources', (data) => {
-            this.setState({sources: data})
+        $.get('/getAllSources', (data) => {
+            this.setState({sourcesReq: data})
         });
     }
 
     static remove(name) {
-        const json = {sourcename: name};
+        const json = {sourceName: name};
         postJSON('/removeSource', json);
     }
 
@@ -42,68 +41,63 @@ class SourcesReact extends React.Component {
             <div id='no-sources'>
                 <div>no sources found! - q|o_O|p</div>
             </div>;
+        }
 
-        if (sources.length !== 0) {
-            {
-                let activeSource = userData.activeSource;
-                return sources.map((e, i) => {
+        return sourcesReq.sources.map((e, i) => {
 
-                    const active = e.name === activeSource;
-                    const btnActiveClass = active ? 'btn-primary' : 'btn-secondary';
-                    const btnText = active ? 'Current' : 'Activate';
+            const active = e.name === sourcesReq.activeSource;
+            const btnActiveClass = active ? 'btn-primary' : 'btn-secondary';
+            const btnText = active ? 'Current' : 'Activate';
 
 
-                    const result = <div key={e.name} className="card border shadow rounded source-card">
-                        <div className="source-item">
-                            <div className="source-item-left">
-                                <div>
-                                    <button id={"btn-source-" + e.name} type="button"
-                                            onClick={() => SourcesReact.setActiveSource(e.name)}
-                                            className={"btn " + btnActiveClass} disabled={active}>
-                                        {btnText}
-                                    </button>
-                                </div>
-                                <div id="main-desc-box">
-                                    <div className="h3">
-                                        {e.name}
-                                    </div>
-                                    <div className="h5">
-                                        {e.description}
-                                    </div>
-                                </div>
+            const result = <div key={e.name} className="card border shadow rounded source-card">
+                <div className="source-item">
+                    <div className="source-item-left">
+                        <div>
+                            <button id={"btn-source-" + e.name} type="button"
+                                    onClick={() => SourcesReact.setActiveSource(e.name)}
+                                    className={"btn " + btnActiveClass} disabled={active}>
+                                {btnText}
+                            </button>
+                        </div>
+                        <div id="main-desc-box">
+                            <div className="h3">
+                                {e.name}
                             </div>
-                            <div className="source-item-right">
-                                <div>
-                                    <div>
-                                        Last modified: {formatDate(new Date(e.lastModified))}
-                                    </div>
-                                    <div>
-                                        Nodes: {e.nodeCount}
-                                    </div>
-                                    <div>
-                                        Links: {e.linkCount}
-                                    </div>
-                                </div>
-
-
-                                <div id="source-item-options">
-                                    <i className="fas fa-project-diagram" data-toggle="tooltip"
-                                       title="View Source"/>
-                                    <i value={e.name} onClick={() => SourcesReact.remove(e.name)}
-                                       className="fas fa-trash-alt" data-toggle="tooltip"
-                                       title="Delete Source"/>
-                                </div>
+                            <div className="h5">
+                                {e.description}
                             </div>
                         </div>
-                    </div>;
+                    </div>
+                    <div className="source-item-right">
+                        <div>
+                            <div>
+                                Last modified: {formatDate(new Date(e.lastModified))}
+                            </div>
+                            <div>
+                                Nodes: {e.nodeCount}
+                            </div>
+                            <div>
+                                Links: {e.linkCount}
+                            </div>
+                        </div>
 
-                    $(function () {
-                        $('i[data-toggle="tooltip"]').tooltip()
-                    });
-                    return result;
-                });
-            }
-        }
-        return nosource;
+
+                        <div id="source-item-options">
+                            <i className="fas fa-project-diagram" data-toggle="tooltip"
+                               title="View Source"/>
+                            <i value={e.name} onClick={() => SourcesReact.remove(e.name)}
+                               className="fas fa-trash-alt" data-toggle="tooltip"
+                               title="Delete Source"/>
+                        </div>
+                    </div>
+                </div>
+            </div>;
+
+            $(function () {
+                $('i[data-toggle="tooltip"]').tooltip()
+            });
+            return result;
+        });
     }
 }

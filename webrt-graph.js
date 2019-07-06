@@ -123,7 +123,6 @@ app.post('/createUser', (req, res, next) => {
                 getDataDb().table(username).insert({
                     "name": username,
                     "last_login": new Date().getTime(),
-                    "sources": []
                 }).run(connection, function (err, result) {
                     if (err) {
                         console.log(err);
@@ -144,7 +143,7 @@ app.get('/logout', (req, res) => {
 
 
 app.get('/getUserData', function (req, res) {
-    getUserData(req.user).get(req.user).without('sources').run(connection, (err, result) => {
+    getUserData(req.user).get(req.user).run(connection, (err, result) => {
         if (err) {
             return res.send(err);
         }
@@ -155,7 +154,7 @@ app.get('/getUserData', function (req, res) {
 
 app.post('/setActiveSource', (req, res, next) => {
     const source = req.body.activeSource;
-    getUserData(req.user).update({activeSource: source}).run(connection, (err, result) => {
+    getUserData(req.user).get(req.user).update({activeSource: source}).run(connection, (err, result) => {
         if (err) {
             return res.send(err);
         }
@@ -167,125 +166,135 @@ app.post('/setActiveSource', (req, res, next) => {
 app.post('/setGraphData', (req, res, next) => {
     const selectedSource = req.body.source;
     const graphData = req.body.graphData;
-    getUserData(req.user).get(req.user).run(connection, (err, result) => {
+    getUserData(req.user).get(selectedSource).run(connection, (err, source) => {
         if (err) {
             console.log(err);
             return res.send(err);
         }
 
-        result.sources.forEach((source) => {
-            if (source.name === selectedSource) {
-                source.data = JSON.stringify(graphData);
-            }
+        source.data = JSON.stringify(graphData);
 
-            getUserData(req.user).update(result).run(connection, (err, result) => {
-                if (err) {
-                    console.log(err);
-                    return res.send(err);
-                }
-                res.end();
-                //TODO return SAVED or something to make it sure
-            });
+        getUserData(req.user).get(selectedSource).update(source).run(connection, (err, result) => {
+            if (err) {
+                console.log(err);
+                return res.send(err);
+            }
+            res.end();
+            //TODO return SAVED or something to make it sure
         });
     });
 });
 
 app.post('/createSource', (req, res, next) => {
-    var source = req.body.source;
+    const source = req.body.source;
 
-    getUserData(req.user).get(req.user)
-        .update({sources: r.row("sources").append(source)})
+    getUserData(req.user).insert(source)
         .run(connection, (err, cursor) => {
-            console.log(cursor)
+            if (err) {
+                console.log(err);
+                return res.end(err)
+            }
+            res.end();
         });
 
     io.emit('source-added');
-    res.end();
 });
 
 app.post('/removeSource', (req, res, next) => {
 
-    const sourcename = req.body.sourcename;
-    getUserData(req.user).get(req.user)
-        .update({
-            sources: r.row('sources').filter(function (row) {
-                return row('name').ne(sourcename)
-            })
-        })
+    const sourceName = req.body.sourceName;
+    getUserData(req.user).get(sourceName).delete()
         .run(connection, (err, result) => {
             if (err) {
                 console.log(err);
                 return res.end(err)
             }
-            console.log(JSON.stringify(result, null, 2));
+
             res.end();
         });
     io.emit('source-removed');
 });
 
-app.get('/getSources', (req, res, next) => {
-
-    getUserData(req.user).get(req.user)('sources').run(connection, function (err, cursor) {
+app.get('/getAllSources', (req, res, next) => {
+    getUserData(req.user).orderBy('lastModified').run(connection, function (err, cursor) {
         if (err) {
             console.log(err);
             return res.end(err);
         }
-        cursor.toArray(function (err, result) {
-            return res.send(result);
+
+        cursor.toArray(function (err, results) {
+            if (err) { //logAndEnd() function.. überall gleich
+                console.log(err);
+                return res.end(err);
+            }
+
+            const response = {sources: results.filter((source) => source.name !== req.user)};
+            response["activeSource"] = results.find((source) => source.name === req.user).activeSource;
+            res.send(response);
         });
+    });
+});
+
+app.get('/getSource', (req, res, next) => {
+
+    const sourceName = req.query.sourceName;
+
+    getUserData(req.user).get(sourceName).run(connection, function (err, result) {
+        if (err) {
+            console.log(err);
+            return res.end(err);
+        }
+
+        res.send(result);
     });
 });
 
 app.post('/setSourceConfig', (req, res, next) => {
 
     const config = req.body.sourceConfig;
-    getUserData(req.user).get(req.user).run(connection, (err, result) => {
+
+    getUserData(req.user).get(config.name).run(connection, (err, source) => {
         if (err) {
             console.log(err);
             return res.send(err);
         }
 
-        result.sources.forEach((source) => {
-            if (source.name === result.activeSource) {
+        if (config.hasOwnProperty("configNode")) {
+            source.configNode = config.configNode;
+        }
+        if (config.hasOwnProperty("configNodeId")) {
+            source.configNodeId = config.configNodeId;
+        }
+        if (config.hasOwnProperty("configLink")) {
+            source.configLink = config.configLink;
+            console.log("Set config link: " + source.configLink)
+        }
+        if (config.hasOwnProperty("configNodeTitle")) {
+            source.configNodeTitle = config.configNodeTitle;
+            console.log("Set config node title: " + source.configNodeTitle)
+        }
+        if (config.hasOwnProperty("configNodeWeight")) {
+            source.configNodeWeight = config.configNodeWeight;
+            console.log("Set config node weight: " + source.configNodeWeight)
+        }
+        if (config.hasOwnProperty("configLinkLineType")) {
+            source.configLinkLineType = config.configLinkLineType;
+            console.log("Set link line type: " + source.configLinkLineType)
+        }
+        if (config.hasOwnProperty("nodeColorPalette")) {
+            source.nodeColorPalette = config.nodeColorPalette;
+            console.log("Set node color palette: " + source.nodeColorPalette)
+        }
+        if (config.hasOwnProperty("nodeCount")) {
+            source.nodeCount = config.nodeCount;
+            console.log("Set node count: " + source.nodeCount)
+        }
+        if (config.hasOwnProperty("linkCount")) {
+            source.linkCount = config.linkCount;
+            console.log("Set link count: " + source.linkCount)
+        }
 
-                if (config.hasOwnProperty("configNode")) {
-                    source.configNode = config.configNode;
-                }
-                if (config.hasOwnProperty("configNodeId")) {
-                    source.configNodeId = config.configNodeId;
-                }
-                if (config.hasOwnProperty("configLink")) {
-                    source.configLink = config.configLink;
-                    console.log("Set config link: " + source.configLink)
-                }
-                if (config.hasOwnProperty("configNodeTitle")) {
-                    source.configNodeTitle = config.configNodeTitle;
-                    console.log("Set config node title: " + source.configNodeTitle)
-                }
-                if (config.hasOwnProperty("configNodeWeight")) {
-                    source.configNodeWeight = config.configNodeWeight;
-                    console.log("Set config node weight: " + source.configNodeWeight)
-                }
-                if (config.hasOwnProperty("configLinkLineType")) {
-                    source.configLinkLineType = config.configLinkLineType;
-                    console.log("Set link line type: " + source.configLinkLineType)
-                }
-                if (config.hasOwnProperty("nodeColorPalette")) {
-                    source.nodeColorPalette = config.nodeColorPalette;
-                    console.log("Set node color palette: " + source.nodeColorPalette)
-                }
-                if (config.hasOwnProperty("nodeCount")) {
-                    source.nodeCount = config.nodeCount;
-                    console.log("Set node count: " + source.nodeCount)
-                }
-                if (config.hasOwnProperty("linkCount")) {
-                    source.linkCount = config.linkCount;
-                    console.log("Set link count: " + source.linkCount)
-                }
-            }
-        });
-
-        getUserData(req.user).update(result).run(connection, (err, result) => {
+        getUserData(req.user).get(config.name).update(source).run(connection, (err, result) => {
             res.end();
         })
     });
@@ -350,12 +359,12 @@ function getDatabaseConfig(fileName) {
 function createLoginStrategy() {
     return new LocalStrategy(
         (id, password, done) => {
-            r.db("test").table('users').get(id).run(connection, (err, user) => {
+            getUserTable().get(id).run(connection, (err, user) => {
 
                 if (err) {
                     done(err);
                 }
-                if (user.password === password) {
+                if (user && user.password === password) {
                     done(null, user)
                 } else {
                     //Incorrect password

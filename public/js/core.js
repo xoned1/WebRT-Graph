@@ -1,7 +1,6 @@
 var context = null;
 var isGraphInitialized = false;
 var socket = io.connect();
-var userData;
 var svgG;
 const forbiddenNodeVars = ["id", "x", "y", "vx", "vy", "index"];
 const defaultNodeWeight = 20;
@@ -14,23 +13,23 @@ var nodeMap = {};
 
 var nodeColors = createPalette(d3.interpolateBrBG);
 
-function setActiveSource() {
-    $.getJSON("/getUserData", function (data) {
-        userData = data;
-        updateLogoutText(data); //TODO warum wird hier eigl der name gesetzt bei jeder source änderung? müsste beim einloggen passieren
-        $.get("/getSources", (data) => {
-            data.forEach((source) => {
-                //TODO Nur die sources datas laden, die auch gebraucht werden.. traffic!
-                if (source.name === userData.activeSource) {
-                    $('#header-source-name').text(source.name.substring(0, 25));
-                    const data = JSON.parse(source.data);
-                    setContext(source, data);
-                    if (IsGraphTabVisible()) {
-                        drawGraph();
-                    }
-                }
-            });
+function getUserData() {
+    return new Promise(function (resolve, reject) {
+        $.getJSON("/getUserData", function (userData) {
+            updateLogoutText(userData);
+            resolve(userData);
         });
+    });
+}
+
+function setActiveSource(sourceName) {
+    $.get("/getSource", {sourceName: sourceName}, (source) => {
+        $('#header-source-name').text(source.name.substring(0, 25));
+        const data = JSON.parse(source.data);
+        setContext(source, data);
+        if (IsGraphTabVisible()) {
+            drawGraph();
+        }
     });
 }
 
@@ -44,10 +43,15 @@ $(document).ready(() => {
                 return false;
             }
         };
-        setActiveSource();
-        ReactDOM.render(
-            <SourcesReact/>, document.getElementById('sources-container')
-        );
+
+        getUserData().then(userData => {
+            ReactDOM.render(
+                <SourcesReact/>, document.getElementById('sources-container')
+            );
+            setActiveSource(userData.activeSource);
+        });
+
+
         ReactDOM.render(
             <NodeInfo ref={(nodeInfo) => {
                 window.nodeInfo = nodeInfo
@@ -220,14 +224,11 @@ function sourceConfigNodeChanged(e) {
     isGraphInitialized = false;
     //update nodeID, node title, node weight
     const json = {
-        sourceConfig:
-            {
-                configNode: e.value,
-                nodeCount: context.getNodeCount()
-            }
+        configNode: e.value,
+        nodeCount: context.getNodeCount()
     };
 
-    postJSON('/setSourceConfig', json);
+    sendSourceConfig(json);
     nodeConfigChanged();
     updateGraphTabState();
 }
@@ -235,8 +236,11 @@ function sourceConfigNodeChanged(e) {
 function sourceConfigNodeIdChanged(e) {
     context.setConfigNodeId(e.value);
     isGraphInitialized = false;
-    const json = {sourceConfig: {configNodeId: e.value}};
-    postJSON('/setSourceConfig', json);
+    const json = {
+        configNodeId: e.value
+    };
+
+    sendSourceConfig(json);
     updateGraphTabState();
 }
 
@@ -244,13 +248,10 @@ function sourceConfigLinkChanged(e) {
     context.setConfigLink(e.value);
     isGraphInitialized = false;
     const json = {
-        sourceConfig:
-            {
-                configLink: e.value,
-                linkCount: context.getLinkCount()
-            }
+        configLink: e.value,
+        linkCount: context.getLinkCount()
     };
-    postJSON('/setSourceConfig', json);
+    sendSourceConfig(json);
     linkConfigChanged();
 }
 
@@ -260,17 +261,17 @@ function linkConfigChanged() {
 
 function sourceConfigNodeTitleChanged(e) {
     const title = e.value === "None" ? null : e.value;
-    const json = {sourceConfig: {configNodeTitle: title}};
+    const json = {configNodeTitle: title};
     context.setConfigNodeTitle(title);
-    postJSON('/setSourceConfig', json);
+    sendSourceConfig(json);
     SIM.refresh();
 }
 
 function sourceConfigNodeWeightChanged(e) {
     const weight = e.value === "None" ? null : e.value;
-    const json = {sourceConfig: {configNodeWeight: weight}};
+    const json = {configNodeWeight: weight};
     context.setConfigNodeWeight(e.value);
-    postJSON('/setSourceConfig', json);
+    sendSourceConfig(json);
     isGraphInitialized = false;
 }
 
@@ -592,7 +593,7 @@ function stopSaveAnimation(animation, success) {
 
 function saveGraph() {
     const animation = startSaveAnimation();
-    const json = {source: userData.activeSource, graphData: context.getData()};
+    const json = {source: context.getName(), graphData: context.getData()};
 
     $.ajax('/setGraphData', {
         data: JSON.stringify(json),
@@ -692,7 +693,6 @@ function createSource() {
     }
 
     data = data.replace(/\r?\n|\r/g, "");
-
     const json = {
         source:
             {
@@ -760,6 +760,7 @@ function setLinkLineType(e) {
 }
 
 function sendSourceConfig(config) {
+    config.name = context.getName();
     const data = {sourceConfig: config};
     postJSON('/setSourceConfig', data);
 }
