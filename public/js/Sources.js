@@ -1,4 +1,4 @@
-const Util = require('./util');
+const Util = require('./Util');
 
 module.exports = class SourcesReact extends React.Component {
 

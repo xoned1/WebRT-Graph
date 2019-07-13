@@ -3,3 +3,5 @@ database.json
 *.css.map
 node_modules/
 workspace.xml
+public/bundle.js
+public/login.js

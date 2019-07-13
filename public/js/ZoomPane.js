@@ -1,4 +1,4 @@
-const Simulation = require('./simulation');
+const Simulation = require('./Simulation');
 
 var deltaX, deltaY;
 

@@ -1,5 +1,5 @@
-const Simulation = require('./simulation');
-const Util = require('./util');
+const Simulation = require('./Simulation');
+const Util = require('./Util');
 
 module.exports = class NodeInfo extends React.Component {
 

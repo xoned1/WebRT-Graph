@@ -1,4 +1,4 @@
-const Util = require('./util');
+const Util = require('./Util');
 
 $(document).ready(() => {
 

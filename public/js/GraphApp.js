@@ -1,13 +1,13 @@
-require('./svg-to-image');
-const DataTable = require('./data-table');
-const SourcesReact = require('./sources-react');
-const NodeInfo = require('./node-info');
-const NodeBar = require('./node-bar');
-const Graph = require('./graph');
-const GraphContext = require('./graph-context');
-const ZoomPane = require('./zoom-pane');
-const Simulation = require('./simulation');
-const Util = require('./util');
+require('./SVG2Image');
+const DataTable = require('./DataTable');
+const SourcesReact = require('./Sources');
+const NodeInfo = require('./NodeInfo');
+const NodeBar = require('./NodeBar');
+const Graph = require('./Graph');
+const GraphContext = require('./GraphContext');
+const ZoomPane = require('./ZoomPane');
+const Simulation = require('./Simulation');
+const Util = require('./Util');
 
 const forbiddenNodeVars = ["id", "x", "y", "vx", "vy", "index"];
 const none = "None";
