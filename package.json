@@ -130,7 +130,8 @@
     "start": "node webrt-graph",
     "test": "echo \"Error: no test specified\" && exit 1",
     "server-dev": "nodemon --ignore sessions/ webrt-graph.js",
-    "dev": "watchify public/js/core.js -o public/bundle.js -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ] --verbose deamdify -t",
+    "dev-login": "watchify public/js/login.js -o public/login.js -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ] --verbose deamdify -t",
+    "dev-core": "watchify public/js/core.js -o public/bundle.js -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ] --verbose deamdify -t",
     "mini": "browserify -p tinyify public/js/core.js -o public/bundle.js -t [ babelify --presets [ @babel/preset-env @babel/preset-react ] ]"
   },
   "author": "",

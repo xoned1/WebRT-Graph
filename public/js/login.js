@@ -1,3 +1,5 @@
+const Util = require('./util');
+
 $(document).ready(() => {
 
     $(document).keydown((event) => {
@@ -20,7 +22,7 @@ function setLoginCardHeight() {
     loginCard.css('height', height);
 }
 
-function login() {
+window.login = function () {
     let username = $('#login-username')[0].value;
     let password = $('#login-password')[0].value;
 
@@ -35,16 +37,16 @@ function login() {
             return window.location.replace(data.redirect);
         }
         if (data.err) {
-            showAlert('login', data.err);
+            Util.showAlert('login', data.err);
         } else {
-            showAlert('login', "Error while login.");
+            Util.showAlert('login', "Error while login.");
         }
     }).fail((xhr, status, error) => {
-        showAlert('login', status + ': ' + error);
+        Util.showAlert('login', status + ': ' + error);
     });
-}
+};
 
-function register() {
+window.register = function () {
     const username = $('#signup-username').val();
     const password = $('#signup-password').val();
 
@@ -55,12 +57,12 @@ function register() {
         type: 'POST',
     }).done((data) => {
         if (data) {
-            showAlert('login', data);
+            Util.showAlert('login', data);
         }
     }).fail((data) => {
-        showAlert('login', data);
+        Util.showAlert('login', data);
     });
-}
+};
 
 
 
