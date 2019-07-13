@@ -1,4 +1,4 @@
-class DataTable extends React.Component {
+module.exports = class DataTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
@@ -6,7 +6,7 @@ class DataTable extends React.Component {
 
 
     render() {
-        let nodes = context.getNodes();
+        let nodes = this.props.context.getNodes();
         const nodeKeys = Object.keys(nodes[0]);
 
         const header = nodeKeys.map((nodeKey) => {
@@ -28,4 +28,4 @@ class DataTable extends React.Component {
             <tbody>{body}</tbody>
         </table>
     }
-}
+};

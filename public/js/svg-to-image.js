@@ -1,6 +1,6 @@
-function saveGraphAsImage() {
-    var svg = $('#graph-svg')[0];
-    var svgString = getSVGString(svg);
+window.saveGraphAsImage = function() {
+    const svg = $('#graph-svg')[0];
+    const svgString = getSVGString(svg);
 
     let graphContainer = $("#graph-container");
     svgString2Image(svgString, 2 * graphContainer.width(), 2 * graphContainer.height(), 'png', save); // passes Blob and filesize String to the callback
@@ -8,15 +8,15 @@ function saveGraphAsImage() {
     function save(dataBlob, filesize) {
         saveAs(dataBlob, 'webrt-graph-export.png'); //TODO: + sourcename
     }
-}
+};
 
 
 function getSVGString(svgNode) {
     svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
-    var cssStyleText = getCSSStyles(svgNode);
+    const cssStyleText = getCSSStyles(svgNode);
     appendCSS(cssStyleText, svgNode);
 
-    var serializer = new XMLSerializer();
+    const serializer = new XMLSerializer();
     var svgString = serializer.serializeToString(svgNode);
     svgString = svgString.replace(/(\w+)?:?xlink=/g, 'xmlns:xlink='); // Fix root xlink without namespace
     svgString = svgString.replace(/NS\d+:href/g, 'xlink:href'); // Safari NS namespace fix

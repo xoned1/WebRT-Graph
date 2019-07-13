@@ -1,5 +1,3 @@
-info wo immer grob steht welche source und info..
-
 docker hat eine schöne einlogg seite
 
 prüfung von source daten die erstellt werden (leer, ungültig)
@@ -20,12 +18,14 @@ beim klick auf node könnte man alle benachbarten heller machen und die anderen 
 configuration:
 nach änderung auf graph ändern (grapg ungültig kennzeichnen?)
 
-wenn z.b. title geändert wird aktualisiert sich nicht er graph von allein erst bei drag
-zoom to fit nach änderung? funktion auf jedenfall implementieren
 
 
 Bug: Wenn man bei config link die nodes auswöhlt, erhält man fehler aber kann nichts anderes mehr auswählen wenn es nur "nodes" gibt (z.b. bei CSV)
 Bug: Beim einloggen kann man durch refresh wieder eingeloggt werden..
-Bug: Stop force on source change..
+Bug: Stop force on source change.. sonst läuft die alte kraft weiter..
 
 bootstrap switches?
+
+browserify standalone statt window.setLinkType(e) ? bad practice..
+seit browserify warum graphcontext export = class GraphContext und bei anderen imports nicht?
+login.js..

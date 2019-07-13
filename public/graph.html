@@ -256,38 +256,115 @@
                                 <div class="block-title">Links</div>
                                 <div class="form-group">
                                     <label for="linkLineType">Type</label>
-                                    <select onchange="setLinkLineType(this)" class="form-control custom-select custom-select-sm graph-settings"
+                                    <select onchange="setLinkLineType(this)"
+                                            class="custom-select custom-select-sm graph-settings"
                                             id="linkLineType">
                                         <option>Linear</option>
                                         <option>Curved</option>
                                     </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nodeColorPalettes">Stroke Width</label>
+                                    <div class="form-row">
+                                        <div class="col-6">
+                                            <input id='TODO1' type="text"
+                                                   class="form-control form-control-sm graph-settings" value="1"/>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                                    onclick="test()">Node
+                                            </button>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block">All</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nodeColorPalettes">Color</label>
+                                    <div class="form-row">
+                                        <div class="col-6">
+                                            <input id='TODO2' type="text"
+                                                   class="form-control form-control-sm graph-settings" value="1"/>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                                    onclick="test()">Node
+                                            </button>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block">All</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="block rounded shadow">
                                 <div class="block-title">Nodes</div>
                                 <div class="form-group">
                                     <label for="nodeColorPalettes">Color Palette</label>
-                                    <select onchange="setNodeColorPalette(this)" class="form-control custom-select custom-select-sm graph-settings"
-                                            id="nodeColorPalettes">
-                                        <option>BrBg</option>
-                                        <option>PRGn</option>
-                                        <option>PiYG</option>
-                                        <option>PuoR</option>
-                                        <option>RdBu</option>
-                                        <option>RdYIBu</option>
-                                        <option>Spectral</option>
-                                        <option>Blues</option>
-                                        <option>Greens</option>
-                                        <option>Oranges</option>
-                                        <option>Reds</option>
-                                        <option>Purples</option>
-                                        <option>Viridis</option>
-                                        <option>Inferno</option>
-                                        <option>Warm</option>
-                                        <option>Cool</option>
-                                        <option>Rainbow</option>
-                                        <option>Sinebow</option>
-                                    </select>
+                                    <div class="form-row">
+                                        <div class="col-9">
+                                            <select onchange="setNodeColorPalette(this)"
+                                                    class="form-control custom-select custom-select-sm graph-settings"
+                                                    id="nodeColorPalettes">
+                                                <option>BrBg</option>
+                                                <option>PRGn</option>
+                                                <option>PiYG</option>
+                                                <option>PuoR</option>
+                                                <option>RdBu</option>
+                                                <option>RdYIBu</option>
+                                                <option>Spectral</option>
+                                                <option>Blues</option>
+                                                <option>Greens</option>
+                                                <option>Oranges</option>
+                                                <option>Reds</option>
+                                                <option>Purples</option>
+                                                <option>Viridis</option>
+                                                <option>Inferno</option>
+                                                <option>Warm</option>
+                                                <option>Cool</option>
+                                                <option>Rainbow</option>
+                                                <option>Sinebow</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block">Apply</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nodeColorPalettes">Stroke Width</label>
+                                    <div class="form-row">
+                                        <div class="col-6">
+                                            <input id='txtBox-node-stroke-width' type="text"
+                                                   class="form-control form-control-sm graph-settings" value="1"/>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                                    onclick="test()">Node
+                                            </button>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block">All</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nodeColorPalettes">Color</label>
+                                    <div class="form-row">
+                                        <div class="col-6">
+                                            <input id='TODO' type="text"
+                                                   class="form-control form-control-sm graph-settings" value="1"/>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                                    onclick="test()">Node
+                                            </button>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block">All</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -327,11 +404,11 @@
                 </div>
                 <div>
                     <i value="" class="fas fa-compress-arrows-alt" data-toggle="tooltip" title="Fit (F)"
-                       onclick="zoomFit(0.95, 500)"></i>
+                       onclick="zoomFit()"></i>
                 </div>
                 <div>
                     <i value="" class="fas fa-magnet" data-toggle="tooltip" title="Explode"
-                       onclick="SIM.explode()"></i>
+                       onclick="explode()"></i>
                 </div>
                 <div>
                     <i value="" class="fas fa-plus-circle" data-toggle="tooltip" title="Add Node"
@@ -430,16 +507,6 @@
         </div>
     </div>
 </div>
-<!--Order Matters!-->
-<script type="text/babel" src="js/graph-context.js"></script>
-<script type="text/babel" src="js/graph.js"></script>
-<script type="text/babel" src="js/core.js"></script>
-<script type="text/babel" src="js/simulation.js"></script>
-<script type="text/babel" src="js/zoom-pane.js"></script>
-<script type="text/babel" src="js/node-bar.js"></script>
-<script type="text/babel" src="js/sources-react.js"></script>
-<script type="text/babel" src="js/svg-to-image.js"></script>
-<script type="text/babel" src="js/data-table.js"></script>
-<script type="text/babel" src="js/node-info.js"></script>
+<script type="text/javascript" src="bundle.js"></script>
 </body>
 </html>

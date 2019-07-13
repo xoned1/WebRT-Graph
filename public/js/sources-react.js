@@ -1,5 +1,10 @@
-class SourcesReact extends React.Component {
+const Util = require('./util');
+
+module.exports = class SourcesReact extends React.Component {
+
     constructor(props) {
+
+        const socket = io.connect();
         super(props);
         this.state = {
             sourcesReq: null,
@@ -13,7 +18,7 @@ class SourcesReact extends React.Component {
         });
         socket.on('active-source-changed', (msg) => {
             this.getSources();
-            setActiveSource(msg);
+            setActiveSource(msg); //TODO für anderen nutzer muss es gesetzt werden. ist das wirklich so?
         });
         this.getSources();
     }
@@ -26,12 +31,12 @@ class SourcesReact extends React.Component {
 
     static remove(name) {
         const json = {sourceName: name};
-        postJSON('/removeSource', json);
+        Util.postJSON('/removeSource', json);
     }
 
     static setActiveSource(name) {
         const source = {activeSource: name};
-        postJSON('/setActiveSource', source)
+        Util.postJSON('/setActiveSource', source)
     }
 
 
@@ -83,7 +88,7 @@ class SourcesReact extends React.Component {
                     <div className="source-item-right">
                         <div>
                             <div>
-                                Last modified: {formatDate(new Date(e.lastModified))}
+                                Last modified: {Util.formatDate(new Date(e.lastModified))}
                             </div>
                             <div>
                                 Nodes: {e.nodeCount}
@@ -111,4 +116,4 @@ class SourcesReact extends React.Component {
             return result;
         });
     }
-}
+};

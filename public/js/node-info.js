@@ -1,7 +1,11 @@
-class NodeInfo extends React.Component {
+const Simulation = require('./simulation');
+const Util = require('./util');
+
+module.exports = class NodeInfo extends React.Component {
 
     constructor(props) {
         super(props);
+
         this.state = {
             activeNode: {}
         };
@@ -17,7 +21,7 @@ class NodeInfo extends React.Component {
         //TODO "setActiveNode" the react way?
         this.state.activeNode[key] = event.target.value;
         this.setState({activeNode: this.state.activeNode});
-        SIM.refresh();
+        Simulation.refresh();
     }
 
     render() {
@@ -33,9 +37,9 @@ class NodeInfo extends React.Component {
 
         const node = this.state.activeNode;
         return Object.keys(node).map((key) => {
-            const disabled = forbiddenNodeVars.includes(key);
+            const disabled = this.props.forbiddenVars.includes(key);
 
-            let value = forbiddenNodeVars.includes(key) && isFloat(node[key]) ?
+            let value = this.props.forbiddenVars.includes(key) && Util.isFloat(node[key]) ?
                 Number(node[key]).toFixed(3) :
                 node[key];
 
@@ -54,4 +58,4 @@ class NodeInfo extends React.Component {
             </form>;
         });
     }
-}
+};

@@ -1,30 +1,46 @@
-var context = null;
-var isGraphInitialized = false;
-var socket = io.connect();
-var svgG;
+require('./svg-to-image');
+const DataTable = require('./data-table');
+const SourcesReact = require('./sources-react');
+const NodeInfo = require('./node-info');
+const NodeBar = require('./node-bar');
+const Graph = require('./graph');
+const GraphContext = require('./graph-context');
+const ZoomPane = require('./zoom-pane');
+const Simulation = require('./simulation');
+const Util = require('./util');
+
 const forbiddenNodeVars = ["id", "x", "y", "vx", "vy", "index"];
-const defaultNodeWeight = 20;
-const minNodeWeight = 5;
-const maxNodeWeight = 50;
 const none = "None";
 const zoom = d3.zoom();
 
-var nodeMap = {};
 
-var nodeColors = createPalette(d3.interpolateBrBG);
+var context = null;
+var isGraphInitialized = false;
+var rootGroup;
+
+
+ZoomPane.setZoom(zoom);
+
+window.explode = function () {
+    Simulation.explode();
+};
+
+window.zoomFit = function () {
+    ZoomPane.zoomFit(0.95, 500);
+};
 
 function getUserData() {
     return new Promise(function (resolve, reject) {
         $.getJSON("/getUserData", function (userData) {
-            updateLogoutText(userData);
             resolve(userData);
         });
     });
 }
 
+//TODO name is kind of misleanding.. setSource invokes getSource..
 function setActiveSource(sourceName) {
     $.get("/getSource", {sourceName: sourceName}, (source) => {
-        $('#header-source-name').text(source.name.substring(0, 25));
+        setSourceNameInHeader(source.name);
         const data = JSON.parse(source.data);
         setContext(source, data);
         if (IsGraphTabVisible()) {
@@ -35,16 +51,17 @@ function setActiveSource(sourceName) {
 
 $(document).ready(() => {
         document.onkeydown = function (e) {
-            if (e.ctrlKey && e.key == "s") {
+            if (e.ctrlKey && e.key === "s") {
                 saveGraph();
                 return false;
-            } else if (e.key == "f") {
-                zoomFit(0.95, 500);
+            } else if (e.key === "f") {
+                ZoomPane.zoomFit(0.95, 500);
                 return false;
             }
         };
 
         getUserData().then(userData => {
+            updateLogoutText(userData);
             ReactDOM.render(
                 <SourcesReact/>, document.getElementById('sources-container')
             );
@@ -53,7 +70,7 @@ $(document).ready(() => {
 
 
         ReactDOM.render(
-            <NodeInfo ref={(nodeInfo) => {
+            <NodeInfo forbiddenVars={forbiddenNodeVars} ref={(nodeInfo) => {
                 window.nodeInfo = nodeInfo
             }}/>, document.getElementById('info-container')
         );
@@ -78,7 +95,7 @@ $(document).ready(() => {
                 $('html, body').css("overflow-y", "hidden");
             } else if (activatedTab === "data-tab") {
                 ReactDOM.render(
-                    <DataTable/>, document.getElementById('data-table-container')
+                    <DataTable context={context}/>, document.getElementById('data-table-container')
                 );
 
                 $('html, body').css("overflow-y", "scroll");
@@ -90,21 +107,21 @@ $(document).ready(() => {
         /*
         Settgings: Force slider
          */
-        const manybodySlider = document.getElementById("slider-manybody");
-        manybodySlider.oninput = function () {
+        const manyBodySlider = document.getElementById("slider-manybody");
+        manyBodySlider.oninput = function () {
             $('#value-manybody').text(this.value);
         };
 
         const forceLinkSlider = document.getElementById("slider-linkforce");
         forceLinkSlider.oninput = function () {
             $('#value-linkforce').text(this.value);
-            SIM.linkforce();
+            Simulation.linkforce();
         };
 
 
         d3.select('svg').call(
             zoom.scaleExtent([0, 10])
-                .on("zoom", zoomed));
+                .on("zoom", ZoomPane.zoomed));
     }
 );
 
@@ -170,7 +187,7 @@ function updateNodeConfigBox() {
     const nodeBox = $('#sourceConfigDropBoxNodes');
     nodeBox.empty();
     Object.keys(context.getData()).forEach((key) => {
-        nodeBox.append(createOption(key));
+        nodeBox.append(Util.createOption(key));
     });
     nodeBox.val(context.getConfigNode());
 }
@@ -180,7 +197,7 @@ function updateNodeIDconfigBox() {
     nodeIDBox.empty();
     if (context.getConfigNode()) {
         Object.keys(context.getNodes()[0]).forEach((key) => { //TODO nur wenn node/links angeben sind.. graph nur anzeigenn wenn nodes/links defined?
-            nodeIDBox.append(createOption(key));
+            nodeIDBox.append(Util.createOption(key));
         });
     }
     nodeIDBox.val(context.getConfigNodeId());
@@ -189,10 +206,10 @@ function updateNodeIDconfigBox() {
 function updateNodeTitleConfigBox() {
     const titleBox = $('#sourceConfigDropBoxNodeTitle');
     titleBox.empty();
-    titleBox.append(createOption(none));
+    titleBox.append(Util.createOption(none));
     if (context.getConfigNode()) {
         Object.keys(context.getNodes()[0]).forEach((key) => {
-            titleBox.append(createOption(key));
+            titleBox.append(Util.createOption(key));
         });
     }
     titleBox.val(context.getConfigNodeTitle());
@@ -201,10 +218,10 @@ function updateNodeTitleConfigBox() {
 function updateNodeWeightConfigBox() {
     const weightBox = $('#sourceConfigDropBoxNodeWeight');
     weightBox.empty();
-    weightBox.append(createOption(none));
+    weightBox.append(Util.createOption(none));
     if (context.getConfigNode()) {
         Object.keys(context.getNodes()[0]).forEach((key) => {
-            weightBox.append(createOption(key));
+            weightBox.append(Util.createOption(key));
         });
     }
     weightBox.val(context.getConfigNodeWeight());
@@ -214,12 +231,12 @@ function updateLinkConfigBox() {
     const linkBox = $('#sourceConfigDropBoxLinks');
     linkBox.empty();
     Object.keys(context.getData()).forEach((key) => {
-        linkBox.append(createOption(key));
+        linkBox.append(Util.createOption(key));
     });
     linkBox.val(context.getConfigLink());
 }
 
-function sourceConfigNodeChanged(e) {
+window.sourceConfigNodeChanged = function (e) {
     context.setConfigNode(e.value);
     isGraphInitialized = false;
     //update nodeID, node title, node weight
@@ -231,9 +248,9 @@ function sourceConfigNodeChanged(e) {
     sendSourceConfig(json);
     nodeConfigChanged();
     updateGraphTabState();
-}
+};
 
-function sourceConfigNodeIdChanged(e) {
+window.sourceConfigNodeIdChanged = function (e) {
     context.setConfigNodeId(e.value);
     isGraphInitialized = false;
     const json = {
@@ -242,9 +259,9 @@ function sourceConfigNodeIdChanged(e) {
 
     sendSourceConfig(json);
     updateGraphTabState();
-}
+};
 
-function sourceConfigLinkChanged(e) {
+window.sourceConfigLinkChanged = function (e) {
     context.setConfigLink(e.value);
     isGraphInitialized = false;
     const json = {
@@ -253,44 +270,44 @@ function sourceConfigLinkChanged(e) {
     };
     sendSourceConfig(json);
     linkConfigChanged();
-}
+};
 
 function linkConfigChanged() {
     //update depending config comboboxes if link config changed..
 }
 
-function sourceConfigNodeTitleChanged(e) {
+window.sourceConfigNodeTitleChanged = function (e) {
     const title = e.value === "None" ? null : e.value;
     const json = {configNodeTitle: title};
     context.setConfigNodeTitle(title);
     sendSourceConfig(json);
-    SIM.refresh();
-}
+    Simulation.refresh();
+};
 
-function sourceConfigNodeWeightChanged(e) {
+window.sourceConfigNodeWeightChanged = function (e) {
     const weight = e.value === "None" ? null : e.value;
     const json = {configNodeWeight: weight};
     context.setConfigNodeWeight(e.value);
     sendSourceConfig(json);
     isGraphInitialized = false;
-}
+};
 
 function drawGraph() {
 
-    if (svgG) {
-        var transform = svgG.attr("transform")
+    if (rootGroup) {
+        var transform = rootGroup.attr("transform")
     }
 
     isGraphInitialized = true;
     $("svg").empty();
-    SIM.reset();
+    Simulation.reset();
     let graphContainer = $("#graph-container");
 
     let margin = {top: 20, right: 20, bottom: 20, left: 20};
     let width = graphContainer.width() - margin.left - margin.right;
     let height = graphContainer.height() - margin.top - margin.bottom;
 
-    svgG = d3.select('svg')
+    rootGroup = d3.select('svg')
         .attr("id", "graph-svg")
         .attr('background-color', 'red')
         .attr("width", "100%")
@@ -298,7 +315,8 @@ function drawGraph() {
         .append("g")
         .attr("transform", transform);
 
-    calcNodeWeights(context);
+    ZoomPane.setElement(rootGroup);
+    Graph.calcNodeWeights(context);
 
 
     let markerIDs = [];
@@ -325,7 +343,7 @@ function drawGraph() {
         .attr("d", "M 0 0 L 10 5 L 0 10 z");
 
 
-    let nodeParents = svgG
+    let nodeParents = rootGroup
         .selectAll("circle")
         .data(context.getNodes())
         .enter()
@@ -334,15 +352,9 @@ function drawGraph() {
             return node[context.getConfigNodeId()];
         });
 
-
     let node = createNode(nodeParents);
 
-    nodeMap = {};
-    node.each((node) => {
-        nodeMap[node.id] = $('circle[nodeID=' + node.id + ']');
-    });
-
-    let link = svgG
+    let link = rootGroup
         .selectAll("path")
         .data(context.getLinks())
         .enter()
@@ -371,14 +383,13 @@ function drawGraph() {
     d3.selectAll("g").raise();
 
     ReactDOM.render(
-        <NodeBar/>, document.getElementById('nodes')
+        <NodeBar context={context}/>, document.getElementById('nodes')
     );
 
     $('.node-checkbox').click(function () {
-        let nodeid = $(this).parent().attr('data-node-id');
-        let checked = $('.styled-checkbox[id=node-checkbox-' + nodeid + ']')[0].checked;
-
-        hideNode(nodeid, checked);
+        const nodeId = $(this).parent().attr('data-node-id');
+        const checked = $('.styled-checkbox[id=node-checkbox-' + nodeId + ']')[0].checked;
+        hideNode(nodeId, checked);
     });
 
 
@@ -392,7 +403,7 @@ function drawGraph() {
                 return node.weight;
             })
             .style("fill", (node) => {
-                return getNodeColor(node)
+                return Graph.getNodeColor(node)
             })
             .style("stroke-width", (node) => {
                 if (node['stroke-width']) {
@@ -402,7 +413,7 @@ function drawGraph() {
             .on("click", clickNode)
             .on("mouseover", handleMouseOver)
             .on("mouseout", handleMouseExit)
-            .call(nodeDragHandler)
+            .call(ZoomPane.nodeDragHandler)
     }
 
 
@@ -423,7 +434,7 @@ function drawGraph() {
 
         d3.select(this)
             .style('stroke-width', width)
-            .style('fill', getNodeColor(node));
+            .style('fill', Graph.getNodeColor(node));
     }
 
     /*
@@ -459,11 +470,11 @@ function drawGraph() {
         });
     });
 
-    SIM.setItems(context, node, link, text, width, height);
-    SIM.bindSimulation();
+    Simulation.setItems(context, node, link, text, width, height, Graph.getNodeColor);
+    Simulation.bindSimulation();
 }
 
-function addNode() {
+window.addNode = function () {
     enableAddNodeMode();
 
     const keyEvent = event => {
@@ -476,8 +487,8 @@ function addNode() {
     d3.select('svg').on('click', () => {
         cancelNodeAddMode();
 
-        const mouse = d3.mouse(svgG.node());
-        const uuid = uuidv4();
+        const mouse = d3.mouse(rootGroup.node());
+        const uuid = Util.uuidv4();
         const newNode = {};
 
         newNode[context.getConfigNodeId()] = uuid;
@@ -489,10 +500,10 @@ function addNode() {
         drawGraph();
         d3.select('svg').on('click', null)
     });
-}
+};
 
 
-function removeNode() {
+window.removeNode = function () {
     enableSelectNodeMode();
     const keyEvent = event => {
         if (event.key === "Escape") {
@@ -518,9 +529,9 @@ function removeNode() {
         });
         drawGraph();
     });
-}
+};
 
-function addLink() {
+window.addLink = function () {
     enableSelectNodeMode();
     const keyEvent = event => {
         if (event.key === "Escape") {
@@ -538,9 +549,9 @@ function addLink() {
             drawGraph();
         });
     });
-}
+};
 
-function removeLink() {
+window.removeLink = function () {
     enableSelectLinkMode();
     const keyEvent = event => {
         if (event.key === "Escape") {
@@ -553,7 +564,7 @@ function removeLink() {
         context.getLinks().splice(link.index, 1);
         drawGraph();
     });
-}
+};
 
 //TODO element to cross.. use one function and make element as paramter
 function enableSelectNodeMode() {
@@ -602,7 +613,7 @@ function stopSaveAnimation(animation, success) {
     });
 }
 
-function saveGraph() {
+window.saveGraph = function () {
     const animation = startSaveAnimation();
     const json = {source: context.getName(), graphData: context.getData()};
 
@@ -615,9 +626,9 @@ function saveGraph() {
             stopSaveAnimation(animation, true);
         }).fail((jqXHR, textStatus, errorThrown) => {
         stopSaveAnimation(animation, false);
-        showAlert('graph', textStatus);
+        Util.showAlert('graph', textStatus);
     });
-}
+};
 
 function isValidJSON(json) {
     try {
@@ -631,8 +642,7 @@ function isValidJSON(json) {
 
 function parseCSV(csv) {
     const result = Papa.parse(csv, {header: true});
-    const json = {"Nodes": result.data};
-    return json;
+    return {"Nodes": result.data};
 }
 
 
@@ -640,13 +650,6 @@ function clickNode(node) {
     nodeInfo.setNode(node);
     $('#info-tab').tab('show');
     //showNodeContent(d);
-}
-
-function getNodeColor(node) {
-    if (node.weight) {
-        return nodeColors(node.weight)
-    }
-    return nodeColors(defaultNodeWeight);
 }
 
 /*
@@ -667,13 +670,13 @@ function showNodeContent(node) {
 /*
 "Select All" button in nodes navigation
  */
-function selectAllNodes(select) {
+window.selectAllNodes = function (select) {
     $('.node-input-checkbox').each(function () {
         let nodeID = $(this).parent().attr('data-node-id');
         hideNode(nodeID, !select);
         $(this).prop('checked', select);
     });
-}
+};
 
 function hideNode(nodeid, hide) {
     //TODO die source target nur anzeigen, wenn BEIDE nodes angezeigt werden
@@ -692,7 +695,7 @@ function hideNode(nodeid, hide) {
 }
 
 
-function createSource() {
+window.createSource = function () {
 
     const name = $('#create-source-name').val().trim();
     const desc = $('#create-source-description').val().trim();
@@ -716,19 +719,19 @@ function createSource() {
             }
     };
 
-    postJSON('/createSource', json);
+    Util.postJSON('/createSource', json);
     closeAddSourceWindow();
     SourcesReact.setActiveSource(name)
-}
+};
 
 
-function addSourceWindowOnChange() {
+window.addSourceWindowOnChange = function () {
     const name = $('#create-source-name').val();
     const source = $('#create-source-area').val();
 
     const disable = (name.trim() === "") || (source.trim() === "");
     $('#create-source-create-btn').prop("disabled", disable)
-}
+};
 
 
 // var force = d3.layout.force()
@@ -738,114 +741,49 @@ function addSourceWindowOnChange() {
 //     .size([width, height]);
 
 
-function showAddSourceWindow() {
+window.showAddSourceWindow = function () {
     $('#add-source-box').show("clip", 100);
     $('#page-mask').show("clip", 100);
-}
+};
 
-function closeAddSourceWindow() {
+window.closeAddSourceWindow = function () {
     $('#add-source-box').hide("clip", 100);
     $('#page-mask').hide("clip", 100)
-}
+};
 
 
-function setLinkLineType(e) {
+window.setLinkLineType = function (e) {
     const config = {configLinkLineType: e.value};
     sendSourceConfig(config);
-    SIM.refresh();
-}
+    Simulation.refresh();
+};
 
 function sendSourceConfig(config) {
     config.name = context.getName();
     const data = {sourceConfig: config};
-    postJSON('/setSourceConfig', data);
-}
-
-
-function createPalette(palette) {
-    return d3.scaleSequential()
-        .domain([minNodeWeight, maxNodeWeight])
-        .interpolator(palette);
+    Util.postJSON('/setSourceConfig', data);
 }
 
 $('#sources-tab').tab('show');
 $('#node-settings-tab').tab('show');
 
 
-function setNodeColorPalette(e) {
+window.setNodeColorPalette = function (e) {
     const palette = e.value ? e.value : e;
 
-    switch (palette) {
-        case "BrBg":
-            nodeColors = createPalette(d3.interpolateBrBG);
-            break;
-        case "PRGn":
-            nodeColors = createPalette(d3.interpolatePRGn);
-            break;
-        case "PiYG":
-            nodeColors = createPalette(d3.interpolatePiYG);
-            break;
-        case "PuoR":
-            nodeColors = createPalette(d3.interpolatePuOr);
-            break;
-        case "RdBu":
-            nodeColors = createPalette(d3.interpolateRdBu);
-            break;
-        case "RdYIBu":
-            nodeColors = createPalette(d3.interpolateRdYlBu);
-            break;
-        case "Spectral":
-            nodeColors = createPalette(d3.interpolateSpectral);
-            break;
-        case "Blues":
-            nodeColors = createPalette(d3.interpolateBlues);
-            break;
-        case "Greens":
-            nodeColors = createPalette(d3.interpolateGreens);
-            break;
-        case "Oranges":
-            nodeColors = createPalette(d3.interpolateOranges);
-            break;
-        case "Reds":
-            nodeColors = createPalette(d3.interpolateReds);
-            break;
-        case "Purples":
-            nodeColors = createPalette(d3.interpolatePurples);
-            break;
-        case "Viridis":
-            nodeColors = createPalette(d3.interpolateViridis);
-            break;
-        case "Inferno":
-            nodeColors = createPalette(d3.interpolateInferno);
-            break;
-        case "Warm":
-            nodeColors = createPalette(d3.interpolateWarm);
-            break;
-        case "Cool":
-            nodeColors = createPalette(d3.interpolateCool);
-            break;
-        case "Rainbow":
-            nodeColors = createPalette(d3.interpolateRainbow);
-            break;
-        case "Sinebow":
-            nodeColors = createPalette(d3.interpolateSinebow);
-            break;
-    }
+    Graph.setPalette(palette);
 
     $('svg circle').each((index, node) => {
         const nodeId = parseInt(node.getAttribute('nodeID'));
-        node.style.fill = getNodeColor(context.getNode(nodeId));
+        node.style.fill = Graph.getNodeColor(context.getNode(nodeId));
     });
 
     const config = {nodeColorPalette: palette};
     sendSourceConfig(config);
-}
+};
 
-function getGraphNodeById(id) {
-    return nodeMap[id];
-}
 
-function test() {
+window.test = function () {
     d3.selectAll('circle').on('click', function (node) {
 
         const value = $('#txtBox-node-stroke-width').val();
@@ -855,4 +793,8 @@ function test() {
         d3.selectAll('circle').on('click', clickNode);
 
     });
+};
+
+function setSourceNameInHeader(sourceName) {
+    $('#header-source-name').text(sourceName.substring(0, 25));
 }

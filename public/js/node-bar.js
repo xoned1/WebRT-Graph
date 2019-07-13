@@ -1,9 +1,9 @@
-class NodeBar extends React.Component {
+module.exports = class NodeBar extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            context: context,
+            context: props.context,
         };
 
         this.handleClick = this.handleClick.bind(this);
@@ -38,5 +38,5 @@ class NodeBar extends React.Component {
 
         return (node);
     }
+};
 
-}
