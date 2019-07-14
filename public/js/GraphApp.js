@@ -416,9 +416,10 @@ function drawGraph() {
             .call(ZoomPane.nodeDragHandler)
     }
 
-
+    var beforeHoverNodeColor;
     function handleMouseOver(d, i) {
         let color = d3.color(d3.select(this).style('fill'));
+        beforeHoverNodeColor = color;
         color = color.brighter(1);
         d3.select(this)
             .style('stroke-width', '4px')
@@ -434,7 +435,7 @@ function drawGraph() {
 
         d3.select(this)
             .style('stroke-width', width)
-            .style('fill', Graph.getNodeColor(node));
+            .style('fill', beforeHoverNodeColor);
     }
 
     /*
@@ -769,9 +770,17 @@ $('#node-settings-tab').tab('show');
 
 
 window.setNodeColorPalette = function (e) {
-    const palette = e.value ? e.value : e;
 
+    const palette = $('#nodeColorPalettes').val();
     Graph.setPalette(palette);
+
+
+    d3.selectAll('circle').data().forEach(node => {
+        node['fill'] = Graph.getNodeColor(node);
+    });
+    d3.selectAll('circle').style('fill', (node) => {
+        return Graph.getNodeColor(node)
+    });
 
     $('svg circle').each((index, node) => {
         const nodeId = parseInt(node.getAttribute('nodeID'));
@@ -782,17 +791,31 @@ window.setNodeColorPalette = function (e) {
     sendSourceConfig(config);
 };
 
+window.setNodesStrokeWidth = function () {
+    const value = $('#txtBox-node-stroke-width').val();
+    Graph.setNodeStrokeWidth(d3.selectAll('circle'), value);
+};
 
-window.test = function () {
+
+window.setNodeStrokeWidth = function () {
     d3.selectAll('circle').on('click', function (node) {
-
         const value = $('#txtBox-node-stroke-width').val();
-        //if leer? dann 0?
-        node['stroke-width'] = value;
-        d3.select(this).style('stroke-width', value + "px");
-        d3.selectAll('circle').on('click', clickNode);
-
+        Graph.setNodeStrokeWidth(d3.select(this), value);
+        d3.selectAll('circle').on('click', clickNode)
     });
+};
+
+window.setNodeColor = function () {
+    d3.selectAll('circle').on('click', function (node) {
+        const value = $('#node-colorBox').val();
+        Graph.setNodeColor(d3.select(this), value);
+        d3.selectAll('circle').on('click', clickNode)
+    });
+};
+
+window.setNodesColor = function () {
+    const value = $('#node-colorBox').val();
+    Graph.setNodeColor(d3.selectAll('circle'), value);
 };
 
 function setSourceNameInHeader(sourceName) {

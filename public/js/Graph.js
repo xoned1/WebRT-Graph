@@ -106,6 +106,21 @@ module.exports = {
             return value;
         }
     },
+
+    setNodeStrokeWidth: function (nodes, width) {
+        nodes.style('stroke-width', width + "px");
+        nodes.data().forEach(node => {
+            node['stroke-width'] = width;
+        });
+    },
+
+    setNodeColor: function (nodes, color) {
+        nodes.style('fill', color);
+        nodes.data().forEach(node => {
+            node['fill'] = color;
+        });
+    }
+
 };
 
 var nodeColors = createPalette(d3.interpolateBrBG);

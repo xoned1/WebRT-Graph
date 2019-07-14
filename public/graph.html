@@ -264,36 +264,38 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="nodeColorPalettes">Stroke Width</label>
+                                    <label for="nodeColorPalettes">Color</label>
                                     <div class="form-row">
                                         <div class="col-6">
-                                            <input id='TODO1' type="text"
-                                                   class="form-control form-control-sm graph-settings" value="1"/>
+                                            <input id='TODO2' type="color"
+                                                   class="form-control form-control-sm graph-settings" value="#00AAFF"/>
                                         </div>
                                         <div class="col-3">
                                             <button type="button" class="btn btn-dark btn-sm btn-block"
-                                                    onclick="test()">Node
+                                                    onclick="setNodeStrokeWidth()">Node
                                             </button>
                                         </div>
                                         <div class="col-3">
-                                            <button type="button" class="btn btn-dark btn-sm btn-block">All</button>
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                            onclick="setNodesStrokeWidth()">All</button>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="nodeColorPalettes">Color</label>
+                                    <label for="nodeColorPalettes">Stroke Width</label>
                                     <div class="form-row">
                                         <div class="col-6">
-                                            <input id='TODO2' type="text"
-                                                   class="form-control form-control-sm graph-settings" value="1"/>
+                                            <input id='TODO1' type="text" min="0"
+                                                   class="form-control form-control-sm graph-settings" value="5"/>
                                         </div>
                                         <div class="col-3">
                                             <button type="button" class="btn btn-dark btn-sm btn-block"
-                                                    onclick="test()">Node
+                                                    onclick="setNodeStrokeWidth()">Node
                                             </button>
                                         </div>
                                         <div class="col-3">
-                                            <button type="button" class="btn btn-dark btn-sm btn-block">All</button>
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                            onclick="setNodesStrokeWidth()">All</button>
                                         </div>
                                     </div>
                                 </div>
@@ -304,7 +306,7 @@
                                     <label for="nodeColorPalettes">Color Palette</label>
                                     <div class="form-row">
                                         <div class="col-9">
-                                            <select onchange="setNodeColorPalette(this)"
+                                            <select
                                                     class="form-control custom-select custom-select-sm graph-settings"
                                                     id="nodeColorPalettes">
                                                 <option>BrBg</option>
@@ -328,41 +330,45 @@
                                             </select>
                                         </div>
                                         <div class="col-3">
-                                            <button type="button" class="btn btn-dark btn-sm btn-block">Apply</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="nodeColorPalettes">Stroke Width</label>
-                                    <div class="form-row">
-                                        <div class="col-6">
-                                            <input id='txtBox-node-stroke-width' type="text"
-                                                   class="form-control form-control-sm graph-settings" value="1"/>
-                                        </div>
-                                        <div class="col-3">
                                             <button type="button" class="btn btn-dark btn-sm btn-block"
-                                                    onclick="test()">Node
-                                            </button>
-                                        </div>
-                                        <div class="col-3">
-                                            <button type="button" class="btn btn-dark btn-sm btn-block">All</button>
+                                            onclick="setNodeColorPalette()">Apply</button>
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="form-group">
                                     <label for="nodeColorPalettes">Color</label>
                                     <div class="form-row">
                                         <div class="col-6">
-                                            <input id='TODO' type="text"
-                                                   class="form-control form-control-sm graph-settings" value="1"/>
+                                            <input id='node-colorBox' type="color"
+                                                   class="form-control form-control-sm graph-settings" value="#00AAFF"/>
                                         </div>
                                         <div class="col-3">
                                             <button type="button" class="btn btn-dark btn-sm btn-block"
-                                                    onclick="test()">Node
+                                                    onclick="setNodeColor()">Node
                                             </button>
                                         </div>
                                         <div class="col-3">
-                                            <button type="button" class="btn btn-dark btn-sm btn-block">All</button>
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                            onclick="setNodesColor()">All</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                 <div class="form-group">
+                                    <label for="nodeColorPalettes">Stroke Width</label>
+                                    <div class="form-row">
+                                        <div class="col-6">
+                                            <input id='txtBox-node-stroke-width' type="number" min="0"
+                                                   class="form-control form-control-sm graph-settings" value="5"/>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                                    onclick="setNodeStrokeWidth()">Node
+                                            </button>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                            onclick="setNodesStrokeWidth()">All</button>
                                         </div>
                                     </div>
                                 </div>

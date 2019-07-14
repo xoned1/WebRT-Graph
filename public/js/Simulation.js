@@ -35,7 +35,7 @@ module.exports = {
         this.d3
             .force('charge', d3.forceManyBody().strength(strength))
             .on('tick', ticked)
-            .on('end', () =>this.d3.force('charge', null));
+            .on('end', () => this.d3.force('charge', null));
     },
 
     linkforce: function () {
@@ -121,6 +121,9 @@ function ticked() {
             return node.weight;
         })
         .style("fill", (node) => {
+            if (node['fill']) {
+                return node['fill'];
+            }
             return module.nodeColor(node);
         });
 
