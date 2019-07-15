@@ -69,7 +69,7 @@ html, body {
 #nav-container {
   height: 100%;
   background-color: lighten(#242a30, 10%);
-  padding: 15px;
+  padding: 15px 15px 0 15px;
 }
 
 .nav {
@@ -102,9 +102,10 @@ html, body {
 }
 
 #nodes-tab-pane {
-  height: calc(100% - 42px - 33px - 58px);
-
+  height: calc(100% - 42px - 33px - 40px);
 }
+
+
 
 #select-options {
   flex: 0;
@@ -128,7 +129,7 @@ html, body {
   background-color: @nav-item-background-color;
   border-bottom: 1px solid @primary-color;
   padding: 10px;
-  margin-top: 20px;
+  margin-bottom: 20px;
   font-size: 13px;
 }
 
@@ -160,6 +161,11 @@ html, body {
   flex: 0;
   margin-top: auto;
   margin-bottom: auto;
+}
+
+#node-settings {
+  overflow-y: scroll;
+   height: calc(100% - 42px - 13px);
 }
 
 #data-node {
@@ -276,7 +282,7 @@ thead {
 
 input[type=text].graph-settings,
 input[type=number].graph-settings,
-input[type=color].graph-settings{
+input[type=color].graph-settings {
   background: -webkit-linear-gradient(-45deg, rgb(131, 100, 169) 0%, rgb(125, 125, 175) 40%, rgb(119, 152, 187) 100%) !important;
   color: white;
 }

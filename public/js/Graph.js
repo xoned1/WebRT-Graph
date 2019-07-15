@@ -119,6 +119,13 @@ module.exports = {
         nodes.data().forEach(node => {
             node['fill'] = color;
         });
+    },
+
+    setNodeStrokeColor(nodes, color) {
+        nodes.style('stroke', color);
+        nodes.data().forEach(node => {
+            node['stroke-color'] = color;
+        });
     }
 
 };

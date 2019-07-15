@@ -405,6 +405,11 @@ function drawGraph() {
             .style("fill", (node) => {
                 return Graph.getNodeColor(node)
             })
+            .style("stroke", (node) => {
+                if(node['stroke-color']) {
+                    return node['stroke-color'];
+                }
+            })
             .style("stroke-width", (node) => {
                 if (node['stroke-width']) {
                     return node['stroke-width']
@@ -417,6 +422,7 @@ function drawGraph() {
     }
 
     var beforeHoverNodeColor;
+
     function handleMouseOver(d, i) {
         let color = d3.color(d3.select(this).style('fill'));
         beforeHoverNodeColor = color;
@@ -816,6 +822,19 @@ window.setNodeColor = function () {
 window.setNodesColor = function () {
     const value = $('#node-colorBox').val();
     Graph.setNodeColor(d3.selectAll('circle'), value);
+};
+
+window.setNodeStrokeColor = function () {
+    d3.selectAll('circle').on('click', function (node) {
+        const value = $('#txtBox-node-stroke-color').val();
+        Graph.setNodeStrokeColor(d3.select(this), value);
+        d3.selectAll('circle').on('click', clickNode)
+    });
+};
+
+window.setNodesStrokeColor = function () {
+    const value = $('#txtBox-node-stroke-color').val();
+    Graph.setNodeStrokeColor(d3.selectAll('circle'), value);
 };
 
 function setSourceNameInHeader(sourceName) {
