@@ -8,6 +8,10 @@ module.exports = class SourcesReact extends React.Component {
         super(props);
         this.state = {
             sourcesReq: null,
+            loadingCopyToClipBoard: false,
+            loadingViewSource: false,
+            loadingRemoveSource: false,
+            loadingName: ""
         };
 
         socket.on('source-added', () => {
@@ -29,7 +33,8 @@ module.exports = class SourcesReact extends React.Component {
         });
     }
 
-    static remove(name) {
+    remove(name) {
+        //this.setState({loadingRemoveSource: true, loadingName: name});
         const json = {sourceName: name};
         Util.postJSON('/removeSource', json);
     }
@@ -39,6 +44,56 @@ module.exports = class SourcesReact extends React.Component {
         Util.postJSON('/setActiveSource', source)
     }
 
+    showSourceData(name) {
+        this.setState({loadingViewSource: true, loadingName: name});
+        $.get("/getSource", {sourceName: name}, (source) => {
+            $('#source-view-header').text('Source:' + source.name);
+            $('#source-view-body').text(source.data);
+            this.setState({loadingViewSource: false, loadingName: name});
+        });
+    }
+
+    copyToClipboard(name) {
+        this.setState({loadingCopyToClipBoard: true, loadingName: name});
+        $.get("/getSource", {sourceName: name}, (source) => {
+            Util.copyToClipBoard(source.data);
+            this.setState({loadingCopyToClipBoard: false, loadingName: name});
+        });
+    }
+
+    getCopyToClipBoardButton(e) {
+        if (this.state.loadingCopyToClipBoard && this.state.loadingName === e.name) {
+            return <span className="spinner-border spinner-border-sm" role="status">
+                <span className="sr-only">Loading...</span>
+            </span>
+        }
+        return <i className="fas fa-clipboard-list"
+                  onClick={() => this.copyToClipboard(e.name)}
+                  title="Copy Source to Clipboard"/>
+    }
+
+    getViewSourceButton(e) {
+        if (this.state.loadingViewSource && this.state.loadingName === e.name) {
+            return <span className="spinner-border spinner-border-sm" role="status">
+                <span className="sr-only">Loading...</span>
+            </span>
+        }
+        return <i className="fas fa-eye"
+                  onClick={() => this.showSourceData(e.name)}
+                  data-toggle="modal" data-target="#source-view-modal"
+                  title="View Source"/>
+    }
+
+    getRemoveSourceButton(e) {
+        if (this.state.loadingRemoveSource && this.state.loadingName === e.name) {
+            return <span className="spinner-border spinner-border-sm" role="status">
+                <span className="sr-only">Loading...</span>
+            </span>
+        }
+        return <i className="fas fa-trash-alt"
+                  onClick={() => this.remove(e.name)}
+                  title="Delete Source"/>
+    }
 
     render() {
         const sourcesReq = this.state.sourcesReq;
@@ -64,7 +119,9 @@ module.exports = class SourcesReact extends React.Component {
             const active = e.name === sourcesReq.activeSource;
             const btnActiveClass = active ? 'btn-primary' : 'btn-secondary';
             const btnText = active ? 'Current' : 'Activate';
-
+            const viewSourceButton = this.getViewSourceButton(e);
+            const copyToClipBoardButton = this.getCopyToClipBoardButton(e);
+            const removeSourceButton = this.getRemoveSourceButton(e);
 
             const result = <div key={e.name} className="card border shadow rounded source-card">
                 <div className="source-item">
@@ -100,11 +157,9 @@ module.exports = class SourcesReact extends React.Component {
 
 
                         <div id="source-item-options">
-                            <i className="fas fa-project-diagram" data-toggle="tooltip"
-                               title="View Source"/>
-                            <i value={e.name} onClick={() => SourcesReact.remove(e.name)}
-                               className="fas fa-trash-alt" data-toggle="tooltip"
-                               title="Delete Source"/>
+                            {viewSourceButton}
+                            {copyToClipBoardButton}
+                            {removeSourceButton}
                         </div>
                     </div>
                 </div>
@@ -116,4 +171,6 @@ module.exports = class SourcesReact extends React.Component {
             return result;
         });
     }
+
+
 };
