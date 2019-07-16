@@ -244,18 +244,16 @@ app.get('/getAllSources', (req, res, next) => {
 app.get('/getSource', (req, res, next) => {
 
     const sourceName = req.query.sourceName;
-    if (sourceName) {
-        getUserData(req.user).get(sourceName).run(connection, function (err, result) {
-            if (err) {
-                console.log(err);
-                return res.end(err);
-            }
-
-            return res.end(result);
-
-        });
+    if (!sourceName) {
+        return res.end();
     }
-    res.end();
+    getUserData(req.user).get(sourceName).run(connection, function (err, result) {
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        }
+        return res.send(result);
+    });
 });
 
 app.post('/setSourceConfig', (req, res, next) => {
