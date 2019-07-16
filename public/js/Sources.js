@@ -22,7 +22,6 @@ module.exports = class SourcesReact extends React.Component {
         });
         socket.on('active-source-changed', (msg) => {
             this.getSources();
-            setActiveSource(msg); //TODO für anderen nutzer muss es gesetzt werden. ist das wirklich so?
         });
         this.getSources();
     }
@@ -34,9 +33,11 @@ module.exports = class SourcesReact extends React.Component {
     }
 
     remove(name) {
-        //this.setState({loadingRemoveSource: true, loadingName: name});
+        this.setState({loadingRemoveSource: true, loadingName: name});
         const json = {sourceName: name};
-        Util.postJSON('/removeSource', json);
+        Util.postJSON('/removeSource', json).always(() => {
+            this.setState({loadingRemoveSource: false, loadingName: name});
+        });
     }
 
     static setActiveSource(name) {
