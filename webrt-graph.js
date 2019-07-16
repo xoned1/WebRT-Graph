@@ -1,6 +1,7 @@
 const express = require('express');
 const session = require('express-session');
-const path = require('path')
+const path = require('path');
+const bcrypt = require('bcrypt');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const bodyParser = require('body-parser');
@@ -94,7 +95,7 @@ app.post('/dologin', (req, res, next) => {
 //Creates new user in database if not exists
 app.post('/createUser', (req, res, next) => {
     const username = req.body.username;
-    const password = req.body.password;
+    var password = req.body.password;
 
     getUserTable().get(username).run(connection, (err, user) => {
         //Check if user already exists in database
@@ -103,8 +104,13 @@ app.post('/createUser', (req, res, next) => {
             return res.end("User already exists!");
         }
 
+        const salt = bcrypt.genSaltSync();
+        password = bcrypt.hashSync(password, salt);
         //Insert new user into users table
-        getUserTable().insert({username: username, password: password}).run(connection, function (err, result) {
+        getUserTable().insert({
+            username: username,
+            password: password
+        }).run(connection, function (err, result) {
             if (err) {
                 console.log(err);
                 res.send(err);
@@ -238,15 +244,17 @@ app.get('/getAllSources', (req, res, next) => {
 app.get('/getSource', (req, res, next) => {
 
     const sourceName = req.query.sourceName;
+    if (sourceName) {
+        getUserData(req.user).get(sourceName).run(connection, function (err, result) {
+            if (err) {
+                console.log(err);
+                return res.end(err);
+            }
 
-    getUserData(req.user).get(sourceName).run(connection, function (err, result) {
-        if (err) {
-            console.log(err);
-            return res.end(err);
-        }
-
-        res.send(result);
-    });
+            res.send(result);
+        });
+    }
+    res.end();
 });
 
 app.post('/setSourceConfig', (req, res, next) => {
@@ -364,7 +372,7 @@ function createLoginStrategy() {
                 if (err) {
                     done(err);
                 }
-                if (user && user.password === password) {
+                if (user && bcrypt.compareSync(password, user.password)) {
                     done(null, user)
                 } else {
                     //Incorrect password
