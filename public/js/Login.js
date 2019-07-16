@@ -4,7 +4,7 @@ $(document).ready(() => {
 
     $(document).keydown((event) => {
         if (event.key === "Enter") {
-            if (isTabActive('#sign-in-pill')) {
+            if (Util.isTabActive('#sign-in-pill')) {
                 $("#login-button").click();
             } else {
                 $("#signup-button").click();
