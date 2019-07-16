@@ -95,7 +95,7 @@ app.post('/dologin', (req, res, next) => {
 //Creates new user in database if not exists
 app.post('/createUser', (req, res, next) => {
     const username = req.body.username;
-    var password = req.body.password;
+    const password = req.body.password;
 
     getUserTable().get(username).run(connection, (err, user) => {
         //Check if user already exists in database
@@ -105,11 +105,11 @@ app.post('/createUser', (req, res, next) => {
         }
 
         const salt = bcrypt.genSaltSync();
-        password = bcrypt.hashSync(password, salt);
+        const hash = bcrypt.hashSync(password, salt);
         //Insert new user into users table
         getUserTable().insert({
             username: username,
-            password: password
+            password: hash
         }).run(connection, function (err, result) {
             if (err) {
                 console.log(err);
@@ -251,7 +251,8 @@ app.get('/getSource', (req, res, next) => {
                 return res.end(err);
             }
 
-            res.send(result);
+            return res.end(result);
+
         });
     }
     res.end();
