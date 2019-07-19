@@ -3,14 +3,7 @@ module.exports = class GraphContext {
     constructor(source, data) {
         this.source = source;
         this.data = data;
-
-        //TODO workaround
-        if (this.getLinks() && this.getLinks().length > 0 && this.getLinks()[0].target.id) {
-            for (let key in this.getLinks()) {
-                this.getLinks()[key].source = this.getLinks()[key].source.id;
-                this.getLinks()[key].target = this.getLinks()[key].target.id;
-            }
-        }
+        this.origin = JSON.parse(JSON.stringify(data)); //deep copy
     }
 
     getName() {
@@ -97,6 +90,26 @@ module.exports = class GraphContext {
 
     getLinkCount() {
         return this.getLinks().length;
+    }
+
+    getOrigin() {
+        return this.origin;
+    }
+
+    getSource() {
+        return this.source;
+    }
+
+    getCompressedData() {
+        if (this.getLinks() && this.getLinks().length > 0 && this.getLinks()[0].target.id) {
+            for (let key in this.getLinks()) {
+                this.getLinks()[key]['stroke-width'] = this.getLinks()[key]['stroke-width'];
+                this.getLinks()[key]['stroke-color'] = this.getLinks()[key]['stroke-color'];
+                this.getLinks()[key].source = this.getLinks()[key].source.id;
+                this.getLinks()[key].target = this.getLinks()[key].target.id;
+            }
+        }
+        return this.data;
     }
 
 };
