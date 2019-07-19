@@ -837,6 +837,65 @@ window.setNodesStrokeColor = function () {
     Graph.setNodeStrokeColor(d3.selectAll('circle'), value);
 };
 
+window.setLinksColor = function () {
+    const value = $('#txtBox-link-color').val();
+    Graph.setLinkColor(d3.selectAll('path'), value);
+};
+
+window.setLinkColor = function () {
+    d3.selectAll('path').on('click', function (link) {
+        const value = $('#txtBox-link-color').val();
+        Graph.setLinkColor(d3.select(this), value);
+        d3.selectAll('path').on('click', null)
+    });
+};
+
+window.setLinksWidth = function () {
+    const value = $('#txtBox-link-width').val();
+    Graph.setLinkWidth(d3.selectAll('path'), value);
+};
+
+window.setLinkWidth = function () {
+    d3.selectAll('path').on('click', function (link) {
+        const value = $('#txtBox-link-width').val();
+        Graph.setLinkWidth(d3.select(this), value);
+        d3.selectAll('path').on('click', null)
+    });
+};
+
+
+window.setNodeImage = function () {
+    d3.selectAll('circle').on('click', function (node) {
+        const value = $('#nodeImageComboBox').val();
+        Graph.setNodeImage(d3.select(this), value);
+        d3.selectAll('circle').on('click', clickNode)
+    });
+};
+
+window.setNodesImage = function () {
+    const value = $('#nodeImageComboBox').val();
+    Graph.setNodeImage(d3.selectAll('circle'), value);
+};
+
+window.resetGraph = function () {
+    context = new GraphContext(context.getSource(), context.getOrigin());
+    drawGraph();
+};
+
+window.saveImage = function () {
+
+    const fileReader = new FileReader();
+    fileReader.onload = function () {
+        const data = fileReader.result.split(',')[1];
+        const name = $('#add-image-name').val();
+
+        const json = {name: name, image: data};
+        Util.postJSON('/addImage', json);
+    };
+    fileReader.readAsDataURL($('#fileChooser-addImage').prop('files')[0]);
+
+};
+
 function setSourceNameInHeader(sourceName) {
     $('#header-source-name').text(sourceName.substring(0, 25));
 }

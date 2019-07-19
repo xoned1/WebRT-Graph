@@ -126,7 +126,25 @@ module.exports = {
         nodes.data().forEach(node => {
             node['stroke-color'] = color;
         });
-    }
+    },
+
+    setLinkWidth(links, width) {
+        links.style('stroke-width', width + "px");
+        links.data().forEach(link => {
+            if (link['target']) {//warum ?
+                link['stroke-width'] = width;
+            }
+        });
+    },
+
+    setLinkColor(links, color) {
+        links.style('stroke', color);
+        links.data().forEach(link => {
+            if (link['target']) {
+                link['stroke-color'] = color;
+            }
+        });
+    },
 
 };
 

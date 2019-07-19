@@ -108,6 +108,16 @@ function ticked() {
     module.link
         .attr("d", (link) => {
             return getLinkLine(link);
+        })
+        .style("stroke-width", (link) => {
+            if (link['stroke-width']) {
+                return link['stroke-width'] + "px";
+            }
+        })
+        .style("stroke", (link) => {
+            if (link['stroke-color']) {
+                return link['stroke-color'];
+            }
         });
 
     module.node
