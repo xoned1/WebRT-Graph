@@ -29,6 +29,7 @@
     <link rel="stylesheet" type="text/css" href="css/checkbox.css">
     <link rel="stylesheet" type="text/css" href="css/slider.css">
     <link rel="stylesheet" type="text/css" href="css/scrollbar.css">
+    <link rel="stylesheet" type="text/css" href="css/images.css">
 
     <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
     <script src="//unpkg.com/react@16/umd/react.development.js" crossorigin></script>
@@ -102,6 +103,9 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="settings-tab" href="#settings" data-toggle="tab">Settings</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="images-tab" href="#images" data-toggle="tab">Images</a>
             </li>
 
         </ul>
@@ -198,7 +202,7 @@
         </div>
 
 
-        <a id="circle" onclick="showAddSourceWindow()">+</a>
+        <a class="circle" onclick="showAddSourceWindow()">+</a>
     </div>
 
     <div id="graph" class="tab-pane fade" role="tabpanel">
@@ -356,6 +360,27 @@
                                         <div class="col-3">
                                             <button type="button" class="btn btn-dark btn-sm btn-block"
                                                     onclick="setNodesColor()">All
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nodeColorPalettes">Images</label>
+                                    <div class="form-row">
+                                        <div class="col-6">
+                                            <select
+                                                    class="form-control custom-select custom-select-sm graph-settings"
+                                                    id="nodeImageComboBox">
+                                            </select>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                                    onclick="setNodeImage()">Node
+                                            </button>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                                    onclick="setNodesImage()">All
                                             </button>
                                         </div>
                                     </div>
@@ -542,6 +567,39 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="config-tab">
+        <div id="images-container"></div>
+        <a class="circle" data-toggle="modal" data-target="#addImageWindow">+</a>
+        <div id="addImageWindow" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Upload Image</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Select the image you want to upload.</p>
+                        <div class="form-group">
+                            <label for="add-image-name">Image Name</label>
+                            <input type="text" class="form-control" id="add-image-name"
+                                   aria-describedby="emailHelp" placeholder="Enter Image Name">
+                            <label for="fileChooser-addImage">Image</label>
+                            <input type="file" class="form-control-file" id="fileChooser-addImage">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveImage()">
+                            Save Image
+                        </button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 <script type="text/javascript" src="bundle.js"></script>

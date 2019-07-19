@@ -22,6 +22,7 @@ module.exports = class SourcesReact extends React.Component {
         });
         socket.on('active-source-changed', (msg) => {
             this.getSources();
+            this.props.loadSource(msg);
         });
         this.getSources();
     }
@@ -172,6 +173,4 @@ module.exports = class SourcesReact extends React.Component {
             return result;
         });
     }
-
-
 };

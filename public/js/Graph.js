@@ -67,7 +67,7 @@ module.exports = {
         if (node.weight) {
             return nodeColors(node.weight)
         }
-        return nodeColors(defaultNodeWeight);
+        return nodeColors(this.defaultNodeWeight);
     },
 
     calcNodeWeights: function (context) {
@@ -76,7 +76,7 @@ module.exports = {
         //if weight config not defined apply default node weight to all nodes
         if (!context.getConfigNodeWeight()) {
             context.getNodes().forEach((node) => {
-                node.weight = defaultNodeWeight;
+                node.weight = this.defaultNodeWeight;
             });
             return;
         }
@@ -146,6 +146,23 @@ module.exports = {
         });
     },
 
+    setNodeImage(nodes, image) {
+        nodes.data().forEach(node => {
+            node['fill'] = ':' + image;
+        });
+    },
+
+    getNodeFill(node, id) {
+        if (node['fill']) {
+            const fill = node['fill'];
+            return this.isFillImage(fill) ? 'url(#pattern' + id + ')' : fill;
+        }
+        return nodeColors(node);
+    },
+
+    isFillImage(fill) {
+        return fill[0] === ':';
+    }
 };
 
 var nodeColors = createPalette(d3.interpolateBrBG);

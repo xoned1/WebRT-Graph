@@ -1,12 +1,13 @@
 require('./SVG2Image');
 const DataTable = require('./DataTable');
-const SourcesReact = require('./Sources');
+const Sources = require('./Sources');
 const NodeInfo = require('./NodeInfo');
 const NodeBar = require('./NodeBar');
 const Graph = require('./Graph');
 const GraphContext = require('./GraphContext');
 const ZoomPane = require('./ZoomPane');
 const Simulation = require('./Simulation');
+const Images = require('./Images');
 const Util = require('./Util');
 
 const forbiddenNodeVars = ["id", "x", "y", "vx", "vy", "index"];
@@ -37,8 +38,7 @@ function getUserData() {
     });
 }
 
-//TODO name is kind of misleanding.. setSource invokes getSource..
-function setActiveSource(sourceName) {
+function loadSource(sourceName) {
     $.get("/getSource", {sourceName: sourceName}, (source) => {
         setSourceNameInHeader(source.name);
         const data = JSON.parse(source.data);
@@ -57,15 +57,18 @@ $(document).ready(() => {
             } else if (e.key === "f") {
                 ZoomPane.zoomFit(0.95, 500);
                 return false;
+            } else if (e.ctrlKey && e.key === "z") {
+                resetGraph();
+                return false;
             }
         };
 
         getUserData().then(userData => {
             updateLogoutText(userData);
             ReactDOM.render(
-                <SourcesReact/>, document.getElementById('sources-container')
+                <Sources loadSource={loadSource}/>, document.getElementById('sources-container')
             );
-            setActiveSource(userData.activeSource);
+            loadSource(userData.activeSource);
         });
 
 
@@ -73,6 +76,10 @@ $(document).ready(() => {
             <NodeInfo forbiddenVars={forbiddenNodeVars} ref={(nodeInfo) => {
                 window.nodeInfo = nodeInfo
             }}/>, document.getElementById('info-container')
+        );
+
+        ReactDOM.render(
+            <Images/>, document.getElementById('images-container')
         );
         /*
         Hide overlay on click
@@ -195,7 +202,7 @@ function updateNodeConfigBox() {
 function updateNodeIDconfigBox() {
     const nodeIDBox = $('#sourceConfigDropBoxNodeID');
     nodeIDBox.empty();
-    if (context.getConfigNode()) {
+    if (context.getConfigNode() && context.getNodes().length > 0) {
         Object.keys(context.getNodes()[0]).forEach((key) => { //TODO nur wenn node/links angeben sind.. graph nur anzeigenn wenn nodes/links defined?
             nodeIDBox.append(Util.createOption(key));
         });
@@ -207,7 +214,7 @@ function updateNodeTitleConfigBox() {
     const titleBox = $('#sourceConfigDropBoxNodeTitle');
     titleBox.empty();
     titleBox.append(Util.createOption(none));
-    if (context.getConfigNode()) {
+    if (context.getConfigNode() && context.getNodes().length > 0) {
         Object.keys(context.getNodes()[0]).forEach((key) => {
             titleBox.append(Util.createOption(key));
         });
@@ -219,7 +226,7 @@ function updateNodeWeightConfigBox() {
     const weightBox = $('#sourceConfigDropBoxNodeWeight');
     weightBox.empty();
     weightBox.append(Util.createOption(none));
-    if (context.getConfigNode()) {
+    if (context.getConfigNode() && context.getNodes().length > 0) {
         Object.keys(context.getNodes()[0]).forEach((key) => {
             weightBox.append(Util.createOption(key));
         });
@@ -324,7 +331,9 @@ function drawGraph() {
         markerIDs[i] = i;
     }
 
-    d3.select("#graph-svg").append("defs").selectAll("marker")
+    const defs = d3.select("#graph-svg").append("defs");
+
+    defs.selectAll("marker")
         .data(markerIDs)
         .enter()
         .append("marker")
@@ -341,6 +350,27 @@ function drawGraph() {
         .attr("orient", "auto")
         .append("path")
         .attr("d", "M 0 0 L 10 5 L 0 10 z");
+
+    defs.selectAll('pattern')
+        .data(context.getNodes().filter((node) => {
+            return node['fill'] && Graph.isFillImage(node['fill']);
+        }))
+        .enter()
+        .append('pattern')
+        .attr('id', (node) => 'pattern' + node[context.getConfigNodeId()])
+        .attr('x', "0%")
+        .attr('y', "0%")
+        .attr('height', "100%")
+        .attr('width', "100%")
+        .attr('viewBox', "0 0 512 512")
+        .append('image')
+        .attr('x', "0%")
+        .attr('y', "0%")
+        .attr('width', "512")
+        .attr('height', "512")
+        .attr('xlink:href', node => {
+            return 'getImage?name=' + node.fill.substring(1, node.fill.length)
+        });
 
 
     let nodeParents = rootGroup
@@ -403,10 +433,10 @@ function drawGraph() {
                 return node.weight;
             })
             .style("fill", (node) => {
-                return Graph.getNodeColor(node)
+                return Graph.getNodeFill(node, node[context.getConfigNodeId()]);
             })
             .style("stroke", (node) => {
-                if(node['stroke-color']) {
+                if (node['stroke-color']) {
                     return node['stroke-color'];
                 }
             })
@@ -424,24 +454,27 @@ function drawGraph() {
     var beforeHoverNodeColor;
 
     function handleMouseOver(d, i) {
-        let color = d3.color(d3.select(this).style('fill'));
+        const color = d3.color(d3.select(this).style('fill'));
+        const nodeDOM = d3.select(this);
         beforeHoverNodeColor = color;
-        color = color.brighter(1);
-        d3.select(this)
-            .style('stroke-width', '4px')
-            .style('fill', color);
+        if (color) {
+            nodeDOM.style('fill', color.brighter(1));
+        }
+        nodeDOM.style('stroke-width', '4px')
     }
 
     function handleMouseExit(node, i) {
 
+        const nodeDOM = d3.select(this);
         var width = '2px';
         if (node['stroke-width']) {
             width = node['stroke-width'] + 'px';
         }
 
-        d3.select(this)
-            .style('stroke-width', width)
-            .style('fill', beforeHoverNodeColor);
+        if (beforeHoverNodeColor) {
+            nodeDOM.style('fill', beforeHoverNodeColor);
+        }
+        nodeDOM.style('stroke-width', width);
     }
 
     /*
@@ -622,7 +655,7 @@ function stopSaveAnimation(animation, success) {
 
 window.saveGraph = function () {
     const animation = startSaveAnimation();
-    const json = {source: context.getName(), graphData: context.getData()};
+    const json = {source: context.getName(), graphData: context.getCompressedData()};
 
     $.ajax('/setGraphData', {
         data: JSON.stringify(json),
@@ -728,7 +761,7 @@ window.createSource = function () {
 
     Util.postJSON('/createSource', json);
     closeAddSourceWindow();
-    SourcesReact.setActiveSource(name)
+    Sources.setActiveSource(name)
 };
 
 

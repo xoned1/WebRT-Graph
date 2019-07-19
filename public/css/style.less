@@ -105,8 +105,6 @@ html, body {
   height: calc(100% - 42px - 33px - 40px);
 }
 
-
-
 #select-options {
   flex: 0;
   display: flex;
@@ -165,7 +163,7 @@ html, body {
 
 #node-settings {
   overflow-y: scroll;
-   height: calc(100% - 42px - 13px);
+  height: calc(100% - 42px - 13px);
 }
 
 #data-node {
@@ -274,6 +272,28 @@ thead {
   right: 0;
   width: 40%;
   text-align: center;
+}
+
+.circle {
+  width: 60px;
+  height: 60px;
+  background: @primary-color;
+  border-radius: 30px;
+  position: absolute;
+  right: 20px;
+  bottom: 30px;
+  font-size: 40px;
+  text-align: center;
+  line-height: 60px;
+  color: white !important;
+  user-select: none;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.39);
+
+
+  &:hover {
+    background-color: darken(@primary-color, 10%);
+  }
 }
 
 .nodes-value-row {

@@ -18,11 +18,11 @@ module.exports = class GraphContext {
         return this.data[this.getConfigNode()];
     }
 
-    getNode(nodeid) {
+    getNode(nodeId) {
 
         const nodes = this.getNodes();
         for (let key in nodes) {
-            if (this.getNodes()[key][this.getConfigNodeId()].toString() === nodeid.toString()) {
+            if (this.getNodes()[key][this.getConfigNodeId()].toString() === nodeId.toString()) {
                 return this.getNodes()[key];
             }
         }

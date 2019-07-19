@@ -1,5 +1,5 @@
 const lineTypeDropDown = $('#linkLineType');
-
+const Graph = require('./Graph');
 module.exports = {
 
     d3: d3.forceSimulation(),
@@ -130,11 +130,8 @@ function ticked() {
         .attr("r", (node) => {
             return node.weight;
         })
-        .style("fill", (node) => {
-            if (node['fill']) {
-                return node['fill'];
-            }
-            return module.nodeColor(node);
+        .attr("fill", (node) => {
+            return Graph.getNodeFill(node, node[module.context.getConfigNodeId()]);
         });
 
 
