@@ -2,7 +2,7 @@ module.exports = {
 
     showAlert: function (name, message) {
         let control = $('#' + name + '-message');
-        $('#' + name + '-alert').addClass('show');
+        $('#' + name + '-alert').addClass('show').css('z-index', '0');
         control.text(message);
     },
 
@@ -68,5 +68,5 @@ module.exports = {
 };
 
 window.hideAlert = function (name) {
-    $('#' + name + '-alert').removeClass('show')
+    $('#' + name + '-alert').removeClass('show').css('z-index', '-1');
 };
