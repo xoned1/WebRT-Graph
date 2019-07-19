@@ -256,6 +256,65 @@ app.get('/getSource', (req, res, next) => {
     });
 });
 
+app.post('/addImage', (req, res, next) => {
+
+    //base64 encoded
+    const name = req.body.name;
+    const image = req.body.image;
+
+    const contents = new Buffer(image, 'base64');
+    getUserImages(req.user).insert({name: name, image: r.binary(contents)}).run(connection, (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        }
+        io.emit('image-added');
+        return res.end()
+    });
+});
+
+app.get('/getImages', (req, res, next) => {
+
+    getUserImages(req.user).run(connection, (err, cursor) => {
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        }
+        cursor.toArray((err, result) => {
+            if (err) {
+                console.log(err);
+                return res.end(err);
+            }
+            return res.send(result);
+        })
+    });
+});
+
+app.get('/getImage', (req, res, next) => {
+
+    const name = req.query.name;
+    getUserImages(req.user).get(name).run(connection, (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        }
+        return res.end(result.image);
+    })
+});
+
+app.post('/removeImage', (req, res, next) => {
+
+    //base64 encoded
+    const name = req.body.name;
+    getUserImages(req.user).get(name).delete().run(connection, (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.send(err);
+        }
+        return res.end()
+    });
+});
+
 app.post('/setSourceConfig', (req, res, next) => {
 
     const config = req.body.sourceConfig;
@@ -351,6 +410,10 @@ function getUser(username) {
 
 function getUserData(username) {
     return getDataDb().table(username);
+}
+
+function getUserImages(username) {
+    return getDataDb().table(username + "_images");
 }
 
 function getDatabaseConfig(fileName) {
