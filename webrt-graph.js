@@ -179,7 +179,7 @@ app.post('/setGraphData', (req, res, next) => {
         }
 
         source.data = JSON.stringify(graphData);
-
+        source.lastModified = new Date().getTime();
         getUserData(req.user).get(selectedSource).update(source).run(connection, (err, result) => {
             if (err) {
                 console.log(err);
@@ -222,7 +222,7 @@ app.post('/removeSource', (req, res, next) => {
 });
 
 app.get('/getAllSources', (req, res, next) => {
-    getUserData(req.user).orderBy('lastModified').run(connection, function (err, cursor) {
+    getUserData(req.user).orderBy(r.desc('lastModified')).run(connection, function (err, cursor) {
         if (err) {
             console.log(err);
             return res.end(err);
