@@ -64,7 +64,29 @@ module.exports = {
             img.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
             img.src = src;
         }
+    },
+
+    hookFormValidation: function () {
+        const forms = document.getElementsByClassName('needs-validation');
+        Array.prototype.filter.call(forms, function (form) {
+            form.addEventListener('submit', function (event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    },
+
+    hookModalFormReset: function () {
+        $('.modal').on('hidden.bs.modal', function (e) {
+            $('.modal input.reset').val('');
+            $('.modal .alert.reset').alert('close');
+        });
     }
+
+
 };
 
 window.hideAlert = function (name) {

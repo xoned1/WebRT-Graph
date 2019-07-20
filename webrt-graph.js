@@ -196,9 +196,10 @@ app.post('/createSource', (req, res, next) => {
 
     getUserData(req.user).insert(source)
         .run(connection, (err, cursor) => {
-            if (err) {
-                console.log(err);
-                return res.end(err)
+            if (err || cursor.first_error) {
+                const errorMsg = err ? err : cursor.first_error.substring(0, cursor.first_error.indexOf(':'));
+                console.log(errorMsg);
+                return res.end(translateErrorMessage('Source', errorMsg))
             }
             res.end();
         });
@@ -264,9 +265,10 @@ app.post('/addImage', (req, res, next) => {
 
     const contents = new Buffer(image, 'base64');
     getUserImages(req.user).insert({name: name, image: r.binary(contents)}).run(connection, (err, result) => {
-        if (err) {
-            console.log(err);
-            return res.send(err);
+        if (err || result.first_error) {
+            const errorMsg = err ? err : result.first_error.substring(0, result.first_error.indexOf(':'));
+            console.log(errorMsg);
+            return res.end(translateErrorMessage('Image', errorMsg))
         }
         io.emit('image-added');
         return res.end()
@@ -484,4 +486,12 @@ function createSessionStore() {
         sessionTimeout: 86400000,
         flushInterval: 240000, //Clear all 4 minutes the expired sessions
     });
+}
+
+function translateErrorMessage(type, message) {
+    message = message.toLowerCase();
+    if (message.includes('duplicate') && message.includes('primary key')) {
+        return type + ' already exists';
+    }
+    return message;
 }

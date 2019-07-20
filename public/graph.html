@@ -136,7 +136,7 @@
             <div class="modal-dialog modal-lg " role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="source-view-header">Modal title</h5>
+                        <h5 class="modal-title" id="source-view-header">Source Data</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -151,75 +151,82 @@
         </div>
         <div id="sources-container">
         </div>
-        <div class="card border border-primary shadow rounded" id="add-source-box">
-
-            <div class="font-weight-bold text-center card-header">
-                <button type="button" class="close" aria-label="Close" onclick="closeAddSourceWindow()">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                Create Source
-            </div>
-            <div id="add-source-body-box">
-
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" class="form-control form-control-lg" placeholder=""
-                           id="create-source-name" oninput="addSourceWindowOnChange()">
-                </div>
-                <div class="form-group">
-                    <label>Description</label>
-                    <input type="text" class="form-control form-control-lg" placeholder=""
-                           id="create-source-description">
-                </div>
-                <ul class="nav nav-tabs" id="create-source-type-tabs" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#fromscratch" data-toggle="tab">From Scratch</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#fromfile" data-toggle="tab">From File</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#fromtext" data-toggle="tab">Paste Text</a>
-                    </li>
-                </ul>
-                <div class="tab-content" id="myTabContent">
-                    <div class="tab-pane fade show active" id="fromscratch" role="tabpanel">
+        <div id="add-source-box" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">New Source</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <div class="tab-pane fade show " id="fromfile" role="tabpanel">
-                        <input type="file" class="form-control-file" id="create-source-file-button">
-                    </div>
-                    <div class="tab-pane fade show " id="fromtext" role="tabpanel">
-                        <div class="form-group">
-                            <label>JSON/XML/CSV</label>
-                            <textarea class="form-control" id="create-source-area" rows="5"
-                                      oninput="addSourceWindowOnChange()">
+
+                    <div class="modal-body">
+                        <div class="alert alert-danger fade text-center reset" role="alert" id="create-source-alert">
+                            <span id="create-source-message"></span>
+                            <button type="button" onclick="hideAlert('create-source')" class="close" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form class="needs-validation">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" class="form-control form-control-lg reset" placeholder=""
+                                       id="create-source-name" oninput="addSourceWindowOnChange()" required>
+                                <div class="invalid-feedback">
+                                    Please provide a valid name.
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <input type="text" class="form-control form-control-lg reset" placeholder=""
+                                       id="create-source-description">
+                            </div>
+                            <label>Select your source</label>
+                            <ul class="nav nav-pills nav-justified" id="create-source-type-tabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#fromscratch" data-toggle="tab">From Scratch</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#fromfile" data-toggle="tab">From File</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#fromtext" data-toggle="tab">Paste Text</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="fromscratch" role="tabpanel">
+                                </div>
+                                <div class="tab-pane fade show" id="fromfile" role="tabpanel">
+                                    <input type="file" class="form-control-file reset" id="create-source-file-button">
+                                </div>
+                                <div class="tab-pane fade show " id="fromtext" role="tabpanel">
+                                    <div class="form-group">
+                                        <label>JSON/XML/CSV</label>
+                                        <textarea class="form-control" id="create-source-area" rows="5"
+                                                  oninput="addSourceWindowOnChange()">
 {
   "key": "value" //JSON example
 }
                             </textarea>
-                        </div>
-
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <button style="width: 100%" type="button" id="create-source-create-btn"
-                                onclick="createSource()"
-                                class="btn btn-primary mb-2" disabled>
-                            Create
-                        </button>
-                    </div>
-                    <div class="col">
-                        <button style="width: 100%" type="button" onclick="closeAddSourceWindow()"
-                                class="btn btn-dark  mb-2">Close
-                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" id="create-source-create-btn"
+                                        onclick="createSource()" class="btn btn-primary mb-2" disabled>
+                                    Create Source
+                                </button>
+                                <button type="button" data-dismiss="modal" class="btn btn-dark  mb-2">Close
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
+
         </div>
-
-
-        <a class="circle" onclick="showAddSourceWindow()">+</a>
+        <a class="circle" data-toggle="modal" data-target="#add-source-box">+</a>
     </div>
 
     <div id="graph" class="tab-pane fade" role="tabpanel">
@@ -599,17 +606,23 @@
                         </button>
                     </div>
                     <div class="modal-body">
+                        <div class="alert alert-danger fade text-center reset" role="alert" id="create-image-alert">
+                            <span id="create-image-message"></span>
+                            <button type="button" onclick="hideAlert('create-image')" class="close" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                         <p>Select the image you want to upload.</p>
                         <div class="form-group">
                             <label for="add-image-name">Image Name</label>
-                            <input type="text" class="form-control" id="add-image-name"
-                                   aria-describedby="emailHelp" placeholder="Enter Image Name">
+                            <input type="text" class="form-control reset" id="add-image-name"
+                                   placeholder="Enter Image Name">
                             <label for="fileChooser-addImage">Image</label>
-                            <input type="file" class="form-control-file" id="fileChooser-addImage">
+                            <input type="file" class="form-control-file reset" id="fileChooser-addImage">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveImage()">
+                        <button type="button" class="btn btn-primary" onclick="saveImage()">
                             Save Image
                         </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

@@ -50,87 +50,90 @@ function loadSource(sourceName) {
 }
 
 $(document).ready(() => {
-        document.onkeydown = function (e) {
-            if (e.ctrlKey && e.key === "s") {
-                saveGraph();
-                return false;
-            } else if (e.key === "f") {
-                ZoomPane.zoomFit(0.95, 500);
-                return false;
-            } else if (e.ctrlKey && e.key === "z") {
-                resetGraph();
-                return false;
-            }
-        };
 
-        getUserData().then(userData => {
-            updateLogoutText(userData);
+    Util.hookFormValidation();
+    Util.hookModalFormReset();
+
+    document.onkeydown = function (e) {
+        if (e.ctrlKey && e.key === "s") {
+            saveGraph();
+            return false;
+        } else if (e.key === "f") {
+            ZoomPane.zoomFit(0.95, 500);
+            return false;
+        } else if (e.ctrlKey && e.key === "z") {
+            resetGraph();
+            return false;
+        }
+    };
+
+    getUserData().then(userData => {
+        updateLogoutText(userData);
+        ReactDOM.render(
+            <Sources loadSource={loadSource}/>, document.getElementById('sources-container')
+        );
+        loadSource(userData.activeSource);
+    });
+
+
+    ReactDOM.render(
+        <NodeInfo forbiddenVars={forbiddenNodeVars} ref={(nodeInfo) => {
+            window.nodeInfo = nodeInfo
+        }}/>, document.getElementById('info-container')
+    );
+
+    ReactDOM.render(
+        <Images/>, document.getElementById('images-container')
+    );
+    /*
+    Hide overlay on click
+     */
+    $('#overlay').hide().click(function () {
+        $(this).hide(200);
+    });
+
+    /*
+    Tab activation events
+     */
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        let activatedTab = e.target.id;
+
+        if (activatedTab === "graph-tab") {
+            if (!isGraphInitialized && context != null) {
+                drawGraph()
+            }
+
+            $('html, body').css("overflow-y", "hidden");
+        } else if (activatedTab === "data-tab") {
             ReactDOM.render(
-                <Sources loadSource={loadSource}/>, document.getElementById('sources-container')
+                <DataTable context={context}/>, document.getElementById('data-table-container')
             );
-            loadSource(userData.activeSource);
-        });
+
+            $('html, body').css("overflow-y", "scroll");
+        } else if (activatedTab === "sources-tab") {
+            $('html, body').css("overflow-y", "scroll");
+        }
+    });
+
+    /*
+    Settgings: Force slider
+     */
+    const manyBodySlider = document.getElementById("slider-manybody");
+    manyBodySlider.oninput = function () {
+        $('#value-manybody').text(this.value);
+    };
+
+    const forceLinkSlider = document.getElementById("slider-linkforce");
+    forceLinkSlider.oninput = function () {
+        $('#value-linkforce').text(this.value);
+        Simulation.linkforce();
+    };
 
 
-        ReactDOM.render(
-            <NodeInfo forbiddenVars={forbiddenNodeVars} ref={(nodeInfo) => {
-                window.nodeInfo = nodeInfo
-            }}/>, document.getElementById('info-container')
-        );
-
-        ReactDOM.render(
-            <Images/>, document.getElementById('images-container')
-        );
-        /*
-        Hide overlay on click
-         */
-        $('#overlay').hide().click(function () {
-            $(this).hide(200);
-        });
-
-        /*
-        Tab activation events
-         */
-        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-            let activatedTab = e.target.id;
-
-            if (activatedTab === "graph-tab") {
-                if (!isGraphInitialized && context != null) {
-                    drawGraph()
-                }
-
-                $('html, body').css("overflow-y", "hidden");
-            } else if (activatedTab === "data-tab") {
-                ReactDOM.render(
-                    <DataTable context={context}/>, document.getElementById('data-table-container')
-                );
-
-                $('html, body').css("overflow-y", "scroll");
-            } else if (activatedTab === "sources-tab") {
-                $('html, body').css("overflow-y", "scroll");
-            }
-        });
-
-        /*
-        Settgings: Force slider
-         */
-        const manyBodySlider = document.getElementById("slider-manybody");
-        manyBodySlider.oninput = function () {
-            $('#value-manybody').text(this.value);
-        };
-
-        const forceLinkSlider = document.getElementById("slider-linkforce");
-        forceLinkSlider.oninput = function () {
-            $('#value-linkforce').text(this.value);
-            Simulation.linkforce();
-        };
-
-
-        d3.select('svg').call(
-            zoom.scaleExtent([0, 10])
-                .on("zoom", ZoomPane.zoomed));
-    }
-);
+    d3.select('svg').call(
+        zoom.scaleExtent([0, 10])
+            .on("zoom", ZoomPane.zoomed));
+});
 
 function setContext(source, data) {
     context = new GraphContext(source, data);
@@ -759,8 +762,15 @@ window.createSource = function () {
             }
     };
 
-    Util.postJSON('/createSource', json);
-    closeAddSourceWindow();
+    Util.postJSON('/createSource', json).fail(msg => {
+        Util.showAlert('create-source', msg);
+    }).done(msg => {
+        if (msg) {
+            return Util.showAlert('create-source', msg);
+        }
+        $('#add-source-box').modal('hide');
+    });
+
     Sources.setActiveSource(name)
 };
 
@@ -773,24 +783,11 @@ window.addSourceWindowOnChange = function () {
     $('#create-source-create-btn').prop("disabled", disable)
 };
 
-
 // var force = d3.layout.force()
 //     .gravity(.05)
 //     .distance(100)
 //     .charge(-100)
 //     .size([width, height]);
-
-
-window.showAddSourceWindow = function () {
-    $('#add-source-box').show("clip", 100);
-    $('#page-mask').show("clip", 100);
-};
-
-window.closeAddSourceWindow = function () {
-    $('#add-source-box').hide("clip", 100);
-    $('#page-mask').hide("clip", 100)
-};
-
 
 window.setLinkLineType = function (e) {
     const config = {configLinkLineType: e.value};
@@ -923,7 +920,12 @@ window.saveImage = function () {
         const name = $('#add-image-name').val();
 
         const json = {name: name, image: data};
-        Util.postJSON('/addImage', json);
+        Util.postJSON('/addImage', json).done(msg => {
+            if (msg) {
+                return Util.showAlert('create-image', msg);
+            }
+            $('#addImageWindow').modal('hide');
+        });
     };
     fileReader.readAsDataURL($('#fileChooser-addImage').prop('files')[0]);
 
