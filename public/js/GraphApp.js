@@ -152,7 +152,7 @@ function updateLogoutText(data) {
     Config
  */
 function updateGraphTabState() {
-    if (!context.getConfigNode() || !context.getConfigNodeId()) {
+    if (!context.getConfigNode()) { //TODO || !context.getConfigNodeId()) {
         $('#graph-tab').addClass('disabled');
         $('#config-tab').addClass('primary-color')
     } else {
