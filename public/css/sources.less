@@ -83,17 +83,39 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-}
 
-i {
-  font-size: 20px;
-  margin-bottom: 10px;
+  i {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
 }
 
 .close {
   position: relative;
   top: 0;
   bottom: 0;
+}
+
+#shared-items {
+  display: flex;
+  flex-direction: column;
+
+  i {
+    margin-left: 10px;
+  }
+}
+
+.shared-user {
+  margin-left: 10px;
+  display: inline;
+
+  i {
+    margin-left: 5px;
+  }
+
+  i:hover {
+    color: red;
+  }
 }
 
 #source-view-modal {

@@ -8,6 +8,7 @@ const GraphContext = require('./GraphContext');
 const ZoomPane = require('./ZoomPane');
 const Simulation = require('./Simulation');
 const Images = require('./Images');
+const SharedWith = require('./SharedWith');
 const Util = require('./Util');
 
 const forbiddenNodeVars = ["id", "x", "y", "vx", "vy", "index"];
@@ -133,7 +134,8 @@ $(document).ready(() => {
     d3.select('svg').call(
         zoom.scaleExtent([0, 10])
             .on("zoom", ZoomPane.zoomed));
-});
+})
+;
 
 function setContext(source, data) {
     context = new GraphContext(source, data);

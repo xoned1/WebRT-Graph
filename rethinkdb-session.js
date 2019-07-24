@@ -81,12 +81,17 @@ module.exports = function (session) {
 
     // Get Session
     RethinkStore.prototype.get = function (sid, fn) {
-        this.instance.db(this.options.database).table(this.options.table).get(sid).run(this.conn).then(function (data) {
-            logDetails('[details] get result: ', data);
-            fn(null, data ? JSON.parse(data.session) : null);
-        }).catch(function (err) {
-            fn(err);
-        });
+        if (this.conn) {
+            this.instance.db(this.options.database).table(this.options.table).get(sid).run(this.conn).then(function (data) {
+                logDetails('[details] get result: ', data);
+                return fn(null, data ? JSON.parse(data.session) : null);
+            }).catch(function (err) {
+                return fn(err);
+            });
+        } else {
+            fn("DB not connected. Try refresh");
+        }
+
     };
 
     // Set Session

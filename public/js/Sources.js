@@ -1,6 +1,7 @@
 const Util = require('./Util');
+const SharedWith = require('./SharedWith');
 
-module.exports = class SourcesReact extends React.Component {
+module.exports = class Sources extends React.Component {
 
     constructor(props) {
 
@@ -8,11 +9,16 @@ module.exports = class SourcesReact extends React.Component {
         super(props);
         this.state = {
             sourcesReq: null,
+            shareModalSource: "",
             loadingCopyToClipBoard: false,
             loadingViewSource: false,
             loadingRemoveSource: false,
             loadingName: ""
         };
+
+        this.capture = this.capture.bind(this);
+        this.shareWithUser = this.shareWithUser.bind(this);
+        this.unShareWithUser = this.unShareWithUser.bind(this);
 
         socket.on('source-added', () => {
             this.getSources();
@@ -31,6 +37,14 @@ module.exports = class SourcesReact extends React.Component {
         $.get('/getAllSources', (data) => {
             this.setState({sourcesReq: data})
         });
+    }
+
+    setShareModalSource(name) {
+        this.state.sourcesReq.sources.forEach(source => {
+            if (source.name === name) {
+                this.setState({shareModalSource: source});
+            }
+        })
     }
 
     remove(name) {
@@ -86,6 +100,12 @@ module.exports = class SourcesReact extends React.Component {
                   title="View Source"/>
     }
 
+    getShareSourceButton(e) {
+        return <i className="fas fa-share-alt"
+                  data-toggle="modal" data-target="#share-source-modal"
+                  title="Share Source" data-source={e.name} onClick={x => this.setShareModalSource(e.name)}/>
+    }
+
     getRemoveSourceButton(e) {
         if (this.state.loadingRemoveSource && this.state.loadingName === e.name) {
             return <span className="spinner-border spinner-border-sm" role="status">
@@ -95,6 +115,39 @@ module.exports = class SourcesReact extends React.Component {
         return <i className="fas fa-trash-alt"
                   onClick={() => this.remove(e.name)}
                   title="Delete Source"/>
+    }
+
+    static getSharedWithBlock(source) {
+        if (source.sharedWith && source.sharedWith.length > 0) {
+            return source.sharedWith.slice(0, 3).map(user => {
+                return <div key={user}>{user}</div>
+            });
+        }
+        return <div>-</div>
+    }
+
+    capture(e) {
+        this.state.caption = e.target.value;
+    }
+
+    shareWithUser() {
+        const json = {sourceName: this.state.shareModalSource.name, shareWithUser: this.state.caption};
+
+        Util.postJSON('/shareWithUser', json).done(data => {
+            const source = this.state.shareModalSource;
+            source.sharedWith = [...source.sharedWith, data];
+            this.setState({shareModalSource: source});
+        });
+    }
+
+    unShareWithUser(userD) {
+        const json = {sourceName: this.state.shareModalSource.name, unShareWithUser: userD};
+
+        Util.postJSON('/unShareWithUser', json).done(data => {
+            const source = this.state.shareModalSource;
+            source.sharedWith = source.sharedWith.filter(user => user !== data);
+            this.setState({shareModalSource: source});
+        });
     }
 
     render() {
@@ -116,21 +169,18 @@ module.exports = class SourcesReact extends React.Component {
             </div>;
         }
 
-        return sourcesReq.sources.map((e, i) => {
+        var test = sourcesReq.sources.map((e, i) => {
 
             const active = e.name === sourcesReq.activeSource;
             const btnActiveClass = active ? 'btn-primary' : 'btn-secondary';
             const btnText = active ? 'Current' : 'Activate';
-            const viewSourceButton = this.getViewSourceButton(e);
-            const copyToClipBoardButton = this.getCopyToClipBoardButton(e);
-            const removeSourceButton = this.getRemoveSourceButton(e);
 
             const result = <div key={e.name} className="card border shadow rounded source-card">
                 <div className="source-item">
                     <div className="source-item-left">
                         <div>
                             <button id={"btn-source-" + e.name} type="button"
-                                    onClick={() => SourcesReact.setActiveSource(e.name)}
+                                    onClick={() => Sources.setActiveSource(e.name)}
                                     className={"btn " + btnActiveClass} disabled={active}>
                                 {btnText}
                             </button>
@@ -145,6 +195,10 @@ module.exports = class SourcesReact extends React.Component {
                         </div>
                     </div>
                     <div className="source-item-right">
+                        <div id="shared-items">
+                            <div><u>Shared with</u>{this.getShareSourceButton(e)}</div>
+                            {Sources.getSharedWithBlock(e)}
+                        </div>
                         <div>
                             <div>
                                 Last modified: {Util.formatDate(new Date(e.lastModified))}
@@ -156,12 +210,10 @@ module.exports = class SourcesReact extends React.Component {
                                 Links: {e.linkCount}
                             </div>
                         </div>
-
-
                         <div id="source-item-options">
-                            {viewSourceButton}
-                            {copyToClipBoardButton}
-                            {removeSourceButton}
+                            {this.getViewSourceButton(e)}
+                            {this.getCopyToClipBoardButton(e)}
+                            {this.getRemoveSourceButton(e)}
                         </div>
                     </div>
                 </div>
@@ -172,5 +224,14 @@ module.exports = class SourcesReact extends React.Component {
             });
             return result;
         });
+
+        return <><SharedWith
+            sourceName={this.state.shareModalSource.name}
+            sharedUsers={this.state.shareModalSource.sharedWith}
+            shareWithUser={this.shareWithUser}
+            unShareWithUser={this.unShareWithUser}
+            shareUserInput={this.capture}/>{test}</>;
     }
+
+
 };

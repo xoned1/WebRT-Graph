@@ -75,18 +75,13 @@ app.get("/", function (req, res) {
 
 app.post('/dologin', (req, res, next) => {
     passport.authenticate('local', function (err, user, info) {
-        if (err) {
-            console.log(err);
-            return res.write(err);
-        }
+        if (logError(res, err)) { return res.end()}
+
         if (!user) {
             return res.send({err: "Username or password invalid."});
         }
         req.logIn(user, function (err) {
-            if (err) {
-                console.log(err);
-                return res.write(err.toString());
-            }
+            if (logError(res, err)) { return res.end()}
             return res.send({redirect: '/WebRT-Graph'});
         });
     })(req, res, next);
@@ -111,18 +106,13 @@ app.post('/createUser', (req, res, next) => {
             username: username,
             password: hash
         }).run(connection, function (err, result) {
-            if (err) {
-                console.log(err);
-                res.send(err);
-            }
+            if (logError(res, err)) { return res.end()}
+
             console.log("New user \"" + username + "\" added");
 
             //Create own table for user
             getDataDb().tableCreate(username, {primaryKey: "name"}).run(connection, function (err, result) {
-                if (err) {
-                    console.log(err);
-                    res.send(err);
-                }
+                if (logError(res, err)) { return res.end()}
                 console.log("New table \"" + username + "\" created");
 
                 //Insert basic data in his own table
@@ -130,10 +120,7 @@ app.post('/createUser', (req, res, next) => {
                     "name": username,
                     "last_login": new Date().getTime(),
                 }).run(connection, function (err, result) {
-                    if (err) {
-                        console.log(err);
-                        res.send(err);
-                    }
+                    if (logError(res, err)) { return res.end()}
                     res.end();
                 });
             });
@@ -150,9 +137,7 @@ app.get('/logout', (req, res) => {
 
 app.get('/getUserData', function (req, res) {
     getUserData(req.user).get(req.user).run(connection, (err, result) => {
-        if (err) {
-            return res.send(err);
-        }
+        if (logError(res, err)) { return res.end()}
         res.send(result);
     });
 });
@@ -173,18 +158,12 @@ app.post('/setGraphData', (req, res, next) => {
     const selectedSource = req.body.source;
     const graphData = req.body.graphData;
     getUserData(req.user).get(selectedSource).run(connection, (err, source) => {
-        if (err) {
-            console.log(err);
-            return res.send(err);
-        }
+        if (logError(res, err)) { return res.end()}
 
         source.data = JSON.stringify(graphData);
         source.lastModified = new Date().getTime();
         getUserData(req.user).get(selectedSource).update(source).run(connection, (err, result) => {
-            if (err) {
-                console.log(err);
-                return res.send(err);
-            }
+            if (logError(res, err)) { return res.end()}
             res.end();
             //TODO return SAVED or something to make it sure
         });
@@ -224,16 +203,10 @@ app.post('/removeSource', (req, res, next) => {
 
 app.get('/getAllSources', (req, res, next) => {
     getUserData(req.user).orderBy(r.desc('lastModified')).run(connection, function (err, cursor) {
-        if (err) {
-            console.log(err);
-            return res.end(err);
-        }
+        if (logError(res, err)) { return res.end()}
 
         cursor.toArray(function (err, results) {
-            if (err) { //logAndEnd() function.. überall gleich
-                console.log(err);
-                return res.end(err);
-            }
+            if (logError(res, err)) { return res.end()}
 
             const response = {sources: results.filter((source) => source.name !== req.user)};
             response["activeSource"] = results.find((source) => source.name === req.user).activeSource;
@@ -249,10 +222,8 @@ app.get('/getSource', (req, res, next) => {
         return res.end();
     }
     getUserData(req.user).get(sourceName).run(connection, function (err, result) {
-        if (err) {
-            console.log(err);
-            return res.send(err);
-        }
+        if (logError(res, err)) { return res.end()}
+
         return res.send(result);
     });
 });
@@ -278,15 +249,11 @@ app.post('/addImage', (req, res, next) => {
 app.get('/getImages', (req, res, next) => {
 
     getUserImages(req.user).run(connection, (err, cursor) => {
-        if (err) {
-            console.log(err);
-            return res.send(err);
-        }
+        if (logError(res, err)) { return res.end()}
+
         cursor.toArray((err, result) => {
-            if (err) {
-                console.log(err);
-                return res.end(err);
-            }
+            if (logError(res, err)) { return res.end()}
+
             return res.send(result);
         })
     });
@@ -296,10 +263,8 @@ app.get('/getImage', (req, res, next) => {
 
     const name = req.query.name;
     getUserImages(req.user).get(name).run(connection, (err, result) => {
-        if (err) {
-            console.log(err);
-            return res.send(err);
-        }
+        if (logError(res, err)) { return res.end()}
+
         return res.end(result.image);
     })
 });
@@ -309,11 +274,44 @@ app.post('/removeImage', (req, res, next) => {
     //base64 encoded
     const name = req.body.name;
     getUserImages(req.user).get(name).delete().run(connection, (err, result) => {
-        if (err) {
-            console.log(err);
-            return res.send(err);
-        }
+        if (logError(res, err)) { return res.end()}
+
         return res.end()
+    });
+});
+
+app.post('/shareWithUser', (req, res, next) => {
+
+    const shareWithUser = req.body.shareWithUser;
+    const sourceName = req.body.sourceName;
+
+    getUserData(req.user).get(sourceName)('sharedWith').append(shareWithUser).default([]).run(connection, (err, result) => {
+        if (logError(res, err)) { return res.end()}
+
+        getUserData(req.user).get(sourceName).update({sharedWith: result}).run(connection, (err, result) => {
+            if (logError(res, err)) { return res.end()}
+
+            res.send(shareWithUser);
+        });
+    });
+});
+
+app.post('/unShareWithUser', (req, res, next) => {
+
+    const unShareWithUser = req.body.unShareWithUser;
+    const sourceName = req.body.sourceName;
+    getUserData(req.user).get(sourceName)('sharedWith').offsetsOf(unShareWithUser).run(connection, (err, index) => {
+        if (logError(res, err)) { return res.end()}
+
+        getUserData(req.user).get(sourceName)('sharedWith').deleteAt(index[0]).run(connection, (err, result) => {
+            if (logError(res, err)) { return res.end()}
+
+            getUserData(req.user).get(sourceName).update({sharedWith: result}).run(connection, (err, result) => {
+                if (logError(res, err)) { return res.end()}
+
+                res.send(unShareWithUser);
+            });
+        });
     });
 });
 
@@ -322,10 +320,7 @@ app.post('/setSourceConfig', (req, res, next) => {
     const config = req.body.sourceConfig;
 
     getUserData(req.user).get(config.name).run(connection, (err, source) => {
-        if (err) {
-            console.log(err);
-            return res.send(err);
-        }
+        if (logError(res, err)) { return res.end()}
 
         if (config.hasOwnProperty("configNode")) {
             source.configNode = config.configNode;
@@ -367,6 +362,14 @@ app.post('/setSourceConfig', (req, res, next) => {
         })
     });
 });
+
+function logError(res, err) {
+    if (err) { 
+        console.log(err);
+        return res.send(err);
+    }
+}
+
 
 /*
     -----------------------------------------------------
@@ -470,7 +473,6 @@ function createSessionHandler() {
     return session({
         key: 'sid',
         secret: 'dasndjansjdnaj3!dd(key)!',
-        cookie: {maxAge: null},
         store: createSessionStore(),
         resave: false,
         saveUninitialized: true
