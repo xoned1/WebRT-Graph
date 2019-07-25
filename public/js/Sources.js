@@ -134,9 +134,11 @@ module.exports = class Sources extends React.Component {
         const json = {sourceName: this.state.shareModalSource.name, shareWithUser: this.state.caption};
 
         Util.postJSON('/shareWithUser', json).done(data => {
-            const source = this.state.shareModalSource;
-            source.sharedWith = [...source.sharedWith, data];
-            this.setState({shareModalSource: source});
+            if (data === this.state.caption) {
+                const source = this.state.shareModalSource;
+                source.sharedWith = [...source.sharedWith, data];
+                this.setState({shareModalSource: source});
+            }
         });
     }
 
@@ -169,13 +171,27 @@ module.exports = class Sources extends React.Component {
             </div>;
         }
 
-        var test = sourcesReq.sources.map((e, i) => {
+        var sourceItems = sourcesReq.sources.map((e, i) => {
 
             const active = e.name === sourcesReq.activeSource;
             const btnActiveClass = active ? 'btn-primary' : 'btn-secondary';
             const btnText = active ? 'Current' : 'Activate';
+            const dark = e.shared ? "bg-dark text-white" : null;
 
-            const result = <div key={e.name} className="card border shadow rounded source-card">
+            var sharedWithOrBy;
+            if (!e.shared) {
+                sharedWithOrBy = <>
+                    <div><u>Shared with</u>{this.getShareSourceButton(e)}</div>
+                    {Sources.getSharedWithBlock(e)}</>
+            } else {
+                sharedWithOrBy = <>
+                    <div><u>Shared by</u></div>
+                    <div>{e.sharedBy}</div>
+                </>
+            }
+
+
+            const result = <div key={e.name} className={"card shadow rounded source-card " + dark}>
                 <div className="source-item">
                     <div className="source-item-left">
                         <div>
@@ -196,8 +212,7 @@ module.exports = class Sources extends React.Component {
                     </div>
                     <div className="source-item-right">
                         <div id="shared-items">
-                            <div><u>Shared with</u>{this.getShareSourceButton(e)}</div>
-                            {Sources.getSharedWithBlock(e)}
+                            {sharedWithOrBy}
                         </div>
                         <div>
                             <div>
@@ -230,7 +245,7 @@ module.exports = class Sources extends React.Component {
             sharedUsers={this.state.shareModalSource.sharedWith}
             shareWithUser={this.shareWithUser}
             unShareWithUser={this.unShareWithUser}
-            shareUserInput={this.capture}/>{test}</>;
+            shareUserInput={this.capture}/>{sourceItems}</>;
     }
 
 
