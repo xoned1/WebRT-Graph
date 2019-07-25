@@ -121,7 +121,16 @@ app.post('/createUser', (req, res, next) => {
                     "last_login": new Date().getTime(),
                 }).run(connection, function (err, result) {
                     if (logError(res, err)) { return res.end()}
-                    res.end();
+
+                    getDataDb().tableCreate(req.user + "_images").run(connection, function (err, result) {
+                        if (logError(res, err)) { return res.end()}
+
+                        getDataDb().tableCreate(req.user + "_shared").run(connection, function (err, result) {
+                            if (logError(res, err)) { return res.end()}
+
+                            res.end();
+                        });
+                    });
                 });
             });
         });
