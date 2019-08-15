@@ -59,6 +59,11 @@
   div button {
     height: 100%;
   }
+
+  div .btn.disabled, .btn:disabled {
+    //required because the opacity will result in different color when background dark or light
+    opacity: 1;
+  }
 }
 
 .source-item-left, .source-item-right {

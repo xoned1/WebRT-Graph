@@ -207,6 +207,7 @@ html, body {
   right: 0;
   top: 0;
   bottom: 0;
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -337,3 +338,33 @@ select.graph-settings option {
   background-color: rgb(125, 125, 175);
 }
 
+.alert-minimalist {
+  background-color: @background-color;
+  border-color: whitesmoke;
+  border-radius: 5px;
+  color: white;
+  padding: 10px;
+}
+
+.alert-minimalist > [data-notify="icon"] {
+  font-size: 60px;
+  margin-right: 12px;
+  float: left;
+}
+
+.alert-minimalist > [data-notify="title"] {
+  color: white;
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.alert-minimalist > [data-notify="message"] {
+  font-size: 80%;
+}
+
+.alert-minimalist > [data-notify="buttons"] {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}

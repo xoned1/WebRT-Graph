@@ -71,10 +71,8 @@ module.exports = class Images extends React.Component {
             const removeButton = this.getRemoveSourceButton(image);
 
             return <div className="image card shadow rounded" key={image.name}>
+                <h5 className="card-header">{image.name}</h5>
                 <img className="card-img-top" src={base}/>
-                <div className="card-body">
-                    {image.name}
-                </div>
                 {removeButton}
             </div>
 

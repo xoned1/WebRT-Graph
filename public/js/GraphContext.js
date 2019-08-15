@@ -100,16 +100,38 @@ module.exports = class GraphContext {
         return this.source;
     }
 
+    isShared() {
+        return this.source.shared;
+    }
+
+    getSharedBy() {
+        return this.source.sharedBy;
+    }
+
+    getLastModifiedDate() {
+        return this.source.lastModified;
+    }
+
+    setLastModifiedDate(date) {
+        this.source.lastModified = date;
+    }
+
     getCompressedData() {
-        if (this.getLinks() && this.getLinks().length > 0 && this.getLinks()[0].target.id) {
-            for (let key in this.getLinks()) {
-                this.getLinks()[key]['stroke-width'] = this.getLinks()[key]['stroke-width'];
-                this.getLinks()[key]['stroke-color'] = this.getLinks()[key]['stroke-color'];
-                this.getLinks()[key].source = this.getLinks()[key].source.id;
-                this.getLinks()[key].target = this.getLinks()[key].target.id;
+        const copy = JSON.parse(JSON.stringify(this.data)); //deep copy
+        const links = copy[this.getConfigLink()];
+        if (links && links.length > 0 &&
+            (links[0].target.id || links[0].target[this.getConfigNodeId()])) {
+            for (let key in links) {
+                links[key]['stroke-width'] = links[key]['stroke-width'];
+                links[key]['stroke-color'] = links[key]['stroke-color'];
+
+                const id = links[0].target.id ? 'id' : this.getConfigNodeId();
+
+                links[key].source = links[key].source[id];
+                links[key].target = links[key].target[id];
             }
         }
-        return this.data;
+        return copy;
     }
 
 };

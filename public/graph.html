@@ -56,6 +56,11 @@
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
 
+    <!--    Bootstrap Notify-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mouse0270-bootstrap-notify/3.1.7/bootstrap-notify.min.js"
+            crossorigin="anonymous"></script>
+
+
     <!--    SocketIO-->
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
 
@@ -184,20 +189,20 @@
                             <label>Select your source</label>
                             <ul class="nav nav-pills nav-justified" id="create-source-type-tabs" role="tablist">
                                 <li class="nav-item">
-                                    <a class="nav-link active" href="#fromscratch" data-toggle="tab">From Scratch</a>
+                                    <a id="nav-link-from-scratch" class="nav-link active" href="#fromscratch" data-toggle="tab">From Scratch</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#fromfile" data-toggle="tab">From File</a>
+                                    <a id="nav-link-from-file" class="nav-link" href="#fromfile" data-toggle="tab">From File</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#fromtext" data-toggle="tab">Paste Text</a>
+                                    <a id="nav-link-from-text" class="nav-link" href="#fromtext" data-toggle="tab">Paste Text</a>
                                 </li>
                             </ul>
                             <div class="tab-content" id="myTabContent">
                                 <div class="tab-pane fade show active" id="fromscratch" role="tabpanel">
                                 </div>
                                 <div class="tab-pane fade show" id="fromfile" role="tabpanel">
-                                    <input type="file" class="form-control-file reset" id="create-source-file-button">
+                                    <input type="file" class="form-control-file reset" id="create-source-file-button" oninput="addSourceWindowOnChange()">
                                 </div>
                                 <div class="tab-pane fade show " id="fromtext" role="tabpanel">
                                     <div class="form-group">
@@ -205,7 +210,8 @@
                                         <textarea class="form-control" id="create-source-area" rows="5"
                                                   oninput="addSourceWindowOnChange()">
 {
-  "key": "value" //JSON example
+  "comment": "JSON Example",
+  "key": "value"
 }
                             </textarea>
                                     </div>
@@ -491,19 +497,23 @@
                                onclick="explode()"></i>
                         </div>
                         <div>
-                            <i value="" class="fas fa-plus-circle" data-toggle="tooltip" title="Add Node"
+                            <i id="btn-toolbar-add-node" value="" class="fas fa-plus-circle" data-toggle="tooltip"
+                               title="Add Node"
+                               data-content="Click on graph area to place node"
                                onclick="addNode()"></i>
                         </div>
                         <div>
-                            <i value="" class="fas fa-minus-circle" data-toggle="tooltip" title="Remove Node"
+                            <i id="btn-toolbar-remove-node" value="" class="fas fa-minus-circle" data-toggle="tooltip" title="Remove Node"
+                                data-content="Click on the node you want to remove"
                                onclick="removeNode()"></i>
                         </div>
                         <div>
-                            <i value="" class="fas fa-vector-square" data-toggle="tooltip" title="Add Link"
+                            <i id="btn-toolbar-add-link" value="" class="fas fa-vector-square" data-toggle="tooltip" title="Add Link"
                                onclick="addLink()"></i>
                         </div>
                         <div>
-                            <i value="" class="fas fa-draw-polygon" data-toggle="tooltip" title="Remove Link"
+                            <i id="btn-toolbar-remove-link" value="" class="fas fa-draw-polygon" data-toggle="tooltip" title="Remove Link"
+                                data-content="Click on the link you want to remove"
                                onclick="removeLink()"></i>
                         </div>
                         <div>
@@ -598,7 +608,7 @@
         <div id="addImageWindow" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
-                    <form class="needs-validation" novalidate>
+                    <form id="imageUploadForm" class="needs-validation" novalidate>
                         <div class="modal-header">
                             <h5 class="modal-title">Upload Image</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -618,12 +628,12 @@
                             <div class="form-group">
                                 <label for="add-image-name">Image Name</label>
                                 <input type="text" class="form-control reset" id="add-image-name"
-                                       placeholder="Enter Image Name" required>
+                                       placeholder="Enter Image Name" oninput="validateImageUpload()" required>
                                 <div class="invalid-feedback">
                                     Please choose a name.
                                 </div>
                                 <label for="fileChooser-addImage">Image</label>
-                                <input type="file" class="form-control-file reset" id="fileChooser-addImage" required>
+                                <input type="file" class="form-control-file reset" id="fileChooser-addImage" oninput="validateImageUpload()" required>
                                 <div class="invalid-feedback">
                                     Please choose a file.
                                 </div>
@@ -631,7 +641,7 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" onclick="saveImage()">
+                            <button id="btnUploadImage" type="button" class="btn btn-primary" onclick="saveImage()" disabled>
                                 Save Image
                             </button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

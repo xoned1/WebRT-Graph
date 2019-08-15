@@ -41,9 +41,11 @@ module.exports = {
     },
 
     copyToClipBoard: function (text) {
+
         const dummy = $('<input>').val(text).appendTo('body').select();
-        document.execCommand('copy');
+        const result = document.execCommand('copy');
         dummy.remove();
+        return result;
     },
 
     toDataURL: function (src, callback, outputFormat) {
@@ -82,7 +84,13 @@ module.exports = {
     hookModalFormReset: function () {
         $('.modal').on('hidden.bs.modal', function (e) {
             $('.modal input.reset').val('');
-            $('.modal .alert.reset').alert('close');
+            $('.modal .alert.reset').removeClass("show");
+
+            if (e.currentTarget.id === "add-source-box") {
+                addSourceWindowOnChange();
+            } else if (e.currentTarget.id === "addImageWindow") {
+                validateImageUpload();
+            }
         });
     }
 

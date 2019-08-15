@@ -14,7 +14,7 @@ module.exports = class DataTable extends React.Component {
         });
 
         const body = nodes.map((node) => {
-            return <tr key={node.id}>
+            return <tr key={node.index}>
                 {nodeKeys.map((key) => {
                     return <td key={key}>{node[key]}</td>
                 })}

@@ -16,7 +16,8 @@ module.exports = {
 
         module.exports.DOMNodes.clear();
         node.each((node) => {
-            this.DOMNodes.set(node.id, $('circle[nodeID=' + node.id + ']'));
+            const id = node[context.getConfigNodeId()];
+            this.DOMNodes.set(id, $('circle[nodeID=' + id + ']'));
         });
     },
 
@@ -43,7 +44,10 @@ module.exports = {
         const strength = $('#slider-linkforce').val();
         this.d3
             .force('link', d3.forceLink().distance(0).id((d) => {
-                return d.id;
+                if (d.id) {
+                    return d.id;
+                }
+                return d[module.context.getConfigNodeId()];
             }))
             .on('tick', ticked);
     },
@@ -53,27 +57,26 @@ module.exports = {
         this.d3.restart();
 
         this.d3.nodes(module.context.getNodes())
-            .force('center', d3.forceCenter(module.width / 2, module.height / 2))
+        //.force('center', d3.forceCenter(module.width / 2, module.height / 2))
             .force('radius', d3.forceCollide().radius((d) => {
                 return d.weight;
             }))
             .force('link', d3.forceLink().strength(0.000001)
                 .id((d) => {
-                    return d.id;
+                    if (d.id) {
+                        return d.id;
+                    }
+                    return d[module.context.getConfigNodeId()];
                 })
                 .links(module.context.getLinks()))
             .on('tick', ticked)
             .on('end', () => module.exports.d3.force('charge', null));
-
-
     },
-
-
 };
 
 var lineX2 = function (d) {
-
-    let nodeRadius = parseInt(getGraphNodeById(d.target.id).attr("r"));
+    const id = module.context.getConfigNodeId();
+    let nodeRadius = parseInt(getGraphNodeById(d.target[id]).attr("r"));
     var length = Math.sqrt(Math.pow(d.target.y - d.source.y, 2) + Math.pow(d.target.x - d.source.x, 2));
     if (length === 0) length = 1; //TODO
     var scale = (length - nodeRadius) / length;
@@ -81,8 +84,8 @@ var lineX2 = function (d) {
     return d.target.x - offset;
 };
 var lineY2 = function (d) {
-
-    let nodeRadius = parseInt(getGraphNodeById(d.target.id).attr("r"));
+    const id = module.context.getConfigNodeId();
+    let nodeRadius = parseInt(getGraphNodeById(d.target[id]).attr("r"));
     var length = Math.sqrt(Math.pow(d.target.y - d.source.y, 2) + Math.pow(d.target.x - d.source.x, 2));
     if (length === 0) length = 1; //TODO
     var scale = (length - nodeRadius) / length;

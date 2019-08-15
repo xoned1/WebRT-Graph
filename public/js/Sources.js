@@ -26,9 +26,10 @@ module.exports = class Sources extends React.Component {
         socket.on('source-removed', () => {
             this.getSources();
         });
-        socket.on('active-source-changed', (msg) => {
+        //TODO nur für sich selbst
+        socket.on('active-source-changed', (sourceName, sourceOwner) => {
             this.getSources();
-            this.props.loadSource(msg);
+            this.props.loadSource(sourceName, sourceOwner);
         });
         this.getSources();
     }
@@ -55,9 +56,13 @@ module.exports = class Sources extends React.Component {
         });
     }
 
-    static setActiveSource(name) {
-        const source = {activeSource: name};
-        Util.postJSON('/setActiveSource', source)
+    static postActiveSource(source) {
+        const json = {
+            activeSource: source.name,
+            activeSourceOwner: source.shared ? source.sharedBy : null
+        };
+
+        Util.postJSON('/setActiveSource', json)
     }
 
     showSourceData(name) {
@@ -69,10 +74,16 @@ module.exports = class Sources extends React.Component {
         });
     }
 
-    copyToClipboard(name) {
+    copyToClipboard(button, name) {
         this.setState({loadingCopyToClipBoard: true, loadingName: name});
         $.get("/getSource", {sourceName: name}, (source) => {
-            Util.copyToClipBoard(source.data);
+            if (!Util.copyToClipBoard(source.data)) {
+
+                $(button).popover();
+                $(button).popover('show');
+                //setTimeout(() => $(button).popover('hide'), 5000)
+            }
+
             this.setState({loadingCopyToClipBoard: false, loadingName: name});
         });
     }
@@ -84,8 +95,12 @@ module.exports = class Sources extends React.Component {
             </span>
         }
         return <i className="fas fa-clipboard-list"
-                  onClick={() => this.copyToClipboard(e.name)}
-                  title="Copy Source to Clipboard"/>
+                  onClick={(that) => this.copyToClipboard(that.target, e.name)}
+                  title="Copy Source to Clipboard"
+                  data-toggle="popover"
+                  data-content='"Copy to Clipboard" is not supported. Please use "Show Source"'
+
+        />
     }
 
     getViewSourceButton(e) {
@@ -173,7 +188,9 @@ module.exports = class Sources extends React.Component {
 
         var sourceItems = sourcesReq.sources.map((e, i) => {
 
-            const active = e.name === sourcesReq.activeSource;
+            const name = sourcesReq.activeSource;
+            const owner = sourcesReq.activeSourceOwner;
+            const active = e.sharedBy ? e.name === name && e.sharedBy === owner : e.name === name;
             const btnActiveClass = active ? 'btn-primary' : 'btn-secondary';
             const btnText = active ? 'Current' : 'Activate';
             const dark = e.shared ? "bg-dark text-white" : null;
@@ -196,7 +213,7 @@ module.exports = class Sources extends React.Component {
                     <div className="source-item-left">
                         <div>
                             <button id={"btn-source-" + e.name} type="button"
-                                    onClick={() => Sources.setActiveSource(e.name)}
+                                    onClick={() => Sources.postActiveSource(e)}
                                     className={"btn " + btnActiveClass} disabled={active}>
                                 {btnText}
                             </button>
@@ -237,6 +254,10 @@ module.exports = class Sources extends React.Component {
             $(function () {
                 $('i[data-toggle="tooltip"]').tooltip()
             });
+            $(function () {
+                // $('[data-toggle="popover"]').popover({trigger: 'manual'})
+            });
+
             return result;
         });
 

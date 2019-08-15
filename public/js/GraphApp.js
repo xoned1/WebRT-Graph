@@ -8,7 +8,6 @@ const GraphContext = require('./GraphContext');
 const ZoomPane = require('./ZoomPane');
 const Simulation = require('./Simulation');
 const Images = require('./Images');
-const SharedWith = require('./SharedWith');
 const Util = require('./Util');
 
 const forbiddenNodeVars = ["id", "x", "y", "vx", "vy", "index"];
@@ -19,7 +18,11 @@ const zoom = d3.zoom();
 var context = null;
 var isGraphInitialized = false;
 var rootGroup;
+var user;
+var socket;
+var beforeHoverNodeColor;
 
+const FROM_SCRATCH = {nodes: [], links: []};
 
 ZoomPane.setZoom(zoom);
 
@@ -39,8 +42,25 @@ function getUserData() {
     });
 }
 
-function loadSource(sourceName) {
-    $.get("/getSource", {sourceName: sourceName}, (source) => {
+function loadSource(sourceName, owner) {
+
+    var json = {sourceName: sourceName};
+    if (owner) {
+        json.sourceOwner = owner;
+    }
+
+    $.get("/getSource", json, (source) => {
+        const namespace = '/' + source.name + ":" + source.sharedBy;
+        if (!socket || !socket.connected) {
+            socket = io(namespace);
+            socket.on('source-changed', (triggeredBy) => {
+                if (user !== triggeredBy) {
+                    showSourceChangedNotification();
+                }
+            });
+        }
+
+
         setSourceNameInHeader(source.name);
         const data = JSON.parse(source.data);
         setContext(source, data);
@@ -50,10 +70,12 @@ function loadSource(sourceName) {
     });
 }
 
+
 $(document).ready(() => {
 
     Util.hookFormValidation();
     Util.hookModalFormReset();
+
 
     document.onkeydown = function (e) {
         if (e.ctrlKey && e.key === "s") {
@@ -70,10 +92,11 @@ $(document).ready(() => {
 
     getUserData().then(userData => {
         updateLogoutText(userData);
+        user = userData.name;
         ReactDOM.render(
             <Sources loadSource={loadSource}/>, document.getElementById('sources-container')
         );
-        loadSource(userData.activeSource);
+        loadSource(userData.activeSource, userData.activeSourceOwner);
     });
 
 
@@ -113,6 +136,14 @@ $(document).ready(() => {
             $('html, body').css("overflow-y", "scroll");
         } else if (activatedTab === "sources-tab") {
             $('html, body').css("overflow-y", "scroll");
+        } else if (activatedTab === 'config-tab') {
+            initConfigBoxes();
+        }
+
+        if (activatedTab === "nav-link-from-scratch" ||
+            activatedTab === "nav-link-from-file" ||
+            activatedTab === "nav-link-from-text") {
+            addSourceWindowOnChange();
         }
     });
 
@@ -456,7 +487,6 @@ function drawGraph() {
             .call(ZoomPane.nodeDragHandler)
     }
 
-    var beforeHoverNodeColor;
 
     function handleMouseOver(d, i) {
         const color = d3.color(d3.select(this).style('fill'));
@@ -536,8 +566,13 @@ window.addNode = function () {
         const uuid = Util.uuidv4();
         const newNode = {};
 
-        newNode[context.getConfigNodeId()] = uuid;
-        newNode[context.getConfigNodeTitle()] = uuid;
+        var id = context.getConfigNodeId();
+        if (!id) {
+            id = "ID";
+        }
+
+        newNode[id] = uuid;
+        newNode[id] = uuid;
         newNode.x = mouse[0];
         newNode.y = mouse[1];
         context.getNodes().push(newNode);
@@ -550,6 +585,7 @@ window.addNode = function () {
 
 window.removeNode = function () {
     enableSelectNodeMode();
+    $('#btn-toolbar-remove-node').popover('show');
     const keyEvent = event => {
         if (event.key === "Escape") {
             cancelNodeRemoveMode(keyEvent);
@@ -558,7 +594,7 @@ window.removeNode = function () {
     document.addEventListener("keydown", keyEvent);
 
     d3.selectAll('circle').on('click', node => {
-
+        $('#btn-toolbar-remove-node').popover('hide');
         const nodeId = node[context.getConfigNodeId()];
         context.getNodes().splice(node.index, 1);
 
@@ -578,18 +614,23 @@ window.removeNode = function () {
 
 window.addLink = function () {
     enableSelectNodeMode();
+    $('#btn-toolbar-add-link').popover({content: "Step 1: Click on the source node"}).popover('show');
     const keyEvent = event => {
         if (event.key === "Escape") {
             cancelNodeRemoveMode(keyEvent); //TODO name unpassend.. remove node..
+            $('#btn-toolbar-add-link').popover('dispose');
+            d3.selectAll('circle').on('click', null);
         }
     };
     document.addEventListener("keydown", keyEvent);
 
     d3.selectAll('circle').on('click', node => {
         let sourceNode = node;
-
+        $('#btn-toolbar-add-link').popover('dispose');
+        $('#btn-toolbar-add-link').popover({content: 'Step 2: Select the target node'}).popover('show');
         d3.selectAll('circle').on('click', node => {
-
+            $('#btn-toolbar-add-link').popover('dispose');
+            d3.selectAll('circle').on('click', null);
             context.getLinks().push({source: sourceNode, target: node});
             drawGraph();
         });
@@ -598,6 +639,7 @@ window.addLink = function () {
 
 window.removeLink = function () {
     enableSelectLinkMode();
+    $('#btn-toolbar-remove-link').popover('show');
     const keyEvent = event => {
         if (event.key === "Escape") {
             stopSelectLinkMode();
@@ -608,6 +650,8 @@ window.removeLink = function () {
     d3.selectAll('path').on('click', function (link) {
         context.getLinks().splice(link.index, 1);
         drawGraph();
+        $('#btn-toolbar-remove-link').popover('hide');
+        d3.selectAll('path').on('click', null);
     });
 };
 
@@ -618,16 +662,21 @@ function enableSelectNodeMode() {
 
 function enableAddNodeMode() {
     $('svg').css('cursor', 'crosshair');
+    $('#btn-toolbar-add-node').popover('show');
 }
 
 function cancelNodeAddMode(keyEvent) {
     $('svg').css('cursor', 'auto').unbind();
-    document.removeEventListener("keydown", keyEvent)
+    document.removeEventListener("keydown", keyEvent);
+    $('#btn-toolbar-add-node').popover('hide');
+    d3.select('svg').on('click', null);
 }
 
 function cancelNodeRemoveMode(keyEvent) {
     $('circle').css('cursor', 'auto').unbind();
-    document.removeEventListener("keydown", keyEvent)
+    document.removeEventListener("keydown", keyEvent);
+    $('#btn-toolbar-remove-node').popover('hide');
+    d3.selectAll('circle').on('click', clickNode);
 }
 
 function enableSelectLinkMode() {
@@ -636,6 +685,8 @@ function enableSelectLinkMode() {
 
 function stopSelectLinkMode() {
     $('path').css('cursor', 'auto');
+    $('#btn-toolbar-remove-link').popover('hide');
+     d3.selectAll('path').on('click', null);
 }
 
 function pulse() {
@@ -658,17 +709,27 @@ function stopSaveAnimation(animation, success) {
     });
 }
 
-window.saveGraph = function () {
+window.saveGraph = function (overwrite) {
     const animation = startSaveAnimation();
-    const json = {source: context.getName(), graphData: context.getCompressedData()};
+    const json = {
+        source: context.getName(),
+        sourceOwner: context.isShared() ? context.getSharedBy() : null,
+        graphData: context.getCompressedData(),
+        lastModified: context.getLastModifiedDate(),
+        overwrite: overwrite
+    };
 
-    $.ajax('/setGraphData', {
+    $.ajax('/saveGraph', {
         data: JSON.stringify(json),
         contentType: 'application/json',
         type: 'POST',
     })
         .done((data) => {
-            stopSaveAnimation(animation, true);
+            stopSaveAnimation(animation, data.success);
+            context.setLastModifiedDate(data.lastModified);
+            if (data === "overwrite required") {
+                showSourceOverwriteNotification();
+            }
         }).fail((jqXHR, textStatus, errorThrown) => {
         stopSaveAnimation(animation, false);
         Util.showAlert('graph', textStatus);
@@ -739,17 +800,50 @@ function hideNode(nodeid, hide) {
     }
 }
 
+window.addSourceWindowOnChange = function () {
+    const name = $('#create-source-name').val();
+
+    var disable = false;
+    if (Util.isTabActive('#nav-link-from-scratch')) {
+        disable = false;
+    } else if (Util.isTabActive('#nav-link-from-file')) {
+        disable = $('#create-source-file-button')[0].files.length === 0;
+    } else if (Util.isTabActive('#nav-link-from-text')) {
+        const source = $('#create-source-area').val();
+        disable = source.trim() === "";
+    }
+
+    disable = (name.trim() === "") || disable;
+    $('#create-source-create-btn').prop("disabled", disable)
+};
 
 window.createSource = function () {
 
     const name = $('#create-source-name').val().trim();
     const desc = $('#create-source-description').val().trim();
-    let data = $('#create-source-area').val().trim();
 
     // if (!isValidJSON(data)) { //TODO zerstört das json
     //     data = JSON.stringify(parseCSV(data));
     //     //TODO Wenn kein CSV, dann XML testen.
     // }
+
+    if (Util.isTabActive('#nav-link-from-scratch')) {
+        const data = JSON.stringify(FROM_SCRATCH);
+        postGraph(name, desc, data);
+    } else if (Util.isTabActive('#nav-link-from-file')) {
+        const fileReader = new FileReader();
+        fileReader.readAsText($('#create-source-file-button').prop('files')[0]);
+        fileReader.onload = function () {
+            const data = fileReader.result;
+            postGraph(name, desc, data);
+        }
+    } else if (Util.isTabActive('#nav-link-from-text')) {
+        const data = $('#create-source-area').val().trim();
+        postGraph(name, desc, data);
+    }
+};
+
+function postGraph(name, desc, data) {
     data = data.replace(/\r?\n|\r/g, "");
     const json = {
         source:
@@ -773,17 +867,8 @@ window.createSource = function () {
         $('#add-source-box').modal('hide');
     });
 
-    Sources.setActiveSource(name)
-};
-
-
-window.addSourceWindowOnChange = function () {
-    const name = $('#create-source-name').val();
-    const source = $('#create-source-area').val();
-
-    const disable = (name.trim() === "") || (source.trim() === "");
-    $('#create-source-create-btn').prop("disabled", disable)
-};
+    Sources.postActiveSource(name)
+}
 
 // var force = d3.layout.force()
 //     .gravity(.05)
@@ -798,7 +883,6 @@ window.setLinkLineType = function (e) {
 };
 
 function sendSourceConfig(config) {
-    config.name = context.getName();
     const data = {sourceConfig: config};
     Util.postJSON('/setSourceConfig', data);
 }
@@ -845,6 +929,7 @@ window.setNodeStrokeWidth = function () {
 
 window.setNodeColor = function () {
     d3.selectAll('circle').on('click', function (node) {
+        beforeHoverNodeColor = null;
         const value = $('#node-colorBox').val();
         Graph.setNodeColor(d3.select(this), value);
         d3.selectAll('circle').on('click', clickNode)
@@ -936,3 +1021,79 @@ window.saveImage = function () {
 function setSourceNameInHeader(sourceName) {
     $('#header-source-name').text(sourceName.substring(0, 25));
 }
+
+function showSourceChangedNotification() {
+    return $.notify({
+        icon: 'fa fa-sync',
+        title: 'Source changed',
+        message: 'Fetch an update? Your current changes will be lost.',
+
+    }, {
+        type: 'minimalist',
+        delay: 0,
+        allow_dismiss: false,
+        placement: {
+            from: "bottom",
+            align: "right"
+        },
+        template:
+            '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+            '<i data-notify="icon" class="img-circle pull-left" />' +
+            '<span data-notify="title">{1}</span>' +
+            '<span data-notify="message">{2}</span>' +
+            '<div data-notify="buttons"><button type="button" class="btn btn-primary" onclick="fetchSource()">Update</button>' +
+            '<button id="dismiss-button" type="button" class="btn btn-danger" data-notify="dismiss">Dismiss</button>' +
+            '<button type="button" class="btn btn-danger" onclick="closeNotify()">Dismiss</button></div>' +
+            '</div>'
+    });
+}
+
+function showSourceOverwriteNotification() {
+    return $.notify({
+        icon: 'fa fa-exclamation-triangle',
+        title: 'Overwrite Source',
+        message: 'There is already a newer version of the source.' +
+            ' Are you sure you want to overwrite the current version? ' +
+            'The version on the server will be lost. Overwrite?',
+
+    }, {
+        type: 'minimalist',
+        delay: 0,
+        allow_dismiss: false,
+        placement: {
+            from: "bottom",
+            align: "right"
+        },
+        template:
+            '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+            '<i data-notify="icon" class="img-circle pull-left" />' +
+            '<span data-notify="title">{1}</span>' +
+            '<span data-notify="message">{2}</span>' +
+            '<div data-notify="buttons">' +
+            '<button type="button" class="btn btn-warning" onclick="overwriteSource()">Overwrite</button>' +
+            '<button type="button" class="btn btn-success" onclick="fetchSource()">Update</button>' +
+            '<button id="dismiss-button" type="button" class="btn btn-light" data-notify="dismiss">Dismiss</button>' +
+            '<button type="button" class="btn btn-light" onclick="closeNotify()">Dismiss</button>' +
+            '</div>' +
+            '</div>'
+    });
+}
+
+window.overwriteSource = function () {
+    saveGraph(true);
+    $('#dismiss-button').click();
+};
+
+window.fetchSource = function () {
+    loadSource(context.getName(), context.getSharedBy());
+    $('#dismiss-button').click();
+};
+
+window.closeNotify = function () {
+    $("#dismiss-button").click();
+};
+
+window.validateImageUpload = function () {
+    const valid = $('#imageUploadForm')[0].checkValidity();
+    $('#btnUploadImage').attr('disabled', !valid);
+};

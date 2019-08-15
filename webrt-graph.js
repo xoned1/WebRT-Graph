@@ -22,7 +22,12 @@ var connection = null;
 const log = new console.Console(process.stdout, process.stderr);
 
 //Load database config file
-const databaseConfig = getDatabaseConfig('database.json');
+const databaseConfig = getConfig('database.json');
+
+//Load session config file
+const sessionConfig = getConfig('session.json');
+
+const LOGIN_REQ = 'Login required';
 
 //Parse body content
 app.use(bodyParser.urlencoded({extended: false}));
@@ -64,11 +69,11 @@ http.listen(httpPort, () => console.log(`WebRT-Graph is listening on port ${http
     ------------------    Routes    ---------------------
     -----------------------------------------------------
  */
-app.get("/", function (req, res) {
+app.get('/', function (req, res) {
     if (!req.isAuthenticated()) {
-        res.redirect("/login")
+        res.redirect('/login')
     } else {
-        res.redirect("/WebRT-Graph")
+        res.redirect('/WebRT-Graph')
     }
 });
 
@@ -78,7 +83,7 @@ app.post('/dologin', (req, res, next) => {
         if (logError(res, err)) { return res.end()}
 
         if (!user) {
-            return res.send({err: "Username or password invalid."});
+            return res.send({err: 'Username or password invalid.'});
         }
         req.logIn(user, function (err) {
             if (logError(res, err)) { return res.end()}
@@ -92,11 +97,19 @@ app.post('/createUser', (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
 
+    if (!username || !password || !username.length > 0 || !password.length > 0) {
+        return res.end('Missing username or password or empty parameter');
+    }
+    if (username.length < 4 || password.length < 4) {
+        return res.end('The username and password should contain at least 4 character');
+    }
+
     getUserTable().get(username).run(connection, (err, user) => {
         //Check if user already exists in database
         if (user) {
-            console.log("User \"" + username + "\" already exists.");
-            return res.end("User already exists!");
+            const msg = `User ${username} already exists.`;
+            console.log(msg);
+            return res.end(msg);
         }
 
         const salt = bcrypt.genSaltSync();
@@ -108,12 +121,12 @@ app.post('/createUser', (req, res, next) => {
         }).run(connection, function (err, result) {
             if (logError(res, err)) { return res.end()}
 
-            console.log("New user \"" + username + "\" added");
+            console.log(`New user ${username} added`);
 
             //Create own table for user
             getDataDb().tableCreate(username, {primaryKey: "name"}).run(connection, function (err, result) {
                 if (logError(res, err)) { return res.end()}
-                console.log("New table \"" + username + "\" created");
+                console.log(`New table ${username} created`);
 
                 //Insert basic data in his own table
                 getDataDb().table(username).insert({
@@ -145,7 +158,9 @@ app.get('/logout', (req, res) => {
 
 
 app.get('/getUserData', function (req, res) {
-    getUserData(req.user).get(req.user).run(connection, (err, result) => {
+    if (!req.user) { return res.end(LOGIN_REQ); }
+
+    getSource(req.user, req.user).run(connection, (err, result) => {
         if (logError(res, err)) { return res.end()}
         res.send(result);
     });
@@ -153,36 +168,78 @@ app.get('/getUserData', function (req, res) {
 
 
 app.post('/setActiveSource', (req, res, next) => {
+    if (!req.user) { return res.end(LOGIN_REQ); }
+
     const source = req.body.activeSource;
-    getUserData(req.user).get(req.user).update({activeSource: source}).run(connection, (err, result) => {
+    const sourceOwner = req.body.activeSourceOwner ? req.body.activeSourceOwner : req.user;
+
+    if (!source || !sourceOwner) {
+        return res.end('Source required. If its a shared source the source owner is also required.')
+    }
+
+    getSource(req.user, req.user).update(
+        {
+            activeSource: source,
+            activeSourceOwner: sourceOwner
+        }).run(connection, (err, result) => {
         if (err) {
             return res.send(err);
         }
         res.end();
-        io.emit("active-source-changed", source);
+        io.emit("active-source-changed", source, sourceOwner);
     })
 });
 
-app.post('/setGraphData', (req, res, next) => {
+app.post('/saveGraph', (req, res, next) => {
+    if (!req.user) { return res.end(LOGIN_REQ); }
+
     const selectedSource = req.body.source;
     const graphData = req.body.graphData;
-    getUserData(req.user).get(selectedSource).run(connection, (err, source) => {
+    const lastModified = req.body.lastModified;
+    const user = req.body.sourceOwner ? req.body.sourceOwner : req.user;
+    const overwrite = req.body.overwrite;
+
+    if (!selectedSource || !graphData || !lastModified || !user) {
+        return res.end('Missing parameter.\nRequired=[source, graphData, lastModified].\n' +
+            'Optional=[sourceOwner, overwrite].');
+    }
+
+    getSource(user, selectedSource).run(connection, (err, source) => {
         if (logError(res, err)) { return res.end()}
+
+        if (!overwrite) {
+            if (lastModified < source.lastModified) {
+                return res.end('overwrite required');
+            }
+        }
 
         source.data = JSON.stringify(graphData);
         source.lastModified = new Date().getTime();
-        getUserData(req.user).get(selectedSource).update(source).run(connection, (err, result) => {
+        getSource(user, selectedSource).update(source).run(connection, (err, result) => {
             if (logError(res, err)) { return res.end()}
-            res.end();
-            //TODO return SAVED or something to make it sure
+
+            const nsp = io.of('/' + selectedSource + ':' + user);
+            nsp.emit('source-changed', req.user);
+
+            res.send({
+                success: result.replaced === 1,
+                lastModified: source.lastModified
+            });
+            return res.end();
         });
     });
 });
 
 app.post('/createSource', (req, res, next) => {
+    if (!req.user) { return res.end(LOGIN_REQ); }
+
     const source = req.body.source;
 
-    getUserData(req.user).insert(source)
+    if (!source || !source.name.length > 0) {
+        return res.end('Missing "source" parameter or source is empty')
+    }
+
+    getSources(req.user).insert(source)
         .run(connection, (err, cursor) => {
             if (err || cursor.first_error) {
                 const errorMsg = err ? err : cursor.first_error.substring(0, cursor.first_error.indexOf(':'));
@@ -196,9 +253,15 @@ app.post('/createSource', (req, res, next) => {
 });
 
 app.post('/removeSource', (req, res, next) => {
+    if (!req.user) { return res.end(LOGIN_REQ); }
 
     const sourceName = req.body.sourceName;
-    getUserData(req.user).get(sourceName).delete()
+
+    if (!sourceName || !sourceName.length > 0) {
+        return res.end('Missing "sourceName" parameter or the source name is empty')
+    }
+
+    getSource(req.user, sourceName).delete()
         .run(connection, (err, result) => {
             if (err) {
                 console.log(err);
@@ -211,37 +274,79 @@ app.post('/removeSource', (req, res, next) => {
 });
 
 app.get('/getAllSources', (req, res, next) => {
-    getUserData(req.user).orderBy(r.desc('lastModified')).run(connection, function (err, cursor) {
+    if (!req.user) { return res.end(LOGIN_REQ); }
+
+    getSources(req.user).orderBy(r.desc('lastModified')).run(connection, (err, ownSources) => {
         if (logError(res, err)) { return res.end()}
 
-        cursor.toArray(function (err, results) {
+        getSharedSources(req.user).orderBy(r.desc('lastModified')).run(connection, (err, sharedSources) => {
             if (logError(res, err)) { return res.end()}
+            new Promise((resolve, reject) => {
+                let round = 0;
+                sharedSources.forEach(sharedSource => {
 
-            const response = {sources: results.filter((source) => source.name !== req.user)};
-            response["activeSource"] = results.find((source) => source.name === req.user).activeSource;
-            res.send(response);
+                    getSource(sharedSource.sharedFrom, sharedSource.sourceName).run(connection, (err, source) => {
+                        if (logError(res, err)) { return res.end()}
+                        if (!source) { return res.end(); }
+
+                        round++;
+                        //make sure the user still shares source with him.
+                        //source could be revoked and just remain in user_shared..
+                        if (source.sharedWith.includes(req.user)) {
+                            source.shared = true;
+                            source.sharedBy = sharedSource.sharedFrom;
+                            ownSources.push(source);
+                        }
+                        if (round === sharedSources.length) {
+                            resolve(source);
+                        }
+                    });
+                });
+            }).then(source => {
+                const response = {sources: ownSources.filter((source) => source.name !== req.user)};
+                response['activeSource'] = ownSources.find((source) => source.name === req.user).activeSource;
+                response['activeSourceOwner'] = ownSources.find((source) => source.name === req.user).activeSourceOwner;
+                res.send(response);
+            });
         });
     });
 });
 
 app.get('/getSource', (req, res, next) => {
+    if (!req.user) { return res.end(LOGIN_REQ); }
 
     const sourceName = req.query.sourceName;
-    if (!sourceName) {
-        return res.end();
+    if (!sourceName || !sourceName.length > 0) {
+        return res.end('Missing "sourceName" parameter or the source name is empty');
     }
-    getUserData(req.user).get(sourceName).run(connection, function (err, result) {
-        if (logError(res, err)) { return res.end()}
 
-        return res.send(result);
+    const user = req.query.sourceOwner ? req.query.sourceOwner : req.user;
+    if (!user || !user.length > 0) {
+        return res.end('Missing "sourceOwner" parameter or the source owner is empty');
+    }
+
+    getSource(user, sourceName).run(connection, function (err, source) {
+        if (logError(res, err)) { return res.end()}
+        if (!source) { return }
+
+        const nsp = io.of('/' + sourceName + ':' + user);
+
+        source.shared = req.user !== user;
+        source.sharedBy = user;
+        return res.send(source);
     });
 });
 
 app.post('/addImage', (req, res, next) => {
+    if (!req.user) { return res.end(LOGIN_REQ); }
 
     //base64 encoded
     const name = req.body.name;
     const image = req.body.image;
+
+    if (!name || !image || !name.length > 0 || !image.length > 0) {
+        return res.end('Missing parameter "name" or "image" or one of the parameter is empty.')
+    }
 
     const contents = new Buffer(image, 'base64');
     getUserImages(req.user).insert({name: name, image: r.binary(contents)}).run(connection, (err, result) => {
@@ -256,6 +361,7 @@ app.post('/addImage', (req, res, next) => {
 });
 
 app.get('/getImages', (req, res, next) => {
+    if (!req.user) { return res.end(LOGIN_REQ); }
 
     getUserImages(req.user).run(connection, (err, cursor) => {
         if (logError(res, err)) { return res.end()}
@@ -269,8 +375,13 @@ app.get('/getImages', (req, res, next) => {
 });
 
 app.get('/getImage', (req, res, next) => {
+    if (!req.user) { return res.end(LOGIN_REQ); }
 
     const name = req.query.name;
+    if (!name || !name.length > 0) {
+        return res.end('Missing parameter "name" or the name is empty.')
+    }
+
     getUserImages(req.user).get(name).run(connection, (err, result) => {
         if (logError(res, err)) { return res.end()}
 
@@ -279,9 +390,13 @@ app.get('/getImage', (req, res, next) => {
 });
 
 app.post('/removeImage', (req, res, next) => {
+    if (!req.user) { return res.end(LOGIN_REQ); }
 
-    //base64 encoded
     const name = req.body.name;
+    if (!name || !name.length > 0) {
+        return res.end('Missing parameter "name" or the name is empty.')
+    }
+
     getUserImages(req.user).get(name).delete().run(connection, (err, result) => {
         if (logError(res, err)) { return res.end()}
 
@@ -290,32 +405,48 @@ app.post('/removeImage', (req, res, next) => {
 });
 
 app.post('/shareWithUser', (req, res, next) => {
+    if (!req.user) { return res.end(LOGIN_REQ); }
 
     const shareWithUser = req.body.shareWithUser;
     const sourceName = req.body.sourceName;
+    if (!shareWithUser || !sourceName || !shareWithUser.length > 0 || !sourceName.length > 0) {
+        return res.end('Missing parameter "shareWithUser" or "sourceName" or one of the parameter is empty.')
+    }
 
-    getUserData(req.user).get(sourceName)('sharedWith').append(shareWithUser).default([]).run(connection, (err, result) => {
+    getSource(req.user, sourceName)('sharedWith').append(shareWithUser).default([]).run(connection, (err, result) => {
         if (logError(res, err)) { return res.end()}
 
-        getUserData(req.user).get(sourceName).update({sharedWith: result}).run(connection, (err, result) => {
+        getSource(req.user, sourceName).update({sharedWith: result}).run(connection, (err, result) => {
             if (logError(res, err)) { return res.end()}
 
-            res.send(shareWithUser);
+            getSharedSources(shareWithUser).insert({
+                sourceName: sourceName,
+                sharedFrom: req.user
+            }).run(connection, (err, result) => {
+                if (logError(res, err)) { return res.end()}
+
+                res.send(shareWithUser);
+            });
         });
     });
 });
 
 app.post('/unShareWithUser', (req, res, next) => {
+    if (!req.user) { return res.end(LOGIN_REQ); }
 
     const unShareWithUser = req.body.unShareWithUser;
     const sourceName = req.body.sourceName;
-    getUserData(req.user).get(sourceName)('sharedWith').offsetsOf(unShareWithUser).run(connection, (err, index) => {
+    if (!unShareWithUser || !sourceName || !unShareWithUser.length > 0 || !sourceName.length > 0) {
+        return res.end('Missing parameter "unShareWithUser" or "sourceName" or one of the parameter is empty.')
+    }
+
+    getSource(req.user, sourceName)('sharedWith').offsetsOf(unShareWithUser).run(connection, (err, index) => {
         if (logError(res, err)) { return res.end()}
 
-        getUserData(req.user).get(sourceName)('sharedWith').deleteAt(index[0]).run(connection, (err, result) => {
+        getSource(req.user, sourceName)('sharedWith').deleteAt(index[0]).run(connection, (err, result) => {
             if (logError(res, err)) { return res.end()}
 
-            getUserData(req.user).get(sourceName).update({sharedWith: result}).run(connection, (err, result) => {
+            getSource(req.user, sourceName).update({sharedWith: result}).run(connection, (err, result) => {
                 if (logError(res, err)) { return res.end()}
 
                 res.send(unShareWithUser);
@@ -325,55 +456,30 @@ app.post('/unShareWithUser', (req, res, next) => {
 });
 
 app.post('/setSourceConfig', (req, res, next) => {
+    if (!req.user) { return res.end(LOGIN_REQ); }
 
     const config = req.body.sourceConfig;
+    if (!config) {
+        return res.end('Missing parameter "config"')
+    }
 
-    getUserData(req.user).get(config.name).run(connection, (err, source) => {
+    getSource(req.user, req.user).run(connection, (err, userData) => {
         if (logError(res, err)) { return res.end()}
+        if (!userData) { { return res.end()}}
 
-        if (config.hasOwnProperty("configNode")) {
-            source.configNode = config.configNode;
-        }
-        if (config.hasOwnProperty("configNodeId")) {
-            source.configNodeId = config.configNodeId;
-        }
-        if (config.hasOwnProperty("configLink")) {
-            source.configLink = config.configLink;
-            console.log("Set config link: " + source.configLink)
-        }
-        if (config.hasOwnProperty("configNodeTitle")) {
-            source.configNodeTitle = config.configNodeTitle;
-            console.log("Set config node title: " + source.configNodeTitle)
-        }
-        if (config.hasOwnProperty("configNodeWeight")) {
-            source.configNodeWeight = config.configNodeWeight;
-            console.log("Set config node weight: " + source.configNodeWeight)
-        }
-        if (config.hasOwnProperty("configLinkLineType")) {
-            source.configLinkLineType = config.configLinkLineType;
-            console.log("Set link line type: " + source.configLinkLineType)
-        }
-        if (config.hasOwnProperty("nodeColorPalette")) {
-            source.nodeColorPalette = config.nodeColorPalette;
-            console.log("Set node color palette: " + source.nodeColorPalette)
-        }
-        if (config.hasOwnProperty("nodeCount")) {
-            source.nodeCount = config.nodeCount;
-            console.log("Set node count: " + source.nodeCount)
-        }
-        if (config.hasOwnProperty("linkCount")) {
-            source.linkCount = config.linkCount;
-            console.log("Set link count: " + source.linkCount)
-        }
+        const user = getUserFromActiveSource(userData.activeSource, req);
+        const source = getSourceFromActiveSource(userData.activeSource);
 
-        getUserData(req.user).get(config.name).update(source).run(connection, (err, result) => {
+        getSource(user, source).update(config).run(connection, (err, result) => {
+            if (logError(res, err)) { return res.end()}
+
             res.end();
         })
     });
 });
 
 function logError(res, err) {
-    if (err) { 
+    if (err) {
         console.log(err);
         return res.send(err);
     }
@@ -418,25 +524,41 @@ function getUserTable() {
     return getDataDb().table("users");
 }
 
+function getSource(user, source) {
+    return getDataDb().table(user).get(source);
+}
+
 function getUser(username) {
     return getUserTable().get(username);
 }
 
-function getUserData(username) {
+function getSources(username) {
     return getDataDb().table(username);
+}
+
+function getSharedSources(user) {
+    return getDataDb().table(user + "_shared");
 }
 
 function getUserImages(username) {
     return getDataDb().table(username + "_images");
 }
 
-function getDatabaseConfig(fileName) {
+function getConfig(fileName) {
     try {
-        let databaseFile = fs.readFileSync(fileName);
-        return JSON.parse(databaseFile);
+        let configFile = fs.readFileSync(fileName);
+        return JSON.parse(configFile);
     } catch (err) {
-        console.log("Error while loading database config file:" + err)
+        console.log("Error while loading config file:" + err)
     }
+}
+
+function getUserFromActiveSource(sourceString, req) {
+    return sourceString.includes(":") ? sourceString.split(":")[1] : req.user;
+}
+
+function getSourceFromActiveSource(sourceString) {
+    return sourceString.includes(":") ? sourceString.split(":")[0] : sourceString;
 }
 
 
@@ -481,7 +603,7 @@ function createDatabaseConnection(resolve, reject) {
 function createSessionHandler() {
     return session({
         key: 'sid',
-        secret: 'dasndjansjdnaj3!dd(key)!',
+        secret: sessionConfig.secret,
         store: createSessionStore(),
         resave: false,
         saveUninitialized: true

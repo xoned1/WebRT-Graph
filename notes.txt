@@ -29,3 +29,8 @@ bootstrap switches?
 browserify standalone statt window.setLinkType(e) ? bad practice..
 seit browserify warum graphcontext export = class GraphContext und bei anderen imports nicht?
 login.js..
+
+
+copyto clipboard geht in firefox nicht
+
+komplett neue source anlegen, probleme!!

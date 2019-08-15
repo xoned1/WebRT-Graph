@@ -1,4 +1,5 @@
 database.json
+session.json
 *.css
 *.css.map
 node_modules/
