@@ -79,9 +79,12 @@ module.exports = class Sources extends React.Component {
         $.get("/getSource", {sourceName: name}, (source) => {
             if (!Util.copyToClipBoard(source.data)) {
 
-                $(button).popover();
+                $(button).popover({
+                    title: 'Not Supported',
+                    content: 'Copy to Clipboard" is not supported. Please use "Show Source',
+                });
                 $(button).popover('show');
-                //setTimeout(() => $(button).popover('hide'), 5000)
+                setTimeout(() => $(button).popover('hide'), 3000)
             }
 
             this.setState({loadingCopyToClipBoard: false, loadingName: name});
@@ -95,12 +98,8 @@ module.exports = class Sources extends React.Component {
             </span>
         }
         return <i className="fas fa-clipboard-list"
-                  onClick={(that) => this.copyToClipboard(that.target, e.name)}
-                  title="Copy Source to Clipboard"
-                  data-toggle="popover"
-                  data-content='"Copy to Clipboard" is not supported. Please use "Show Source"'
-
-        />
+                  onClick={(that) => this.copyToClipboard(that.target.parentNode, e.name)}
+                  title="Copy Source to Clipboard"/>
     }
 
     getViewSourceButton(e) {
@@ -254,10 +253,6 @@ module.exports = class Sources extends React.Component {
             $(function () {
                 $('i[data-toggle="tooltip"]').tooltip()
             });
-            $(function () {
-                // $('[data-toggle="popover"]').popover({trigger: 'manual'})
-            });
-
             return result;
         });
 

@@ -614,7 +614,7 @@ window.removeNode = function () {
 
 window.addLink = function () {
     enableSelectNodeMode();
-    $('#btn-toolbar-add-link').popover({content: "Step 1: Click on the source node"}).popover('show');
+    $('#btn-toolbar-add-link').popover({content: "Step 1: Click on the source node. Press ESC to cancel."}).popover('show');
     const keyEvent = event => {
         if (event.key === "Escape") {
             cancelNodeRemoveMode(keyEvent); //TODO name unpassend.. remove node..
@@ -627,7 +627,7 @@ window.addLink = function () {
     d3.selectAll('circle').on('click', node => {
         let sourceNode = node;
         $('#btn-toolbar-add-link').popover('dispose');
-        $('#btn-toolbar-add-link').popover({content: 'Step 2: Select the target node'}).popover('show');
+        $('#btn-toolbar-add-link').popover({content: 'Step 2: Select the target node. Press ESC to cancel.'}).popover('show');
         d3.selectAll('circle').on('click', node => {
             $('#btn-toolbar-add-link').popover('dispose');
             d3.selectAll('circle').on('click', null);
