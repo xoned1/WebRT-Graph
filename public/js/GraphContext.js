@@ -3,7 +3,7 @@ module.exports = class GraphContext {
     constructor(source, data) {
         this.source = source;
         this.data = data;
-        this.origin = JSON.parse(JSON.stringify(data)); //deep copy
+        this.setOrigin(data);
     }
 
     getName() {
@@ -133,5 +133,10 @@ module.exports = class GraphContext {
         }
         return copy;
     }
+
+    setOrigin(data) {
+        this.origin = JSON.parse(JSON.stringify(data)); //deep copy
+    }
+
 
 };

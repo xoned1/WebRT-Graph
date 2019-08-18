@@ -107,7 +107,7 @@ app.post('/createUser', (req, res, next) => {
     getUserTable().get(username).run(connection, (err, user) => {
         //Check if user already exists in database
         if (user) {
-            const msg = `User ${username} already exists.`;
+            const msg = `User "${username}" already exists.`;
             console.log(msg);
             return res.end(msg);
         }
@@ -121,7 +121,7 @@ app.post('/createUser', (req, res, next) => {
         }).run(connection, function (err, result) {
             if (logError(res, err)) { return res.end()}
 
-            console.log(`New user ${username} added`);
+            console.log(`New user "${username}" added`);
 
             //Create own table for user
             getDataDb().tableCreate(username, {primaryKey: "name"}).run(connection, function (err, result) {

@@ -124,7 +124,7 @@ $(document).ready(() => {
 
         if (activatedTab === "graph-tab") {
             if (!isGraphInitialized && context != null) {
-                drawGraph()
+                drawGraph();
             }
 
             $('html, body').css("overflow-y", "hidden");
@@ -686,7 +686,7 @@ function enableSelectLinkMode() {
 function stopSelectLinkMode() {
     $('path').css('cursor', 'auto');
     $('#btn-toolbar-remove-link').popover('hide');
-     d3.selectAll('path').on('click', null);
+    d3.selectAll('path').on('click', null);
 }
 
 function pulse() {
@@ -726,9 +726,12 @@ window.saveGraph = function (overwrite) {
     })
         .done((data) => {
             stopSaveAnimation(animation, data.success);
-            context.setLastModifiedDate(data.lastModified);
+
             if (data === "overwrite required") {
                 showSourceOverwriteNotification();
+            } else {
+                context.setLastModifiedDate(data.lastModified);
+                context.setOrigin(context.getData());
             }
         }).fail((jqXHR, textStatus, errorThrown) => {
         stopSaveAnimation(animation, false);

@@ -57,7 +57,7 @@ module.exports = {
         this.d3.restart();
 
         this.d3.nodes(module.context.getNodes())
-        //.force('center', d3.forceCenter(module.width / 2, module.height / 2))
+            //.force('center', d3.forceCenter(module.width / 2, module.height / 2))
             .force('radius', d3.forceCollide().radius((d) => {
                 return d.weight;
             }))
@@ -70,7 +70,9 @@ module.exports = {
                 })
                 .links(module.context.getLinks()))
             .on('tick', ticked)
-            .on('end', () => module.exports.d3.force('charge', null));
+            .on('end', () => {
+                module.exports.d3.force('charge', null);
+            });
     },
 };
 

@@ -84,7 +84,7 @@
 <div id="page-mask"></div>
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
     <a class="navbar-brand" style="color: #00AAFF; font-family: 'Patua One', cursive;" href="graph.html">
-        <img src="images/favicon-32x32.png" width="30" height="30" class="d-inline-block align-top">
+        <img src="images/white-graph-512.png" width="30" height="30" class="d-inline-block align-top">
         WebRT-Graph</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -189,20 +189,24 @@
                             <label>Select your source</label>
                             <ul class="nav nav-pills nav-justified" id="create-source-type-tabs" role="tablist">
                                 <li class="nav-item">
-                                    <a id="nav-link-from-scratch" class="nav-link active" href="#fromscratch" data-toggle="tab">From Scratch</a>
+                                    <a id="nav-link-from-scratch" class="nav-link active" href="#fromscratch"
+                                       data-toggle="tab">From Scratch</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a id="nav-link-from-file" class="nav-link" href="#fromfile" data-toggle="tab">From File</a>
+                                    <a id="nav-link-from-file" class="nav-link" href="#fromfile" data-toggle="tab">From
+                                        File</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a id="nav-link-from-text" class="nav-link" href="#fromtext" data-toggle="tab">Paste Text</a>
+                                    <a id="nav-link-from-text" class="nav-link" href="#fromtext" data-toggle="tab">Paste
+                                        Text</a>
                                 </li>
                             </ul>
                             <div class="tab-content" id="myTabContent">
                                 <div class="tab-pane fade show active" id="fromscratch" role="tabpanel">
                                 </div>
                                 <div class="tab-pane fade show" id="fromfile" role="tabpanel">
-                                    <input type="file" class="form-control-file reset" id="create-source-file-button" oninput="addSourceWindowOnChange()">
+                                    <input type="file" class="form-control-file reset" id="create-source-file-button"
+                                           oninput="addSourceWindowOnChange()">
                                 </div>
                                 <div class="tab-pane fade show " id="fromtext" role="tabpanel">
                                     <div class="form-group">
@@ -480,44 +484,52 @@
                 <div id="toolbar">
                     <div id="toolbar-items" class="shadow text-white">
                         <div>
-                            <i value="" class="fas fa-camera" data-toggle="tooltip" title="Save as image.."
+                            <i value="" class="fas fa-camera" data-placement="left" data-toggle="tooltip"
+                               title="Save as image..<div class='tooltip-desc'>Save the current Graph as image on your disk.</div>"
                                onclick="saveGraphAsImage()"></i>
                         </div>
                         <div>
-                            <i value="" class="fas fa-cloud-upload-alt" data-toggle="tooltip"
+                            <i value="" class="fas fa-cloud-upload-alt" data-placement="left" data-toggle="tooltip"
                                title="Save Graph (Ctrl+S)"
                                onclick="saveGraph()"></i>
                         </div>
                         <div>
-                            <i value="" class="fas fa-compress-arrows-alt" data-toggle="tooltip" title="Fit (F)"
+                            <i value="" class="fas fa-compress-arrows-alt" data-placement="left" data-toggle="tooltip"
+                               title="Fit (F)<div class='tooltip-desc'>Centers the view and adjusts the zoom that everything will fit into.</div>"
                                onclick="zoomFit()"></i>
                         </div>
                         <div>
-                            <i value="" class="fas fa-magnet" data-toggle="tooltip" title="Explode"
+                            <i value="" class="fas fa-magnet" data-placement="left" data-toggle="tooltip"
+                               title="Explode<div class='tooltip-desc'>Either attracts or repulses nodes from each other (like gravity).
+                               <br/><br/>To change the force: Left Navbar → Settings → Forces → Manybody Forces Strenght</div>"
                                onclick="explode()"></i>
                         </div>
                         <div>
-                            <i id="btn-toolbar-add-node" value="" class="fas fa-plus-circle" data-toggle="tooltip"
+                            <i id="btn-toolbar-add-node" value="" data-placement="left" class="fas fa-plus-circle" data-toggle="tooltip"
                                title="Add Node"
                                data-content="Click on graph area to place node. Press ESC to cancel."
                                onclick="addNode()"></i>
                         </div>
                         <div>
-                            <i id="btn-toolbar-remove-node" value="" class="fas fa-minus-circle" data-toggle="tooltip" title="Remove Node"
+                            <i id="btn-toolbar-remove-node" value="" data-placement="left" class="fas fa-minus-circle" data-toggle="tooltip"
+                               title="Remove Node"
                                data-content="Click on the node you want to remove. Press ESC to cancel."
                                onclick="removeNode()"></i>
                         </div>
                         <div>
-                            <i id="btn-toolbar-add-link" value="" class="fas fa-vector-square" data-toggle="tooltip" title="Add Link"
+                            <i id="btn-toolbar-add-link" value="" data-placement="left" class="fas fa-vector-square" data-toggle="tooltip"
+                               title="Add Link"
                                onclick="addLink()"></i>
                         </div>
                         <div>
-                            <i id="btn-toolbar-remove-link" value="" class="fas fa-draw-polygon" data-toggle="tooltip" title="Remove Link"
+                            <i id="btn-toolbar-remove-link" value="" data-placement="left" class="fas fa-draw-polygon" data-toggle="tooltip"
+                               title="Remove Link"
                                data-content="Click on the link you want to remove. Press ESC to cancel."
                                onclick="removeLink()"></i>
                         </div>
                         <div>
-                            <i value="" class="fas fa-reply-all" data-toggle="tooltip" title="Reset Graph (Ctrl+Z)"
+                            <i value="" class="fas fa-reply-all" data-toggle="tooltip" data-placement="left"
+                               title="Reset Graph (Ctrl+Z)<div class='tooltip-desc'>Reverts to the last saved state. <br/><b>Unsaved changes will be lost!<b></div>"
                                onclick="resetGraph()"></i>
                         </div>
                     </div>
@@ -547,60 +559,243 @@
     </div>
     <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
         <div id="source-config-box">
-            <div class="card shadow source-config-box" id="required-card">
-                <div class="card-header bg-danger text-center">
-                    Required Properties
+            <div class="container">
+                <div class="py-5 text-center">
+                    <img class="d-block mx-auto mb-4" src="images/white-graph-512.png" alt="" width="72"
+                         height="72">
+                    <h2>Graph Configuration</h2>
+                    <p class="lead">Below you'll find different configurations for the current activated graph.
+                        Some of the configurations are required to display the graph and some others are optional.</p>
                 </div>
-                <div class="card-body">
-                    <div class="form-group card-text">
-                        <label for="sourceConfigDropBoxNodes">Nodes</label>
-                        <select class="form-control" id="sourceConfigDropBoxNodes"
-                                onchange="sourceConfigNodeChanged(this)">
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="sourceConfigDropBoxNodes">Node ID (must be unique to identify nodes)</label>
-                        <select class="form-control" id="sourceConfigDropBoxNodeID"
-                                onchange="sourceConfigNodeIdChanged(this)">
-                        </select>
+
+                <div class="row">
+
+                    <div class="col-md-12 order-md-1">
+                        <h4 class="mb-3">Basics</h4>
+                        <form class="needs-validation" novalidate="">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="sourceConfigDropBoxNodes">Nodes</label>
+                                    <select class="form-control" id="sourceConfigDropBoxNodes"
+                                            onchange="sourceConfigNodeChanged(this)">
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Valid first name is required.
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="sourceConfigDropBoxNodeID">Links</label>
+                                <select class="form-control" id="sourceConfigDropBoxNodeID"
+                                        onchange="sourceConfigNodeIdChanged(this)">
+                                </select>
+                                    <div class="invalid-feedback">
+                                        Valid last name is required.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <h4 class="mb-3">Basics</h4>
+                                <label for="username">Username</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">@</span>
+                                    </div>
+                                    <input type="text" class="form-control" id="username" placeholder="Username"
+                                           required="">
+                                    <div class="invalid-feedback" style="width: 100%;">
+                                        Your username is required.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email">Email <span class="text-muted">(Optional)</span></label>
+                                <input type="email" class="form-control" id="email" placeholder="you@example.com">
+                                <div class="invalid-feedback">
+                                    Please enter a valid email address for shipping updates.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="address">Address</label>
+                                <input type="text" class="form-control" id="address" placeholder="1234 Main St"
+                                       required="">
+                                <div class="invalid-feedback">
+                                    Please enter your shipping address.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>
+                                <input type="text" class="form-control" id="address2" placeholder="Apartment or suite">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-5 mb-3">
+                                    <label for="country">Country</label>
+                                    <select class="custom-select d-block w-100" id="country" required="">
+                                        <option value="">Choose...</option>
+                                        <option>United States</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select a valid country.
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="state">State</label>
+                                    <select class="custom-select d-block w-100" id="state" required="">
+                                        <option value="">Choose...</option>
+                                        <option>California</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid state.
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="zip">Zip</label>
+                                    <input type="text" class="form-control" id="zip" placeholder="" required="">
+                                    <div class="invalid-feedback">
+                                        Zip code required.
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="mb-4">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="same-address">
+                                <label class="custom-control-label" for="same-address">Shipping address is the same as
+                                    my billing address</label>
+                            </div>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="save-info">
+                                <label class="custom-control-label" for="save-info">Save this information for next
+                                    time</label>
+                            </div>
+                            <hr class="mb-4">
+
+                            <h4 class="mb-3">Payment</h4>
+
+                            <div class="d-block my-3">
+                                <div class="custom-control custom-radio">
+                                    <input id="credit" name="paymentMethod" type="radio" class="custom-control-input"
+                                           checked="" required="">
+                                    <label class="custom-control-label" for="credit">Credit card</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input id="debit" name="paymentMethod" type="radio" class="custom-control-input"
+                                           required="">
+                                    <label class="custom-control-label" for="debit">Debit card</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input"
+                                           required="">
+                                    <label class="custom-control-label" for="paypal">PayPal</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="cc-name">Name on card</label>
+                                    <input type="text" class="form-control" id="cc-name" placeholder="" required="">
+                                    <small class="text-muted">Full name as displayed on card</small>
+                                    <div class="invalid-feedback">
+                                        Name on card is required
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="cc-number">Credit card number</label>
+                                    <input type="text" class="form-control" id="cc-number" placeholder="" required="">
+                                    <div class="invalid-feedback">
+                                        Credit card number is required
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label for="cc-expiration">Expiration</label>
+                                    <input type="text" class="form-control" id="cc-expiration" placeholder=""
+                                           required="">
+                                    <div class="invalid-feedback">
+                                        Expiration date required
+                                    </div>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="cc-cvv">CVV</label>
+                                    <input type="text" class="form-control" id="cc-cvv" placeholder="" required="">
+                                    <div class="invalid-feedback">
+                                        Security code required
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="mb-4">
+                            <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
+                        </form>
                     </div>
                 </div>
-            </div>
-            <div id="node-link-box">
-                <div class="card shadow source-config-box">
-                    <div class="card-header text-center">
-                        Node Properties
-                    </div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="sourceConfigDropBoxNodeTitle">Node Title (shown near the node)</label>
-                            <select onchange="sourceConfigNodeTitleChanged(this)" class="form-control"
-                                    id="sourceConfigDropBoxNodeTitle">
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="sourceConfigDropBoxNodeWeight">Node Weight (affects the node size)</label>
-                            <select onchange="sourceConfigNodeWeightChanged(this)" class="form-control"
-                                    id="sourceConfigDropBoxNodeWeight">
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="card shadow source-config-box">
-                    <div class="card-header text-center">
-                        Link Properties
-                    </div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="sourceConfigDropBoxLinks">Links</label>
-                            <select onchange="sourceConfigLinkChanged(this)" class="form-control"
-                                    id="sourceConfigDropBoxLinks">
-                            </select>
-                        </div>
-                    </div>
-                </div>
+
+                <footer class="my-5 pt-5 text-muted text-center text-small">
+                    <p class="mb-1">© 2017-2019 Company Name</p>
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><a href="#">Privacy</a></li>
+                        <li class="list-inline-item"><a href="#">Terms</a></li>
+                        <li class="list-inline-item"><a href="#">Support</a></li>
+                    </ul>
+                </footer>
             </div>
         </div>
+        <!--            <div class="card shadow source-config-box" id="required-card">-->
+        <!--                <div class="card-header bg-danger text-center">-->
+        <!--                    Required Properties-->
+        <!--                </div>-->
+        <!--                <div class="card-body">-->
+        <!--                    <div class="form-group card-text">-->
+        <!--                        <label for="sourceConfigDropBoxNodes">Nodes</label>-->
+        <!--                        <select class="form-control" id="sourceConfigDropBoxNodes"-->
+        <!--                                onchange="sourceConfigNodeChanged(this)">-->
+        <!--                        </select>-->
+        <!--                    </div>-->
+        <!--                    <div class="form-group">-->
+        <!--                        <label for="sourceConfigDropBoxNodes">Node ID (must be unique to identify nodes)</label>-->
+        <!--                        <select class="form-control" id="sourceConfigDropBoxNodeID"-->
+        <!--                                onchange="sourceConfigNodeIdChanged(this)">-->
+        <!--                        </select>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--            <div id="node-link-box">-->
+        <!--                <div class="card shadow source-config-box">-->
+        <!--                    <div class="card-header text-center">-->
+        <!--                        Node Properties-->
+        <!--                    </div>-->
+        <!--                    <div class="card-body">-->
+        <!--                        <div class="form-group">-->
+        <!--                            <label for="sourceConfigDropBoxNodeTitle">Node Title (shown near the node)</label>-->
+        <!--                            <select onchange="sourceConfigNodeTitleChanged(this)" class="form-control"-->
+        <!--                                    id="sourceConfigDropBoxNodeTitle">-->
+        <!--                            </select>-->
+        <!--                        </div>-->
+        <!--                        <div class="form-group">-->
+        <!--                            <label for="sourceConfigDropBoxNodeWeight">Node Weight (affects the node size)</label>-->
+        <!--                            <select onchange="sourceConfigNodeWeightChanged(this)" class="form-control"-->
+        <!--                                    id="sourceConfigDropBoxNodeWeight">-->
+        <!--                            </select>-->
+        <!--                        </div>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--                <div class="card shadow source-config-box">-->
+        <!--                    <div class="card-header text-center">-->
+        <!--                        Link Properties-->
+        <!--                    </div>-->
+        <!--                    <div class="card-body">-->
+        <!--                        <div class="form-group">-->
+        <!--                            <label for="sourceConfigDropBoxLinks">Links</label>-->
+        <!--                            <select onchange="sourceConfigLinkChanged(this)" class="form-control"-->
+        <!--                                    id="sourceConfigDropBoxLinks">-->
+        <!--                            </select>-->
+        <!--                        </div>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
     </div>
     <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="config-tab">
         <div id="images-container"></div>
@@ -617,7 +812,8 @@
                         </div>
                         <div class="modal-body">
 
-                            <div class="alert alert-danger fade text-center reset" role="alert" id="create-image-alert">
+                            <div class="alert alert-danger fade text-center reset" role="alert"
+                                 id="create-image-alert">
                                 <span id="create-image-message"></span>
                                 <button type="button" onclick="hideAlert('create-image')" class="close"
                                         aria-label="Close">
@@ -633,7 +829,8 @@
                                     Please choose a name.
                                 </div>
                                 <label for="fileChooser-addImage">Image</label>
-                                <input type="file" class="form-control-file reset" id="fileChooser-addImage" oninput="validateImageUpload()" required>
+                                <input type="file" class="form-control-file reset" id="fileChooser-addImage"
+                                       oninput="validateImageUpload()" required>
                                 <div class="invalid-feedback">
                                     Please choose a file.
                                 </div>
@@ -641,7 +838,8 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button id="btnUploadImage" type="button" class="btn btn-primary" onclick="saveImage()" disabled>
+                            <button id="btnUploadImage" type="button" class="btn btn-primary"
+                                    onclick="saveImage()" disabled>
                                 Save Image
                             </button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

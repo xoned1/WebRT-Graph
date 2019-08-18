@@ -81,7 +81,7 @@ module.exports = class Sources extends React.Component {
 
                 $(button).popover({
                     title: 'Not Supported',
-                    content: 'Copy to Clipboard" is not supported. Please use "Show Source',
+                    content: 'Copy to Clipboard" is not supported from your browser. Please use the "Show Source" button.',
                 });
                 $(button).popover('show');
                 setTimeout(() => $(button).popover('hide'), 3000)
@@ -99,7 +99,10 @@ module.exports = class Sources extends React.Component {
         }
         return <i className="fas fa-clipboard-list"
                   onClick={(that) => this.copyToClipboard(that.target.parentNode, e.name)}
-                  title="Copy Source to Clipboard"/>
+                  data-placement="left"
+                  data-toggle="tooltip"
+                  title="Copy Source to Clipboard<div class='tooltip-desc'>Not Supported by all Browsers!</div>"
+                  />
     }
 
     getViewSourceButton(e) {
@@ -108,26 +111,31 @@ module.exports = class Sources extends React.Component {
                 <span className="sr-only">Loading...</span>
             </span>
         }
-        return <i className="fas fa-eye"
-                  onClick={() => this.showSourceData(e.name)}
-                  data-toggle="modal" data-target="#source-view-modal"
-                  title="View Source"/>
+        return <span data-toggle="tooltip" data-placement="left" title="View Source">
+            <i className="fas fa-eye"
+               onClick={() => this.showSourceData(e.name)}
+               data-toggle="modal" data-target="#source-view-modal"/>
+        </span>
     }
 
     getShareSourceButton(e) {
-        return <i className="fas fa-share-alt"
-                  data-toggle="modal" data-target="#share-source-modal"
-                  title="Share Source" data-source={e.name} onClick={x => this.setShareModalSource(e.name)}/>
+        return <span data-toggle="tooltip" data-placement="left" title="Share Source">
+            <i className="fas fa-share-alt"
+               data-toggle="modal" data-target="#share-source-modal"
+               data-source={e.name} onClick={x => this.setShareModalSource(e.name)}/>
+        </span>
     }
 
     getRemoveSourceButton(e) {
         if (this.state.loadingRemoveSource && this.state.loadingName === e.name) {
             return <span className="spinner-border spinner-border-sm" role="status">
-                <span className="sr-only">Loading...</span>
+            <span className="sr-only">Loading...</span>
             </span>
         }
         return <i className="fas fa-trash-alt"
                   onClick={() => this.remove(e.name)}
+                  data-placement="left"
+                  data-toggle="tooltip"
                   title="Delete Source"/>
     }
 
@@ -251,8 +259,17 @@ module.exports = class Sources extends React.Component {
             </div>;
 
             $(function () {
-                $('i[data-toggle="tooltip"]').tooltip()
+                $('[data-toggle="tooltip"]').tooltip({
+                    html: true,
+                    delay: { "show": 500, "hide": 100 }
+                    // template: '<div class="tooltip" role="tooltip">' +
+                    //     '<div class="arrow"></div>' +
+                    //     '<div class="tooltip-inner"></div>' +
+                    //     '</div>'
+                })
             });
+
+
             return result;
         });
 
