@@ -57,7 +57,7 @@ module.exports = {
         this.d3.restart();
 
         this.d3.nodes(module.context.getNodes())
-            //.force('center', d3.forceCenter(module.width / 2, module.height / 2))
+        //.force('center', d3.forceCenter(module.width / 2, module.height / 2))
             .force('radius', d3.forceCollide().radius((d) => {
                 return d.weight;
             }))
@@ -113,16 +113,6 @@ function ticked() {
     module.link
         .attr("d", (link) => {
             return getLinkLine(link);
-        })
-        .style("stroke-width", (link) => {
-            if (link['stroke-width']) {
-                return link['stroke-width'] + "px";
-            }
-        })
-        .style("stroke", (link) => {
-            if (link['stroke-color']) {
-                return link['stroke-color'];
-            }
         });
 
     module.node
@@ -135,6 +125,7 @@ function ticked() {
         .attr("r", (node) => {
             return node.weight;
         })
+        //muss das immer abgefragt werden?
         .attr("fill", (node) => {
             return Graph.getNodeFill(node, node[module.context.getConfigNodeId()]);
         });

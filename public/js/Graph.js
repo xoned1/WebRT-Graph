@@ -161,6 +161,7 @@ module.exports = {
     },
 
     isFillImage(fill) {
+        if (!fill) { return false; }
         return fill[0] === ':';
     }
 };

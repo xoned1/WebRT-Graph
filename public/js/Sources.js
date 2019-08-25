@@ -49,6 +49,7 @@ module.exports = class Sources extends React.Component {
     }
 
     remove(name) {
+        $(".tooltip").tooltip('hide');
         this.setState({loadingRemoveSource: true, loadingName: name});
         const json = {sourceName: name};
         Util.postJSON('/removeSource', json).always(() => {
@@ -66,8 +67,9 @@ module.exports = class Sources extends React.Component {
     }
 
     showSourceData(name) {
+        $(".tooltip").tooltip('hide');
         this.setState({loadingViewSource: true, loadingName: name});
-        $.get("/getSource", {sourceName: name}, (source) => {
+        $.get('/getSource', {sourceName: name}, (source) => {
             $('#source-view-header').text('Source:' + source.name);
             $('#source-view-body').text(source.data);
             this.setState({loadingViewSource: false, loadingName: name});
@@ -75,8 +77,9 @@ module.exports = class Sources extends React.Component {
     }
 
     copyToClipboard(button, name) {
+        $('.tooltip').tooltip('hide');
         this.setState({loadingCopyToClipBoard: true, loadingName: name});
-        $.get("/getSource", {sourceName: name}, (source) => {
+        $.get('/getSource', {sourceName: name}, (source) => {
             if (!Util.copyToClipBoard(source.data)) {
 
                 $(button).popover({
@@ -102,7 +105,7 @@ module.exports = class Sources extends React.Component {
                   data-placement="left"
                   data-toggle="tooltip"
                   title="Copy Source to Clipboard<div class='tooltip-desc'>Not Supported by all Browsers!</div>"
-                  />
+        />
     }
 
     getViewSourceButton(e) {
@@ -111,7 +114,7 @@ module.exports = class Sources extends React.Component {
                 <span className="sr-only">Loading...</span>
             </span>
         }
-        return <span data-toggle="tooltip" data-placement="left" title="View Source">
+        return <span data-toggle="tooltip" data-trigger="hover" data-placement="left" title="View Source">
             <i className="fas fa-eye"
                onClick={() => this.showSourceData(e.name)}
                data-toggle="modal" data-target="#source-view-modal"/>
@@ -261,11 +264,7 @@ module.exports = class Sources extends React.Component {
             $(function () {
                 $('[data-toggle="tooltip"]').tooltip({
                     html: true,
-                    delay: { "show": 500, "hide": 100 }
-                    // template: '<div class="tooltip" role="tooltip">' +
-                    //     '<div class="arrow"></div>' +
-                    //     '<div class="tooltip-inner"></div>' +
-                    //     '</div>'
+                    trigger: 'hover'
                 })
             });
 

@@ -1,15 +1,8 @@
-docker hat eine schöne einlogg seite
-
-prüfung von source daten die erstellt werden (leer, ungültig)
-
 jquery böse bei performance (simulation)
 
 fragezeichen mit erklärungen einbauen.. (z.b. polinode)
 
 
-directed/undirected..
-
-smooth zoom
 
 beim klick auf node könnte man alle benachbarten heller machen und die anderen dunkler (polinode)
 
@@ -21,16 +14,10 @@ nach änderung auf graph ändern (grapg ungültig kennzeichnen?)
 
 
 Bug: Wenn man bei config link die nodes auswöhlt, erhält man fehler aber kann nichts anderes mehr auswählen wenn es nur "nodes" gibt (z.b. bei CSV)
-Bug: Beim einloggen kann man durch refresh wieder eingeloggt werden..
 Bug: Stop force on source change.. sonst läuft die alte kraft weiter..
 
-bootstrap switches?
-
-browserify standalone statt window.setLinkType(e) ? bad practice..
-seit browserify warum graphcontext export = class GraphContext und bei anderen imports nicht?
-login.js..
+Bug: Hover ein bild node und die links werden nicht markiert.
 
 
-copyto clipboard geht in firefox nicht
-
-komplett neue source anlegen, probleme!!
+Löschen von shared sources geht nicht (wenn nicht die eigene).
+was passiert aktuell wenn source gelöscht wird, die einem gehört beim anderen?

@@ -79,6 +79,9 @@
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/PapaParse/4.6.3/papaparse.min.js"></script>
 
+    <!--    https://cdn.jsdelivr.net/npm/xml-js@1.6.11/dist/xml-js.min.js-->
+    <script src="//cdn.jsdelivr.net/npm/xml-js@1.6.11/dist/xml-js.js"></script>
+
 </head>
 <body>
 <div id="page-mask"></div>
@@ -96,21 +99,19 @@
                 <a class="nav-link active" id="sources-tab" href="#sources" data-toggle="tab">Sources</a>
             </li>
             <li class="nav-item ">
-                <a class="nav-link" id="graph-tab" href="#graph" data-toggle="tab">
-                    Graph
-                </a>
+                <a class="nav-link" id="graph-tab" href="#graph" data-toggle="tab">Graph</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="data-tab" href="#data" data-toggle="tab">Data</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="config-tab" href="#config" data-toggle="tab">Config</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="settings-tab" href="#settings" data-toggle="tab">Settings</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" id="images-tab" href="#images" data-toggle="tab">Images</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="help-tab" href="#help" data-toggle="tab">Help</a>
             </li>
 
         </ul>
@@ -252,11 +253,11 @@
                                href="#nodes-tab-pane">Nodes</a>
                         </li>
                         <li class="flex-fill nav-item">
-                            <a class="flex-fill nav-link" data-toggle="pill" id="view-tab" href="#views">Views</a>
+                            <a class="flex-fill nav-link" data-toggle="pill" id="node-settings-tab"
+                               href="#node-settings">Tools</a>
                         </li>
                         <li class="flex-fill nav-item">
-                            <a class="flex-fill nav-link" data-toggle="pill" id="node-settings-tab"
-                               href="#node-settings">Settings</a>
+                            <a class="flex-fill nav-link" data-toggle="pill" id="view-tab" href="#config">Config</a>
                         </li>
                     </ul>
                     <div class="tab-content" id="tab-contents">
@@ -271,24 +272,51 @@
                             </div>
                             <div id="nodes">Nodes..</div>
                         </div>
-                        <div class="tab-pane fade" id="views" role="tabpanel" aria-labelledby="profile-tab">Sources..
-                        </div>
-                        <div class="tab-pane fade" id="node-settings" role="tabpanel" aria-labelledby="profile-tab">
+                        <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="profile-tab">
                             <div class="block rounded shadow">
-                                <div class="block-title">Forces</div>
-                                <div class="slidecontainer">
-                                    <p>Many-Body Force Strength</p>
-                                    <input type="range" min="-100" max="100" value="0" class="slider"
-                                           id="slider-manybody"/>
-                                    <p id="value-manybody" style="text-align: center">0</p>
+                                <div class="block-title">Required</div>
+                                <div class="form-group">
+                                    <label for="sourceConfigDropBoxNodes">Nodes</label>
+                                    <select class="form-control custom-select custom-select-sm graph-settings"
+                                            id="sourceConfigDropBoxNodes"
+                                            onchange="sourceConfigNodeChanged(this)">
+                                    </select>
                                 </div>
-                                <div class="slidecontainer">
-                                    <p>Link Force Strength</p>
-                                    <input type="range" min="1" max="100" value="50" class="slider"
-                                           id="slider-linkforce"/>
-                                    <p id="value-linkforce" style="text-align: center">50</p>
+                                <div class="form-group">
+                                    <label for="sourceConfigDropBoxLinks">Links</label>
+                                    <select onchange="sourceConfigLinkChanged(this)"
+                                            class="form-control custom-select custom-select-sm graph-settings"
+                                            id="sourceConfigDropBoxLinks">
+                                    </select>
                                 </div>
                             </div>
+
+                            <div class="block rounded shadow">
+                                <div class="block-title">Nodes</div>
+                                <div class="form-group">
+                                    <label for="sourceConfigDropBoxNodeID">ID</label>
+                                    <select class="form-control custom-select custom-select-sm graph-settings"
+                                            id="sourceConfigDropBoxNodeID"
+                                            onchange="sourceConfigNodeIdChanged(this)">
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="sourceConfigDropBoxNodeTitle">Node Title (shown near the node)</label>
+                                    <select onchange="sourceConfigNodeTitleChanged(this)"
+                                            class="form-control custom-select custom-select-sm graph-settings"
+                                            id="sourceConfigDropBoxNodeTitle">
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="sourceConfigDropBoxNodeWeight">Node Weight (affects the node
+                                        size)</label>
+                                    <select onchange="sourceConfigNodeWeightChanged(this)"
+                                            class="form-control custom-select custom-select-sm graph-settings"
+                                            id="sourceConfigDropBoxNodeWeight">
+                                    </select>
+                                </div>
+                            </div>
+
                             <div class="block rounded shadow">
                                 <div class="block-title">Links</div>
                                 <div class="form-group">
@@ -301,45 +329,32 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="nodeColorPalettes">Color</label>
-                                    <div class="form-row">
-                                        <div class="col-6">
-                                            <input id='txtBox-link-color' type="color"
-                                                   class="form-control form-control-sm graph-settings"
-                                                   value="#00AAFF"/>
-                                        </div>
-                                        <div class="col-3">
-                                            <button type="button" class="btn btn-dark btn-sm btn-block"
-                                                    onclick="setLinkColor()">Link
-                                            </button>
-                                        </div>
-                                        <div class="col-3">
-                                            <button type="button" class="btn btn-dark btn-sm btn-block"
-                                                    onclick="setLinksColor()">All
-                                            </button>
-                                        </div>
-                                    </div>
+                                    <label for="linkLineDirected">Directed</label>
+                                    <select onchange="setLinkLineDirected(this)"
+                                            class="custom-select custom-select-sm graph-settings"
+                                            id="linkLineDirected">
+                                        <option>Directed</option>
+                                        <option>Undirected</option>
+                                    </select>
                                 </div>
                                 <div class="form-group">
-                                    <label for="nodeColorPalettes">Stroke Width</label>
-                                    <div class="form-row">
-                                        <div class="col-6">
-                                            <input id='txtBox-link-width' type="text" min="0"
-                                                   class="form-control form-control-sm graph-settings" value="5"/>
-                                        </div>
-                                        <div class="col-3">
-                                            <button type="button" class="btn btn-dark btn-sm btn-block"
-                                                    onclick="setLinkWidth()">Link
-                                            </button>
-                                        </div>
-                                        <div class="col-3">
-                                            <button type="button" class="btn btn-dark btn-sm btn-block"
-                                                    onclick="setLinksWidth()">All
-                                            </button>
-                                        </div>
-                                    </div>
+                                    <label for="linkLineDirection">Direction</label>
+                                    <select onchange="setLinkLineDirection(this)"
+                                            class="custom-select custom-select-sm graph-settings"
+                                            id="linkLineDirection">
+                                        <option>Target</option>
+                                        <option>Source</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="linkLineDirection">Scale Arrow Marker</label>
+                                    <input type="checkbox" value=""/>
                                 </div>
                             </div>
+
+
+                        </div>
+                        <div class="tab-pane fade" id="node-settings" role="tabpanel" aria-labelledby="profile-tab">
                             <div class="block rounded shadow">
                                 <div class="block-title">Nodes</div>
                                 <div class="form-group">
@@ -398,7 +413,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="nodeColorPalettes">Images</label>
+                                    <label for="nodeColorPalettes">Image</label>
                                     <div class="form-row">
                                         <div class="col-6">
                                             <select
@@ -458,6 +473,67 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="block rounded shadow">
+                                <div class="block-title">Links</div>
+
+                                <div class="form-group">
+                                    <label for="nodeColorPalettes">Color</label>
+                                    <div class="form-row">
+                                        <div class="col-6">
+                                            <input id='txtBox-link-color' type="color"
+                                                   class="form-control form-control-sm graph-settings"
+                                                   value="#00AAFF"/>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                                    onclick="setLinkColor()">Link
+                                            </button>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                                    onclick="setLinksColor()">All
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="nodeColorPalettes">Stroke Width</label>
+                                    <div class="form-row">
+                                        <div class="col-6">
+                                            <input id='txtBox-link-width' type="text" min="0"
+                                                   class="form-control form-control-sm graph-settings" value="5"/>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                                    onclick="setLinkWidth()">Link
+                                            </button>
+                                        </div>
+                                        <div class="col-3">
+                                            <button type="button" class="btn btn-dark btn-sm btn-block"
+                                                    onclick="setLinksWidth()">All
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="block rounded shadow">
+                                <div class="block-title">Forces</div>
+                                <div class="slidecontainer">
+                                    <p>Many-Body Force Strength</p>
+                                    <input type="range" min="-100" max="100" value="0" class="slider"
+                                           id="slider-manybody"/>
+                                    <p id="value-manybody" style="text-align: center">0</p>
+                                </div>
+                                <div class="slidecontainer">
+                                    <p>Link Force Strength</p>
+                                    <input type="range" min="1" max="100" value="50" class="slider"
+                                           id="slider-linkforce"/>
+                                    <p id="value-linkforce" style="text-align: center">50</p>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -505,24 +581,28 @@
                                onclick="explode()"></i>
                         </div>
                         <div>
-                            <i id="btn-toolbar-add-node" value="" data-placement="left" class="fas fa-plus-circle" data-toggle="tooltip"
+                            <i id="btn-toolbar-add-node" value="" data-placement="left" class="fas fa-plus-circle"
+                               data-toggle="tooltip"
                                title="Add Node"
                                data-content="Click on graph area to place node. Press ESC to cancel."
                                onclick="addNode()"></i>
                         </div>
                         <div>
-                            <i id="btn-toolbar-remove-node" value="" data-placement="left" class="fas fa-minus-circle" data-toggle="tooltip"
+                            <i id="btn-toolbar-remove-node" value="" data-placement="left" class="fas fa-minus-circle"
+                               data-toggle="tooltip"
                                title="Remove Node"
                                data-content="Click on the node you want to remove. Press ESC to cancel."
                                onclick="removeNode()"></i>
                         </div>
                         <div>
-                            <i id="btn-toolbar-add-link" value="" data-placement="left" class="fas fa-vector-square" data-toggle="tooltip"
+                            <i id="btn-toolbar-add-link" value="" data-placement="left" class="fas fa-vector-square"
+                               data-toggle="tooltip"
                                title="Add Link"
                                onclick="addLink()"></i>
                         </div>
                         <div>
-                            <i id="btn-toolbar-remove-link" value="" data-placement="left" class="fas fa-draw-polygon" data-toggle="tooltip"
+                            <i id="btn-toolbar-remove-link" value="" data-placement="left" class="fas fa-draw-polygon"
+                               data-toggle="tooltip"
                                title="Remove Link"
                                data-content="Click on the link you want to remove. Press ESC to cancel."
                                onclick="removeLink()"></i>
@@ -557,246 +637,242 @@
 
     <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
     </div>
-    <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
-        <div id="source-config-box">
-            <div class="container">
-                <div class="py-5 text-center">
-                    <img class="d-block mx-auto mb-4" src="images/white-graph-512.png" alt="" width="72"
-                         height="72">
-                    <h2>Graph Configuration</h2>
-                    <p class="lead">Below you'll find different configurations for the current activated graph.
-                        Some of the configurations are required to display the graph and some others are optional.</p>
-                </div>
+    <!--    <div class="tab-pane fade" id="config-old" role="tabpanel" aria-labelledby="config-tab">-->
+    <!--        <div id="source-config-box">-->
+    <!--            <div class="container">-->
+    <!--                <div class="py-5 text-center">-->
+    <!--                    <img class="d-block mx-auto mb-4" src="images/white-graph-512.png" alt="" width="72"-->
+    <!--                         height="72">-->
+    <!--                    <h2>Graph Configuration</h2>-->
+    <!--                    <p class="lead">Below you'll find different configurations for the current activated graph.-->
+    <!--                        Some of the configurations are required to display the graph and some others are optional.</p>-->
+    <!--                </div>-->
 
-                <div class="row">
+    <!--                <div class="row">-->
 
-                    <div class="col-md-12 order-md-1">
-                        <h4 class="mb-3">Basics</h4>
-                        <form class="needs-validation" novalidate="">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="sourceConfigDropBoxNodes">Nodes</label>
-                                    <select class="form-control" id="sourceConfigDropBoxNodes"
-                                            onchange="sourceConfigNodeChanged(this)">
-                                    </select>
-                                    <div class="invalid-feedback">
-                                        Valid first name is required.
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="sourceConfigDropBoxNodeID">Links</label>
-                                <select class="form-control" id="sourceConfigDropBoxNodeID"
-                                        onchange="sourceConfigNodeIdChanged(this)">
-                                </select>
-                                    <div class="invalid-feedback">
-                                        Valid last name is required.
-                                    </div>
-                                </div>
-                            </div>
+    <!--                    <div class="col-md-12 order-md-1">-->
+    <!--                        <h4 class="mb-3">Basics</h4>-->
+    <!--                        <form class="needs-validation" novalidate="">-->
+    <!--                            <div class="row">-->
+    <!--                                <div class="col-md-6 mb-3">-->
+    <!--                                    <label for="sourceConfigDropBoxNodes">Nodes</label>-->
+    <!--                                    &lt;!&ndash;                                    <select class="form-control" id="sourceConfigDropBoxNodes"&ndash;&gt;-->
+    <!--                                    &lt;!&ndash;                                            onchange="sourceConfigNodeChanged(this)">&ndash;&gt;-->
+    <!--                                    &lt;!&ndash;                                    </select>&ndash;&gt;-->
 
-                            <div class="mb-3">
-                                <h4 class="mb-3">Basics</h4>
-                                <label for="username">Username</label>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">@</span>
-                                    </div>
-                                    <input type="text" class="form-control" id="username" placeholder="Username"
-                                           required="">
-                                    <div class="invalid-feedback" style="width: 100%;">
-                                        Your username is required.
-                                    </div>
-                                </div>
-                            </div>
+    <!--                                </div>-->
+    <!--                                <div class="col-md-6 mb-3">-->
+    <!--                                    &lt;!&ndash;                                    <label for="sourceConfigDropBoxNodeID">Links</label>&ndash;&gt;-->
+    <!--                                    &lt;!&ndash;                                    <select class="form-control" id="sourceConfigDropBoxNodeID"&ndash;&gt;-->
+    <!--                                    &lt;!&ndash;                                            onchange="sourceConfigNodeIdChanged(this)">&ndash;&gt;-->
+    <!--                                    &lt;!&ndash;                                    </select>&ndash;&gt;-->
 
-                            <div class="mb-3">
-                                <label for="email">Email <span class="text-muted">(Optional)</span></label>
-                                <input type="email" class="form-control" id="email" placeholder="you@example.com">
-                                <div class="invalid-feedback">
-                                    Please enter a valid email address for shipping updates.
-                                </div>
-                            </div>
+    <!--                                </div>-->
+    <!--                            </div>-->
 
-                            <div class="mb-3">
-                                <label for="address">Address</label>
-                                <input type="text" class="form-control" id="address" placeholder="1234 Main St"
-                                       required="">
-                                <div class="invalid-feedback">
-                                    Please enter your shipping address.
-                                </div>
-                            </div>
+    <!--                            <div class="mb-3">-->
+    <!--                                <h4 class="mb-3">Basics</h4>-->
+    <!--                                <label for="username">Username</label>-->
+    <!--                                <div class="input-group">-->
+    <!--                                    <div class="input-group-prepend">-->
+    <!--                                        <span class="input-group-text">@</span>-->
+    <!--                                    </div>-->
+    <!--                                    <input type="text" class="form-control" id="username" placeholder="Username"-->
+    <!--                                           required="">-->
+    <!--                                    <div class="invalid-feedback" style="width: 100%;">-->
+    <!--                                        Your username is required.-->
+    <!--                                    </div>-->
+    <!--                                </div>-->
+    <!--                            </div>-->
 
-                            <div class="mb-3">
-                                <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>
-                                <input type="text" class="form-control" id="address2" placeholder="Apartment or suite">
-                            </div>
+    <!--                            <div class="mb-3">-->
+    <!--                                <label for="email">Email <span class="text-muted">(Optional)</span></label>-->
+    <!--                                <input type="email" class="form-control" id="email" placeholder="you@example.com">-->
+    <!--                                <div class="invalid-feedback">-->
+    <!--                                    Please enter a valid email address for shipping updates.-->
+    <!--                                </div>-->
+    <!--                            </div>-->
 
-                            <div class="row">
-                                <div class="col-md-5 mb-3">
-                                    <label for="country">Country</label>
-                                    <select class="custom-select d-block w-100" id="country" required="">
-                                        <option value="">Choose...</option>
-                                        <option>United States</option>
-                                    </select>
-                                    <div class="invalid-feedback">
-                                        Please select a valid country.
-                                    </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label for="state">State</label>
-                                    <select class="custom-select d-block w-100" id="state" required="">
-                                        <option value="">Choose...</option>
-                                        <option>California</option>
-                                    </select>
-                                    <div class="invalid-feedback">
-                                        Please provide a valid state.
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label for="zip">Zip</label>
-                                    <input type="text" class="form-control" id="zip" placeholder="" required="">
-                                    <div class="invalid-feedback">
-                                        Zip code required.
-                                    </div>
-                                </div>
-                            </div>
-                            <hr class="mb-4">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="same-address">
-                                <label class="custom-control-label" for="same-address">Shipping address is the same as
-                                    my billing address</label>
-                            </div>
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="save-info">
-                                <label class="custom-control-label" for="save-info">Save this information for next
-                                    time</label>
-                            </div>
-                            <hr class="mb-4">
+    <!--                            <div class="mb-3">-->
+    <!--                                <label for="address">Address</label>-->
+    <!--                                <input type="text" class="form-control" id="address" placeholder="1234 Main St"-->
+    <!--                                       required="">-->
+    <!--                                <div class="invalid-feedback">-->
+    <!--                                    Please enter your shipping address.-->
+    <!--                                </div>-->
+    <!--                            </div>-->
 
-                            <h4 class="mb-3">Payment</h4>
+    <!--                            <div class="mb-3">-->
+    <!--                                <label for="address2">Address 2 <span class="text-muted">(Optional)</span></label>-->
+    <!--                                <input type="text" class="form-control" id="address2" placeholder="Apartment or suite">-->
+    <!--                            </div>-->
 
-                            <div class="d-block my-3">
-                                <div class="custom-control custom-radio">
-                                    <input id="credit" name="paymentMethod" type="radio" class="custom-control-input"
-                                           checked="" required="">
-                                    <label class="custom-control-label" for="credit">Credit card</label>
-                                </div>
-                                <div class="custom-control custom-radio">
-                                    <input id="debit" name="paymentMethod" type="radio" class="custom-control-input"
-                                           required="">
-                                    <label class="custom-control-label" for="debit">Debit card</label>
-                                </div>
-                                <div class="custom-control custom-radio">
-                                    <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input"
-                                           required="">
-                                    <label class="custom-control-label" for="paypal">PayPal</label>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="cc-name">Name on card</label>
-                                    <input type="text" class="form-control" id="cc-name" placeholder="" required="">
-                                    <small class="text-muted">Full name as displayed on card</small>
-                                    <div class="invalid-feedback">
-                                        Name on card is required
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="cc-number">Credit card number</label>
-                                    <input type="text" class="form-control" id="cc-number" placeholder="" required="">
-                                    <div class="invalid-feedback">
-                                        Credit card number is required
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3 mb-3">
-                                    <label for="cc-expiration">Expiration</label>
-                                    <input type="text" class="form-control" id="cc-expiration" placeholder=""
-                                           required="">
-                                    <div class="invalid-feedback">
-                                        Expiration date required
-                                    </div>
-                                </div>
-                                <div class="col-md-3 mb-3">
-                                    <label for="cc-cvv">CVV</label>
-                                    <input type="text" class="form-control" id="cc-cvv" placeholder="" required="">
-                                    <div class="invalid-feedback">
-                                        Security code required
-                                    </div>
-                                </div>
-                            </div>
-                            <hr class="mb-4">
-                            <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>
-                        </form>
-                    </div>
-                </div>
+    <!--                            <div class="row">-->
+    <!--                                <div class="col-md-5 mb-3">-->
+    <!--                                    <label for="country">Country</label>-->
+    <!--                                    <select class="custom-select d-block w-100" id="country" required="">-->
+    <!--                                        <option value="">Choose...</option>-->
+    <!--                                        <option>United States</option>-->
+    <!--                                    </select>-->
+    <!--                                    <div class="invalid-feedback">-->
+    <!--                                        Please select a valid country.-->
+    <!--                                    </div>-->
+    <!--                                </div>-->
+    <!--                                <div class="col-md-4 mb-3">-->
+    <!--                                    <label for="state">State</label>-->
+    <!--                                    <select class="custom-select d-block w-100" id="state" required="">-->
+    <!--                                        <option value="">Choose...</option>-->
+    <!--                                        <option>California</option>-->
+    <!--                                    </select>-->
+    <!--                                    <div class="invalid-feedback">-->
+    <!--                                        Please provide a valid state.-->
+    <!--                                    </div>-->
+    <!--                                </div>-->
+    <!--                                <div class="col-md-3 mb-3">-->
+    <!--                                    <label for="zip">Zip</label>-->
+    <!--                                    <input type="text" class="form-control" id="zip" placeholder="" required="">-->
+    <!--                                    <div class="invalid-feedback">-->
+    <!--                                        Zip code required.-->
+    <!--                                    </div>-->
+    <!--                                </div>-->
+    <!--                            </div>-->
+    <!--                            <hr class="mb-4">-->
+    <!--                            <div class="custom-control custom-checkbox">-->
+    <!--                                <input type="checkbox" class="custom-control-input" id="same-address">-->
+    <!--                                <label class="custom-control-label" for="same-address">Shipping address is the same as-->
+    <!--                                    my billing address</label>-->
+    <!--                            </div>-->
+    <!--                            <div class="custom-control custom-checkbox">-->
+    <!--                                <input type="checkbox" class="custom-control-input" id="save-info">-->
+    <!--                                <label class="custom-control-label" for="save-info">Save this information for next-->
+    <!--                                    time</label>-->
+    <!--                            </div>-->
+    <!--                            <hr class="mb-4">-->
 
-                <footer class="my-5 pt-5 text-muted text-center text-small">
-                    <p class="mb-1">© 2017-2019 Company Name</p>
-                    <ul class="list-inline">
-                        <li class="list-inline-item"><a href="#">Privacy</a></li>
-                        <li class="list-inline-item"><a href="#">Terms</a></li>
-                        <li class="list-inline-item"><a href="#">Support</a></li>
-                    </ul>
-                </footer>
-            </div>
-        </div>
-        <!--            <div class="card shadow source-config-box" id="required-card">-->
-        <!--                <div class="card-header bg-danger text-center">-->
-        <!--                    Required Properties-->
-        <!--                </div>-->
-        <!--                <div class="card-body">-->
-        <!--                    <div class="form-group card-text">-->
-        <!--                        <label for="sourceConfigDropBoxNodes">Nodes</label>-->
-        <!--                        <select class="form-control" id="sourceConfigDropBoxNodes"-->
-        <!--                                onchange="sourceConfigNodeChanged(this)">-->
-        <!--                        </select>-->
-        <!--                    </div>-->
-        <!--                    <div class="form-group">-->
-        <!--                        <label for="sourceConfigDropBoxNodes">Node ID (must be unique to identify nodes)</label>-->
-        <!--                        <select class="form-control" id="sourceConfigDropBoxNodeID"-->
-        <!--                                onchange="sourceConfigNodeIdChanged(this)">-->
-        <!--                        </select>-->
-        <!--                    </div>-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--            <div id="node-link-box">-->
-        <!--                <div class="card shadow source-config-box">-->
-        <!--                    <div class="card-header text-center">-->
-        <!--                        Node Properties-->
-        <!--                    </div>-->
-        <!--                    <div class="card-body">-->
-        <!--                        <div class="form-group">-->
-        <!--                            <label for="sourceConfigDropBoxNodeTitle">Node Title (shown near the node)</label>-->
-        <!--                            <select onchange="sourceConfigNodeTitleChanged(this)" class="form-control"-->
-        <!--                                    id="sourceConfigDropBoxNodeTitle">-->
-        <!--                            </select>-->
-        <!--                        </div>-->
-        <!--                        <div class="form-group">-->
-        <!--                            <label for="sourceConfigDropBoxNodeWeight">Node Weight (affects the node size)</label>-->
-        <!--                            <select onchange="sourceConfigNodeWeightChanged(this)" class="form-control"-->
-        <!--                                    id="sourceConfigDropBoxNodeWeight">-->
-        <!--                            </select>-->
-        <!--                        </div>-->
-        <!--                    </div>-->
-        <!--                </div>-->
-        <!--                <div class="card shadow source-config-box">-->
-        <!--                    <div class="card-header text-center">-->
-        <!--                        Link Properties-->
-        <!--                    </div>-->
-        <!--                    <div class="card-body">-->
-        <!--                        <div class="form-group">-->
-        <!--                            <label for="sourceConfigDropBoxLinks">Links</label>-->
-        <!--                            <select onchange="sourceConfigLinkChanged(this)" class="form-control"-->
-        <!--                                    id="sourceConfigDropBoxLinks">-->
-        <!--                            </select>-->
-        <!--                        </div>-->
-        <!--                    </div>-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--        </div>-->
-    </div>
+    <!--                            <h4 class="mb-3">Payment</h4>-->
+
+    <!--                            <div class="d-block my-3">-->
+    <!--                                <div class="custom-control custom-radio">-->
+    <!--                                    <input id="credit" name="paymentMethod" type="radio" class="custom-control-input"-->
+    <!--                                           checked="" required="">-->
+    <!--                                    <label class="custom-control-label" for="credit">Credit card</label>-->
+    <!--                                </div>-->
+    <!--                                <div class="custom-control custom-radio">-->
+    <!--                                    <input id="debit" name="paymentMethod" type="radio" class="custom-control-input"-->
+    <!--                                           required="">-->
+    <!--                                    <label class="custom-control-label" for="debit">Debit card</label>-->
+    <!--                                </div>-->
+    <!--                                <div class="custom-control custom-radio">-->
+    <!--                                    <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input"-->
+    <!--                                           required="">-->
+    <!--                                    <label class="custom-control-label" for="paypal">PayPal</label>-->
+    <!--                                </div>-->
+    <!--                            </div>-->
+    <!--                            <div class="row">-->
+    <!--                                <div class="col-md-6 mb-3">-->
+    <!--                                    <label for="cc-name">Name on card</label>-->
+    <!--                                    <input type="text" class="form-control" id="cc-name" placeholder="" required="">-->
+    <!--                                    <small class="text-muted">Full name as displayed on card</small>-->
+    <!--                                    <div class="invalid-feedback">-->
+    <!--                                        Name on card is required-->
+    <!--                                    </div>-->
+    <!--                                </div>-->
+    <!--                                <div class="col-md-6 mb-3">-->
+    <!--                                    <label for="cc-number">Credit card number</label>-->
+    <!--                                    <input type="text" class="form-control" id="cc-number" placeholder="" required="">-->
+    <!--                                    <div class="invalid-feedback">-->
+    <!--                                        Credit card number is required-->
+    <!--                                    </div>-->
+    <!--                                </div>-->
+    <!--                            </div>-->
+    <!--                            <div class="row">-->
+    <!--                                <div class="col-md-3 mb-3">-->
+    <!--                                    <label for="cc-expiration">Expiration</label>-->
+    <!--                                    <input type="text" class="form-control" id="cc-expiration" placeholder=""-->
+    <!--                                           required="">-->
+    <!--                                    <div class="invalid-feedback">-->
+    <!--                                        Expiration date required-->
+    <!--                                    </div>-->
+    <!--                                </div>-->
+    <!--                                <div class="col-md-3 mb-3">-->
+    <!--                                    <label for="cc-cvv">CVV</label>-->
+    <!--                                    <input type="text" class="form-control" id="cc-cvv" placeholder="" required="">-->
+    <!--                                    <div class="invalid-feedback">-->
+    <!--                                        Security code required-->
+    <!--                                    </div>-->
+    <!--                                </div>-->
+    <!--                            </div>-->
+    <!--                            <hr class="mb-4">-->
+    <!--                            <button class="btn btn-primary btn-lg btn-block" type="submit">Continue to checkout</button>-->
+    <!--                        </form>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+
+    <!--                <footer class="my-5 pt-5 text-muted text-center text-small">-->
+    <!--                    <p class="mb-1">© 2017-2019 Company Name</p>-->
+    <!--                    <ul class="list-inline">-->
+    <!--                        <li class="list-inline-item"><a href="#">Privacy</a></li>-->
+    <!--                        <li class="list-inline-item"><a href="#">Terms</a></li>-->
+    <!--                        <li class="list-inline-item"><a href="#">Support</a></li>-->
+    <!--                    </ul>-->
+    <!--                </footer>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--            <div class="card shadow source-config-box" id="required-card">-->
+    <!--                <div class="card-header bg-danger text-center">-->
+    <!--                    Required Properties-->
+    <!--                </div>-->
+    <!--                <div class="card-body">-->
+    <!--                    <div class="form-group card-text">-->
+    <!--                        <label for="sourceConfigDropBoxNodes">Nodes</label>-->
+    <!--                        <select class="form-control" id="sourceConfigDropBoxNodes"-->
+    <!--                                onchange="sourceConfigNodeChanged(this)">-->
+    <!--                        </select>-->
+    <!--                    </div>-->
+    <!--                    <div class="form-group">-->
+    <!--                        <label for="sourceConfigDropBoxNodes">Node ID (must be unique to identify nodes)</label>-->
+    <!--                        <select class="form-control" id="sourceConfigDropBoxNodeID"-->
+    <!--                                onchange="sourceConfigNodeIdChanged(this)">-->
+    <!--                        </select>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--            <div id="node-link-box">-->
+    <!--                <div class="card shadow source-config-box">-->
+    <!--                    <div class="card-header text-center">-->
+    <!--                        Node Properties-->
+    <!--                    </div>-->
+    <!--                    <div class="card-body">-->
+    <!--                        <div class="form-group">-->
+    <!--                            <label for="sourceConfigDropBoxNodeTitle">Node Title (shown near the node)</label>-->
+    <!--                            <select onchange="sourceConfigNodeTitleChanged(this)" class="form-control"-->
+    <!--                                    id="sourceConfigDropBoxNodeTitle">-->
+    <!--                            </select>-->
+    <!--                        </div>-->
+    <!--                        <div class="form-group">-->
+    <!--                            <label for="sourceConfigDropBoxNodeWeight">Node Weight (affects the node size)</label>-->
+    <!--                            <select onchange="sourceConfigNodeWeightChanged(this)" class="form-control"-->
+    <!--                                    id="sourceConfigDropBoxNodeWeight">-->
+    <!--                            </select>-->
+    <!--                        </div>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--                <div class="card shadow source-config-box">-->
+    <!--                    <div class="card-header text-center">-->
+    <!--                        Link Properties-->
+    <!--                    </div>-->
+    <!--                    <div class="card-body">-->
+    <!--                        <div class="form-group">-->
+    <!--                            <label for="sourceConfigDropBoxLinks">Links</label>-->
+    <!--                            <select onchange="sourceConfigLinkChanged(this)" class="form-control"-->
+    <!--                                    id="sourceConfigDropBoxLinks">-->
+    <!--                            </select>-->
+    <!--                        </div>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--            </div>-->
+    <!--        </div>-->
+    <!--    </div>-->
     <div class="tab-pane fade" id="images" role="tabpanel" aria-labelledby="config-tab">
         <div id="images-container"></div>
         <a class="circle" data-toggle="modal" data-target="#addImageWindow">+</a>
@@ -811,7 +887,6 @@
                             </button>
                         </div>
                         <div class="modal-body">
-
                             <div class="alert alert-danger fade text-center reset" role="alert"
                                  id="create-image-alert">
                                 <span id="create-image-message"></span>
@@ -848,7 +923,9 @@
                 </div>
             </div>
         </div>
-
+    </div>
+    <div class="tab-pane fade" id="help" role="tabpanel" aria-labelledby="help-tab">
+        Coming soon
     </div>
 </div>
 <script type="text/javascript" src="bundle.js"></script>

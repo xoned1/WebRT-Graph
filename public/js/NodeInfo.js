@@ -7,7 +7,7 @@ module.exports = class NodeInfo extends React.Component {
         super(props);
 
         this.state = {
-            activeNode: {}
+            activeNode: null
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -36,6 +36,9 @@ module.exports = class NodeInfo extends React.Component {
         }
 
         const node = this.state.activeNode;
+
+        if (!node) { return <div>No Node Selected.<br/> Click on a Node to see details.</div>; }
+
         return Object.keys(node).map((key) => {
             const disabled = this.props.forbiddenVars.includes(key);
 

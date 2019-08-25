@@ -15,7 +15,16 @@ module.exports = class GraphContext {
     }
 
     getNodes() {
-        return this.data[this.getConfigNode()];
+        return this.findNode(this.data, this.getConfigNode());
+    }
+
+    findNode(nodes, key) {
+        for (var nkey in nodes) {
+            if (nkey === key) {
+                return nodes[key];
+            }
+            return this.findNode(nodes[nkey], key);
+        }
     }
 
     getNode(nodeId) {
@@ -37,6 +46,10 @@ module.exports = class GraphContext {
     }
 
     getConfigNodeId() {
+        if (!this.source.configNodeId) {
+            //default value applied by d3.js
+            return 'index';
+        }
         return this.source.configNodeId;
     }
 
