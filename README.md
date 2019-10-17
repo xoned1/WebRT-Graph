@@ -21,9 +21,10 @@ Just import your data and define what fields are the nodes & links. That's it!
 * **Export** the graph as JSON or as an Image
 
 * **And More** - directed & undirected graphs, linear & curved links, weighted nodes, etc..
-
+---
 ![Image of WebRT-Graph](webrt.JPG)
 
+---
 ## How to use it
 ### For developers (simple guide)
 WebRT-Graph is based on 
