@@ -23,9 +23,9 @@ Just import your data and define what fields are the nodes & links. That's it!
 * **And More** - directed & undirected graphs, linear & curved links, weighted nodes, etc..
 ---
 ## Examples
-![Image of WebRT-Graph](public/images/graph_example1.JPG)
+![Image of WebRT-Graph](public/images/example_graph1_nb.png)
 ***
-![Image of WebRT-Graph](public/images/graph_example2.JPG)
+![Image of WebRT-Graph](public/images/example_graph2_nb.png)
 
 ---
 ## How to use WebRT-Graph
