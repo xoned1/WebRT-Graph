@@ -10,7 +10,7 @@ Just import your data and define what fields are the nodes & links. That's it!
 ## WebRT-Graph let's you:
 * **From Scratch** - start a new graph from scratch with no data
 
-* **Import** - or import any structured data like JSON, XML & CSV files 
+* **Import** - or import any structured data like JSON, XML & CSV files
 
 * **Edit** - add or remove nodes and links
 
@@ -18,11 +18,14 @@ Just import your data and define what fields are the nodes & links. That's it!
 
 * **Share** - share your graph with other user to work together on it
 
-* **Export** the graph as JSON or as an Image
+* **Export** - the graph as JSON or as an Image
 
 * **And More** - directed & undirected graphs, linear & curved links, weighted nodes, etc..
 ---
-![Image of WebRT-Graph](webrt.JPG)
+### Examples
+![Image of WebRT-Graph](public/images/graph_example1.JPG)
+***
+![Image of WebRT-Graph](public/images/graph_example2.JPG)
 
 ---
 ## How to use it
