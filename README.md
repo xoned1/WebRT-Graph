@@ -22,13 +22,13 @@ Just import your data and define what fields are the nodes & links. That's it!
 
 * **And More** - directed & undirected graphs, linear & curved links, weighted nodes, etc..
 ---
-### Examples
+## Examples
 ![Image of WebRT-Graph](public/images/graph_example1.JPG)
 ***
 ![Image of WebRT-Graph](public/images/graph_example2.JPG)
 
 ---
-## How to use it
+## How to use WebRT-Graph
 ### For developers (simple guide)
 WebRT-Graph is based on 
 [Node.js](https://github.com/nodejs "Node.js Github")
@@ -45,7 +45,7 @@ as data store.
 
 
 
-### For non-developers (more detailed guide)
+### For non-developers (a little bit more detailed guide)
 
 You'll need to download [Node.js](https://nodejs.org/de/ "Node.js")
 and [RethinkDB](https://rethinkdb.com/ "RethinkDB") first.
