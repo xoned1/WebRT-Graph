@@ -1,15 +1,16 @@
-window.saveGraphAsImage = function() {
-    const svg = $('#graph-svg')[0];
-    const svgString = getSVGString(svg);
+module.exports = {
+    exportAsImage: function (filename) {
+        const svg = $('#graph-svg')[0];
+        const svgString = getSVGString(svg);
 
-    let graphContainer = $("#graph-container");
-    svgString2Image(svgString, 2 * graphContainer.width(), 2 * graphContainer.height(), 'png', save); // passes Blob and filesize String to the callback
+        let graphContainer = $("#graph-container");
+        svgString2Image(svgString, 2 * graphContainer.width(), 2 * graphContainer.height(), 'png', save); // passes Blob and filesize String to the callback
 
-    function save(dataBlob, filesize) {
-        saveAs(dataBlob, 'webrt-graph-export.png'); //TODO: + sourcename
+        function save(dataBlob, filesize) {
+            saveAs(dataBlob, filename + '.png');
+        }
     }
 };
-
 
 function getSVGString(svgNode) {
     svgNode.setAttribute('xlink', 'http://www.w3.org/1999/xlink');
@@ -59,6 +60,7 @@ function getSVGString(svgNode) {
             var cssRules = s.cssRules;
             for (var r = 0; r < cssRules.length; r++) {
                 if (contains(cssRules[r].selectorText, selectorTextArr))
+                    console.log( cssRules[r].cssText)
                     extractedCSSText += cssRules[r].cssText;
             }
         }
@@ -83,8 +85,8 @@ function getSVGString(svgNode) {
 
 
 function svgString2Image(svgString, width, height, format, callback) {
+    //console.log(svgString)
     var format = format ? format : 'png';
-
     var imgsrc = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
 
     var canvas = document.createElement("canvas");
@@ -102,8 +104,6 @@ function svgString2Image(svgString, width, height, format, callback) {
             var filesize = Math.round(blob.length / 1024) + ' KB';
             if (callback) callback(blob, filesize);
         });
-
-
     };
 
     image.src = imgsrc;

@@ -93,6 +93,14 @@ module.exports = class GraphContext {
         return this.source.configLinkLineType;
     }
 
+    getLinkLineDirected() {
+        return this.source.configLinkLineDirected;
+    }
+
+    getLinkLineDirection() {
+        return this.source.configLinkLineDirection;
+    }
+
     getNodeColorPalette() {
         return this.source.nodeColorPalette;
     }

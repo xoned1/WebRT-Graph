@@ -69,7 +69,7 @@ http.listen(httpPort, () => console.log(`WebRT-Graph is listening on port ${http
     ------------------    Routes    ---------------------
     -----------------------------------------------------
  */
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
     if (!req.isAuthenticated()) {
         res.redirect('/login')
     } else {
@@ -186,7 +186,7 @@ app.post('/setActiveSource', (req, res, next) => {
             return res.send(err);
         }
         res.end();
-        io.emit("active-source-changed", source, sourceOwner);
+        io.emit(req.user + "active-source-changed", source, sourceOwner);
     })
 });
 
@@ -196,6 +196,8 @@ app.post('/saveGraph', (req, res, next) => {
     const selectedSource = req.body.source;
     const graphData = req.body.graphData;
     const lastModified = req.body.lastModified;
+    const nodeCount = req.body.nodeCount;
+    const linkCount = req.body.linkCount;
     const user = req.body.sourceOwner ? req.body.sourceOwner : req.user;
     const overwrite = req.body.overwrite;
 
@@ -215,6 +217,8 @@ app.post('/saveGraph', (req, res, next) => {
 
         source.data = JSON.stringify(graphData);
         source.lastModified = new Date().getTime();
+        source.nodeCount = nodeCount;
+        source.linkCount = linkCount;
         getSource(user, selectedSource).update(source).run(connection, (err, result) => {
             if (logError(res, err)) { return res.end()}
 

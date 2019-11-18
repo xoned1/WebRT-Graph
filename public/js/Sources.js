@@ -26,8 +26,7 @@ module.exports = class Sources extends React.Component {
         socket.on('source-removed', () => {
             this.getSources();
         });
-        //TODO nur für sich selbst
-        socket.on('active-source-changed', (sourceName, sourceOwner) => {
+        socket.on(this.props.user + 'active-source-changed', (sourceName, sourceOwner) => {
             this.getSources();
             this.props.loadSource(sourceName, sourceOwner);
         });
