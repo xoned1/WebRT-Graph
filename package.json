@@ -11,7 +11,7 @@
     "babel-runtime": "^6.26.0",
     "babel-types": "^6.26.0",
     "babelify": "^10.0.0",
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.0.0",
     "blueimp-canvas-to-blob": "^3.14.0",
     "body-parser": "^1.19.0",
     "braces": "^3.0.2",
