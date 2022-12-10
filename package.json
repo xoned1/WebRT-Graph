@@ -24,7 +24,7 @@
     "detect-indent": "^4.0.0",
     "expand-brackets": "^0.1.5",
     "expand-range": "^1.8.2",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-session": "^1.16.2",
     "extend-shallow": "^3.0.2",
     "extglob": "^0.3.2",
